@@ -1,0 +1,15 @@
+[submodule "vim/.vim/bundle/solarized"]
+	path = vim/.vim/bundle/solarized
+	url = https://github.com/altercation/vim-colors-solarized
+[submodule "vim/.vim/bundle/eunuch"]
+	path = vim/.vim/bundle/eunuch
+	url = https://github.com/tpope/vim-eunuch
+[submodule "vim/.vim/bundle/surround"]
+	path = vim/.vim/bundle/surround
+	url = https://github.com/tpope/vim-surround
+[submodule "vim/.vim/bundle/unimpaired"]
+	path = vim/.vim/bundle/unimpaired
+	url = https://github.com/tpope/vim-unimpaired
+[submodule "vim/.vim/bundle/syntastic"]
+	path = vim/.vim/bundle/syntastic
+	url = https://github.com/scrooloose/syntastic
