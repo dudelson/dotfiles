@@ -66,6 +66,8 @@ export HISTSIZE=10000                           # The maximum number of events t
 export SAVEHIST=10000                           # The maximum number of events to save in the history file.
 export EDITOR='vim'
 export LANG='en_US.UTF-8'
+#export LANGUAGE='en_US.UTF-8'
+#export LC_ALL='en_US.UTF-8'
 
 
 #############################################################################
@@ -132,6 +134,9 @@ function popdls {
 ##````````````````````````````EXTERNAL MODULES`````````````````````````````##
 ##`````````````````````````````````````````````````````````````````````````##
 #############################################################################
+# colors!!!11!
+autoload -U colors && colors
+
 # smart urls 
 autoload -Uz url-quote-magic
 zle -N self-insert url-quote-magic
@@ -152,5 +157,6 @@ autoload -Uz compinit && compinit -i
 # emacs line editing
 bindkey -e
 # prompt
+export PROMPT="%M %{$fg[blue]%}%~%{$reset_color%} %# "
 
 

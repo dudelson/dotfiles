@@ -67,5 +67,5 @@ URxvt.scrollBar:       false
 URxvt.right_scrollBar: true
 URxvt.urlLauncher:     chromium
 URxvt.geometry:        100x30
-URxvt.font:            xft:Sauce Code Powerline:pixelsize=13:antialiasing=true:hinting:true,xft:Inconsolata\ for\ Powerline:pixelsize=13:antialiasing:true:hinting:true
+URxvt.font:            xft:Source\ Code\ Pro\ Medium:pixelsize=13:antialias=true:hinting=true,xft:Source\ Code\ Pro\ Medium:pixelsize=13:antialias=true:hinting=true
 URxvt.perl-ext-common: default,matcher
