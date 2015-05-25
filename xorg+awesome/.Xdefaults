@@ -62,10 +62,14 @@
 *color15:        S_base3
 
 ! URxvt settings
-URxvt.transparent:     false
-URxvt.scrollBar:       false
-URxvt.right_scrollBar: true
-URxvt.urlLauncher:     chromium
-URxvt.geometry:        100x30
-URxvt.font:            xft:Sauce Code Powerline:pixelsize=13:antialiasing=true:hinting:true,xft:Inconsolata\ for\ Powerline:pixelsize=13:antialiasing:true:hinting:true
-URxvt.perl-ext-common: default,matcher
+URxvt.perl-ext-common:      default,clipboard,url-select,keyboard-select
+URxvt.url-select.launcher:  /usr/bin/chromium
+URxvt.url-select.underline: true
+URxvt.keysym.M-u:           perl:url-select:select_next
+URxvt.keysym.M-Escape:      perl:keyboard-select:activate
+URxvt.keysym.M-s:           perl:keyboard-select:search
+URxvt.transparent:          false
+URxvt.scrollBar:            false
+URxvt.right_scrollBar:      true
+URxvt.geometry:             100x30
+URxvt*font:                 xft:Source\ Code\ Pro\ Medium:pixelsize=13:antialias=true:hinting=true,xft:Source\ Code\ Pro\ Medium:pixelsize=13:antialias=true:hinting=true

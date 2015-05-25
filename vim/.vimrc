@@ -41,6 +41,13 @@ let python_highlight_exceptions=1
 let python_highlight_string_formatting=1
 let python_print_as_function=1
 
+" load powerline
+python from powerline.vim import setup; setup()
+" always show the powerline statusline
+set laststatus=2
+set showtabline=2
+set noshowmode
+
 """""""""""""""""""
 "" Abbreviations ""
 """""""""""""""""""
