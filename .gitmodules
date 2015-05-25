@@ -13,3 +13,6 @@
 [submodule "vim/.vim/bundle/syntastic"]
 	path = vim/.vim/bundle/syntastic
 	url = https://github.com/scrooloose/syntastic
+[submodule "xorg+awesome/alttab"]
+	path = xorg+awesome/alttab
+	url = https://github.com/jorenheit/awesome_alttab

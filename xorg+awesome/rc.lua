@@ -286,6 +286,12 @@ globalkeys = awful.util.table.join(
 	function()
 	    alttab.switch(-1, "Alt_L", "Tab", "ISO_Left_Tab")
 	end
+    ),
+    -- Printscreen
+    awful.key({                 }, "Print",
+	function()
+	    awful.util.spawn(os.date('maim /tmp/screenshot_%Y-%m-%d_%X.png'), false)
+	end
     )
 )
 
