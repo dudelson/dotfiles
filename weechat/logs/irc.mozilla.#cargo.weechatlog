@@ -1,0 +1,13 @@
+2015-05-26 19:23:27	-->	ubeatlenine (david@moz-30lmkk.nh.comcast.net) has joined #cargo
+2015-05-26 19:23:27	--	Topic for #cargo is "THE RUST PACKAGE MANAGER | dox: http://crates.io | bors: http://buildbot.rust-lang.org/bors-cargo/bors.html"
+2015-05-26 19:23:27	--	Topic set by acrichto on Thu, 03 Jul 2014 18:06:13
+2015-05-26 19:23:28	--	Channel #cargo: 115 nicks (7 ops, 0 halfops, 0 voices, 108 normals)
+2015-05-26 19:23:29	--	Channel created on Fri, 27 Jun 2014 20:27:53
+2015-05-26 19:23:52	@huon	acrichto: ^
+2015-05-26 19:24:37	@acrichto	jdub: no the arguments are only passed to the final crate
+2015-05-26 19:32:23	-->	harrisonclarke (harrisoncla@moz-uur7pt.eastlink.ca) has joined #cargo
+2015-05-26 19:33:43	-->	Rym (y@moz-c2u.sd4.38.217.IP) has joined #cargo
+2015-05-26 19:38:08	<--	Rym (y@moz-c2u.sd4.38.217.IP) has quit (Ping timeout: 121 seconds)
+2015-05-26 19:43:24	jdub	acrichto: would it be wrong to apply them to all crates?
+2015-05-26 19:43:39	@acrichto	jdub: for many flags, yes, for others, possibly not
+2015-05-26 19:45:03	<--	ubeatlenine (david@moz-30lmkk.nh.comcast.net) has left #cargo ("WeeChat 1.2")
