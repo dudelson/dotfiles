@@ -19,3 +19,12 @@
 [submodule "vim/.vim/bundle/rust"]
 	path = vim/.vim/bundle/rust
 	url = https://github.com/rust-lang/rust.vim.git
+[submodule "vim/.vim/bundle/nerdtree"]
+	path = vim/.vim/bundle/nerdtree
+	url = https://github.com/scrooloose/nerdtree.git
+[submodule "vim/.vim/bundle/airline"]
+	path = vim/.vim/bundle/airline
+	url = https://github.com/bling/vim-airline.git
+[submodule "vim/.vim/bundle/fugitive"]
+	path = vim/.vim/bundle/fugitive
+	url = https://github.com/tpope/vim-fugitive.git
