@@ -142,9 +142,6 @@ noremap <buffer> <silent> j gj
 " Fast vertical movement (probably temporary solution)
 nmap <c-j> 10j
 nmap <c-k> 10k
-" Temp switch buffers
-nmap <c-h> :bp<CR>
-nmap <c-l> :bn<CR>
 " Open nerdtree
 nnoremap <leader>t :NERDTree<CR>
 " Easy paste that is never overridden by delete
@@ -152,4 +149,5 @@ nnoremap <leader>p "0p
 " Experimental unimpaired rebindings
 nnoremap [j :lprev<cr>
 nnoremap ]j :lnext<cr>
-
+" Close buffer
+nmap <leader>q :Bdelete<cr>
