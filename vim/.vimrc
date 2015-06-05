@@ -59,10 +59,17 @@ set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
 set statusline+=%*
 
+let g:syntastic_error_symbol = '✗'
+let g:syntastic_warning_symbol = '!'
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
+
+let g:syntastic_cpp_compiler_options = "-std=c++11"
+
+" NERDTree settings
+let NERDTreeDirArrows = 0
 
 " airline settings
 let g:airline_powerline_fonts = 1
@@ -74,6 +81,23 @@ let g:airline#extensions#whitespace#enabled = 0
 """""""""""""""""""
 abbr Flase False
 
+"""""""""""""""""""""
+"" Custom Fuctions ""
+"""""""""""""""""""""
+
+" Complements the window movement keybindings
+function! WinMove(key) 
+  let t:curwin = winnr()
+  exec "wincmd ".a:key
+  if (t:curwin == winnr()) "we havent moved
+    if (match(a:key,'[jk]')) "were we going up/down
+      wincmd v
+    else 
+      wincmd s
+    endif
+    exec "wincmd ".a:key
+  endif
+endfunction
 
 """"""""""""""""""
 "" Key Bindings ""
@@ -92,11 +116,24 @@ nnoremap XZ ZQ
 nnoremap :: :!
 " Press F3 to clear highlighting from last search
 nnoremap <F3> :let @/ = ""<CR>
-" Easy movement from window to window
-map <leader><c-h> <c-w>h
-map <leader><c-j> <c-w>j
-map <leader><c-k> <c-w>k
-map <leader><c-l> <c-w>l
+
+" Easy window movement, opening, closing, and swapping
+" lowercase asdf to move to a window in that direction
+" if there is no window in that direction, create one
+map <leader>a        :call WinMove('h')<cr>
+map <leader>s        :call WinMove('j')<cr>
+map <leader>d        :call WinMove('k')<cr>
+map <leader>f        :call WinMove('l')<cr>
+" uppercase ASDF to swap windows
+map <leader>A        :wincmd H<cr>
+map <leader>S        :wincmd J<cr>
+map <leader>D        :wincmd K<cr>
+map <leader>F        :wincmd L<cr>
+" close a window
+map <leader>c        :wincmd q<cr>
+" rotate windows
+map <leader>r        <C-W>r
+
 " Intuitive movement, even in the face of wrapped lines
 noremap <buffer> <silent> k gk
 noremap <buffer> <silent> j gj
@@ -112,4 +149,7 @@ nmap <c-l> :bn<CR>
 nnoremap <leader>t :NERDTree<CR>
 " Easy paste that is never overridden by delete
 nnoremap <leader>p "0p
+" Experimental unimpaired rebindings
+nnoremap [j :lprev<cr>
+nnoremap ]j :lnext<cr>
 
