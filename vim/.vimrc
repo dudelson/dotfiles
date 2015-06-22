@@ -8,8 +8,10 @@ filetype plugin indent on
 set background=dark
 colorscheme solarized
 
-" turn on line numbers
-set nu
+" turn on relative line numbers
+" but show the absolute line number for the line the cursor is on
+set relativenumber
+set number
 
 " search options 
 set hlsearch
@@ -36,6 +38,9 @@ autocmd BufWinEnter ?* silent loadview
 " but don't preserve the current .vimrc settings
 set viewoptions-=options
 
+" autosave
+au FocusLost * nested silent! wa
+
 " always show the statusline
 set laststatus=2
 set showtabline=2
@@ -59,8 +64,8 @@ set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
 set statusline+=%*
 
-let g:syntastic_error_symbol = '✗'
-let g:syntastic_warning_symbol = '!'
+"let g:syntastic_error_symbol = '✗'
+"let g:syntastic_warning_symbol = '!'
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 1
