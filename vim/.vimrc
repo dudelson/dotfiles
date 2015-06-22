@@ -13,6 +13,9 @@ colorscheme solarized
 set relativenumber
 set number
 
+" display a line at 80 characters
+set colorcolumn=80
+
 " search options 
 set hlsearch
 set incsearch
