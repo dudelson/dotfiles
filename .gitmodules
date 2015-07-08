@@ -31,3 +31,6 @@
 [submodule "vim/.vim/bundle/bbye"]
 	path = vim/.vim/bundle/bbye
 	url = https://github.com/moll/vim-bbye.git
+[submodule "vim/.vim/bundle/simpylfold"]
+	path = vim/.vim/bundle/simpylfold
+	url = https://github.com/tmhedberg/SimpylFold.git
