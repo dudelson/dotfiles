@@ -62,6 +62,10 @@ let python_highlight_exceptions=1
 let python_highlight_string_formatting=1
 let python_print_as_function=1
 
+" options for simpylfold
+autocmd BufWinEnter *.py setlocal foldexpr=SimpylFold(v:lnum) foldmethod=expr
+autocmd BufWinLeave *.py setlocal foldexpr< foldmethod<
+
 " syntastic settings
 set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
@@ -74,7 +78,7 @@ let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
 
-let g:syntastic_cpp_compiler_options = "-std=c++11"
+let g:syntastic_cpp_compiler_options = "-std=c++11 -fsyntax-only"
 
 " NERDTree settings
 let NERDTreeDirArrows = 0
@@ -122,7 +126,7 @@ nnoremap ZX ZQ
 nnoremap XZ ZQ
 " Quick shell cmd execution
 nnoremap :: :!
-" Press F3 to clear highlighting from last search
+" Clear highlighting from last search
 nnoremap <F3> :let @/ = ""<CR>
 
 " Easy window movement, opening, closing, and swapping
@@ -142,7 +146,12 @@ map <leader>c        :wincmd q<cr>
 " rotate windows
 map <leader>r        <C-W>r
 
-" Intuitive movement, even in the face of wrapped lines
+" Close buffer (depends on bbye plugin)
+nmap <leader>q :Bdelete<cr>
+" Use [b and ]b to switch between buffers within a window
+" See `:help unimpaired-next`
+
+" Intuitive movement, even with wrapped lines
 noremap <buffer> <silent> k gk
 noremap <buffer> <silent> j gj
 "noremap <buffer> <silent> 0 g0
@@ -153,9 +162,11 @@ nmap <c-k> 10k
 " Open nerdtree
 nnoremap <leader>t :NERDTree<CR>
 " Easy paste that is never overridden by delete
+" TODO: this doesn't work?
 nnoremap <leader>p "0p
 " Experimental unimpaired rebindings
+" TODO: these don't work?
 nnoremap [j :lprev<cr>
 nnoremap ]j :lnext<cr>
-" Close buffer
-nmap <leader>q :Bdelete<cr>
+" see `:help unimpaired-toggling` for more keybindings that toggle common
+" settings
