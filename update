@@ -1,0 +1,50 @@
+#!/usr/bin/env python2
+
+import argparse
+
+update = [
+    'other/.toprc ~/.toprc',
+    'vim/.vimrc ~/.vimrc',
+    'vim/.vim ~',
+    'weechat/.weechat ~',
+    'xorg+awesome/alttab ~/.config/awesome',
+    'xorg+awesome/rc.lua ~/.config/awesome',
+    'xorg+awesome/.Xdefaults ~/.Xdefaults',
+    'xorg+awesome/.xinitrc ~/.xinitrc'
+    'zsh/.zlogin ~/.zlogin',
+    'zsh/.zshrc ~/.zshrc'
+]
+
+if [ -z "$1" ]; then
+    echo usage: "$0 <repo|system>"
+    exit
+elif [ "$1" = "repo" ]; then
+    echo Updating repo from local file system...
+else
+    echo Updating local file system from repo...
+
+    echo cp other/.toprc ~/.toprc
+    cp other/.toprc ~/.toprc
+
+    echo cp vim/.vimrc ~/.vimrc
+    cp vim/.vimrc ~/.vimrc
+    echo cp -R /vim/.vim ~/.vim
+    cp -R /vim/.vim ~/.vim
+
+    echo cp -R weechat ~/.weechat
+    cp -R weechat ~/.weechat
+
+    echo cp -R xorg+awesome/alttab ~/.config/awesome/alttab
+    cp -R xorg+awesome/alttab ~/.config/awesome/alttab
+    echo cp xorg+awesome/rc.lua ~/.config/awesome/rc.lua
+    cp xorg+awesome/rc.lua ~/.config/awesome/rc.lua
+    echo cp xorg+awesome/.Xdefaults ~/.Xdefaults
+    cp xorg+awesome/.Xdefaults ~/.Xdefaults
+    echo cp xorg+awesome/.xinitrc ~/.xinitrc
+    cp xorg+awesome/.xinitrc ~/.xinitrc
+
+    echo cp zsh/.zlogin ~/.zlogin
+    cp zsh/.zlogin ~/.zlogin
+    echo cp zsh/.zshrc ~/.zshrc
+    cp zsh/.zshrc ~/.zshrc
+fi
