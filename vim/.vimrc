@@ -65,6 +65,8 @@ let python_print_as_function=1
 " options for simpylfold
 autocmd BufWinEnter *.py setlocal foldexpr=SimpylFold(v:lnum) foldmethod=expr
 autocmd BufWinLeave *.py setlocal foldexpr< foldmethod<
+" xml linter
+au FileType xml exe ":silent %!xmllint --format --recover - 2>/dev/null"
 
 " syntastic settings
 set statusline+=%#warningmsg#
@@ -161,6 +163,10 @@ nmap <c-j> 10j
 nmap <c-k> 10k
 " Open nerdtree
 nnoremap <leader>t :NERDTree<CR>
+" Yank to system clipboard
+nnoremap gy "+y
+" Past from system clipboard. This overwrites a builtin vim movement!
+nnoremap gp "+p 
 " Easy paste that is never overridden by delete
 " TODO: this doesn't work?
 nnoremap <leader>p "0p
