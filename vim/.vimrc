@@ -1,4 +1,6 @@
 execute pathogen#infect()
+" automatically generate helptags for all plugins
+execute pathogen#helptags()  
 
 filetype on
 syntax on
@@ -90,6 +92,15 @@ let g:airline_powerline_fonts = 1
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#whitespace#enabled = 0
 
+" vimtex settings
+let g:vimtex_latexmk_options = "-pdf -dvi-"
+let g:vimtex_view_method = "mupdf"
+augroup vimtex_config
+    au!
+    au User VimtexEventQuit      VimtexClean
+    au User VimtexEventInitPost  VimtexCompile
+augroup END
+
 """""""""""""""""""
 "" Abbreviations ""
 """""""""""""""""""
@@ -113,6 +124,26 @@ function! WinMove(key)
   endif
 endfunction
 
+" For use with latex: inserts new homework template
+function! Newhw(template)
+    let b:templates = {
+	'test': ['test.template', 1]
+    }
+
+    if has_key(b:templates, template)
+	b:absolute_template_path = "/home/david/template.txt"
+	if b:templates[template][1]
+	    let b:hw_number = "parse last number out of current filename
+	    exec "read !sed 's/%hw_number/" . b:hw_number . "/g' " . b:absolute_template_path
+	else
+	    exec "read " . b:absolute_template_path
+	endif
+	" move cursor to first problem ?
+    else
+	call echoerr("Template \"" . template . "\" not found")
+    endif
+endfunction
+
 """"""""""""""""""
 "" Key Bindings ""
 """"""""""""""""""
@@ -120,6 +151,9 @@ endfunction
 " set a mapleader that doesn't suck :3
 let mapleader = ","
 let g:mapleader = ","
+
+let maplocalleader = "`"
+let g:maplocalleader = "`"
 
 " Fast save
 nmap <leader>w :w!<CR>
