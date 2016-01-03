@@ -2,7 +2,7 @@
 local gears = require("gears")
 local awful = require("awful")
 awful.rules = require("awful.rules")
-require("awful.autofocus")
+awful.autofocus = require("awful.autofocus")
 -- Widget and layout library
 local wibox = require("wibox")
 -- Theme handling library
@@ -220,16 +220,20 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "v",  awful.tag.viewnext       ),
     awful.key({ modkey,           }, "Escape", awful.tag.history.restore),
 
-    awful.key({ modkey,           }, "j",
-        function ()
-            awful.client.focus.byidx(-1)
-            if client.focus then client.focus:raise() end
-        end),
-    awful.key({ modkey,           }, "k",
-        function ()
-            awful.client.focus.byidx( 1)
-            if client.focus then client.focus:raise() end
-        end),
+    -- enable movement between windows by direction
+    awful.key({ modkey }, "j", function () awful.client.focus.bydirection("down")
+        if client.focus then client.focus:raise() end
+    end),
+    awful.key({ modkey }, "k", function () awful.client.focus.bydirection("up")
+        if client.focus then client.focus:raise() end
+    end),
+    awful.key({ modkey }, "h", function () awful.client.focus.bydirection("left")
+        if client.focus then client.focus:raise() end
+    end),
+    awful.key({ modkey }, "l", function () awful.client.focus.bydirection("right")
+        if client.focus then client.focus:raise() end
+    end),
+
     awful.key({ modkey,           }, "w", function () mymainmenu:show() end),
 
     -- Layout manipulation
@@ -291,6 +295,12 @@ globalkeys = awful.util.table.join(
     awful.key({                 }, "Print",
 	function()
 	    awful.util.spawn(os.date('maim /tmp/screenshot_%Y-%m-%d_%X.png'), false)
+	end
+    ),
+    -- open chromium
+    awful.key({ modkey,           }, "b", 
+	function () 
+	    awful.util.spawn("chromium") 
 	end
     )
 )
@@ -464,3 +474,23 @@ end)
 client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 -- }}}
+
+
+
+-- spawn tray icons
+
+-- this function ensures that two instances of each icon do not appear in the
+-- event that awesome wm is restarted
+function run_once(cmd)
+    findme = cmd
+    firstspace = cmd:find(" ")
+    if firstspace then
+	findme = cmd:sub(0, firstspace-1)
+    end
+    awful.util.spawn_with_shell("pgrep -u $USER -x " .. findme .. " > /dev/null || (" .. cmd .. ")")
+end
+
+--run_once("nm-applet")  -- networkmanager
+--run_once("volumeicon") -- volumeicon
+--run_once("cbatticon -u 1 -c 'sudo s2disk'")  -- battery level indicator
+--run_once("dropbox")    -- dropbox
