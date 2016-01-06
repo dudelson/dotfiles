@@ -9,7 +9,6 @@ local wibox = require("wibox")
 local beautiful = require("beautiful")
 -- Notification library
 local naughty = require("naughty")
-local menubar = require("menubar")
 -- alt+tab functionality
 local alttab = require("alttab")
 
@@ -106,9 +105,6 @@ mymainmenu = awful.menu({ items = { { "awesome", myawesomemenu, beautiful.awesom
 mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon,
                                      menu = mymainmenu })
 
--- Menubar configuration
-menubar.utils.terminal = terminal -- Set the terminal for applications that require it
--- }}}
 
 -- {{{ Wibox
 -- Create a textclock widget
@@ -216,11 +212,13 @@ root.buttons(awful.util.table.join(
 
 -- {{{ Key bindings
 globalkeys = awful.util.table.join(
+    -- Movement between tags
     awful.key({ modkey,           }, "c",   awful.tag.viewprev       ),
-    awful.key({ modkey,           }, "v",  awful.tag.viewnext       ),
+    awful.key({ modkey,           }, "v",   awful.tag.viewnext       ),
     awful.key({ modkey,           }, "Escape", awful.tag.history.restore),
 
-    -- enable movement between windows by direction
+    -- Movement between windows
+    --[[ by direction
     awful.key({ modkey }, "j", function () awful.client.focus.bydirection("down")
         if client.focus then client.focus:raise() end
     end),
@@ -233,6 +231,20 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey }, "l", function () awful.client.focus.bydirection("right")
         if client.focus then client.focus:raise() end
     end),
+    --]]
+    --[[ with multiple monitors
+    awful.key({ modkey,           }, "j",
+        function ()
+            --awful.client.focus.byidx(-1)
+	    awful.client.focus.global_bydirection("left");
+            if client.focus then client.focus:raise() end
+        end),
+    awful.key({ modkey,           }, "k",
+        function ()
+            --awful.client.focus.byidx( 1)
+	    awful.client.focus.global_bydirection("right");
+            if client.focus then client.focus:raise() end
+    --]]
 
     awful.key({ modkey,           }, "w", function () mymainmenu:show() end),
 
@@ -252,6 +264,7 @@ globalkeys = awful.util.table.join(
 
     -- Standard program
     awful.key({ modkey,           }, "Return", function () awful.util.spawn(terminal) end),
+    awful.key({ modkey,           }, "b", function () awful.util.spawn("chromium") end),
     awful.key({ modkey, "Control" }, "r", awesome.restart),
     awful.key({ modkey, "Shift"   }, "q", awesome.quit),
     -- Change "h" and "l" to "u" and "i" because mod4+l locks the screen when running linux as
@@ -277,8 +290,6 @@ globalkeys = awful.util.table.join(
                   awful.util.eval, nil,
                   awful.util.getdir("cache") .. "/history_eval")
               end),
-    -- Menubar
-    awful.key({ modkey }, "p", function() menubar.show() end),
     -- Alt+tab
     awful.key({"Mod1",          }, "Tab",
 	function ()
@@ -295,12 +306,6 @@ globalkeys = awful.util.table.join(
     awful.key({                 }, "Print",
 	function()
 	    awful.util.spawn(os.date('maim /tmp/screenshot_%Y-%m-%d_%X.png'), false)
-	end
-    ),
-    -- open chromium
-    awful.key({ modkey,           }, "b", 
-	function () 
-	    awful.util.spawn("chromium") 
 	end
     )
 )
