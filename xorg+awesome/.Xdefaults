@@ -69,6 +69,10 @@ URxvt.keysym.M-u:           perl:url-select:select_next
 URxvt.keysym.M-Escape:      perl:keyboard-select:activate
 URxvt.keysym.M-s:           perl:keyboard-select:search
 URxvt.transparent:          false
+! To try to get transparency working, change the above line to "true", and
+! uncomment the following two lines
+!URxvt*inheritPixmap:        true
+!URxvt*.shading:             110
 URxvt.scrollBar:            false
 URxvt.right_scrollBar:      true
 URxvt.geometry:             100x30

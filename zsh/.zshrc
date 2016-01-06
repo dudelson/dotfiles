@@ -141,12 +141,13 @@ autoload -U colors && colors
 autoload -Uz url-quote-magic
 zle -N self-insert url-quote-magic
 
-# zsh-completions
-
 # Load and initialize the completion system, ignoring insecure dirs
 autoload -Uz compinit && compinit -i
 
-# source fasd
+# uncomment the next three lines to enable powerline
+#if [[ -r /usr/lib/python3.4/site-packages/powerline/bindings/zsh/powerline.zsh ]]; then
+#    source /usr/lib/python3.4/site-packages/powerline/bindings/zsh/powerline.zsh
+#fi
 
 
 #############################################################################
