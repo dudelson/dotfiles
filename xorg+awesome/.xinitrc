@@ -28,5 +28,6 @@ xrandr --output VGA-0 --mode $NEW_MODE
 xrdb -merge $HOME/.Xdefaults
 
 # start awesome
-exec awesome &>> ~/.cache/awesome/awesome.log
+export AWESOME_LOG_FILE=~/.cache/awesome/awesome.log
+exec awesome &>> $AWESOME_LOG_FILE
 

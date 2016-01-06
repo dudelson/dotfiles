@@ -1,3 +1,9 @@
+-- note that we have restarted awesome in the log file
+log_file_path = os.getenv("AWESOME_LOG_FILE")
+f = io.open(log_file_path, "a")
+f:write("--RESTART--\n")
+f:close()
+
 -- Standard awesome library
 local gears = require("gears")
 local awful = require("awful")
