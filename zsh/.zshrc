@@ -101,6 +101,14 @@ alias sl='ls'
 # lists the ten most used commands (from zprezto history module)
 alias history-stat="history 0 | awk '{print \$2}' | sort | uniq -c | sort -n -r | head"
 
+alias top='htop'
+alias pacman='yaourt'
+
+# fasd aliases
+alias v='f -e vim'
+alias o='a -e xdg-open'
+alias l='a -e ls'
+alias c='a -e cs'
 
 #############################################################################
 ##`````````````````````````````````````````````````````````````````````````##
@@ -114,7 +122,7 @@ function mkdcd {
 }
 
 # Changes to a directory and lists its contents.
-function cl {
+function cs {
     builtin cd "$argv[-1]" && ls "${(@)argv[1,-2]}"
 }
 
@@ -149,6 +157,8 @@ autoload -Uz compinit && compinit -i
 #    source /usr/lib/python3.4/site-packages/powerline/bindings/zsh/powerline.zsh
 #fi
 
+# fasd
+eval "$(fasd --init auto)"
 
 #############################################################################
 ##`````````````````````````````````````````````````````````````````````````##
