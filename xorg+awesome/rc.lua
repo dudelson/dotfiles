@@ -19,6 +19,8 @@ local naughty = require("naughty")
 local alttab = require("alttab")
 -- homegrown system information widget
 require("sysmonitor")
+-- calendar widget from wiki
+local cal = require("cal")
 
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
@@ -117,6 +119,9 @@ mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon,
 -- {{{ Wibox
 -- Create a textclock widget
 mytextclock = awful.widget.textclock()
+mytextclock:set_font("source code pro 9")
+-- add calendar widget to clock
+cal.register(mytextclock)
 
 -- Create a wibox for each screen and add it
 mywibox = {}
