@@ -101,6 +101,9 @@ alias sl='ls'
 # lists the ten most used commands (from zprezto history module)
 alias history-stat="history 0 | awk '{print \$2}' | sort | uniq -c | sort -n -r | head"
 
+# custom aliases
+#alias feh='feh --scale-down'
+
 
 #############################################################################
 ##`````````````````````````````````````````````````````````````````````````##
