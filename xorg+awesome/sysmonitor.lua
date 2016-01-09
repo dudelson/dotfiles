@@ -5,6 +5,30 @@ sysmonitor_widget = wibox.widget.textbox()
 sysmonitor_widget:set_align("right")
 sysmonitor_widget:set_font("source code pro 9")
 
+function update_battery() 
+    fh = assert(io.popen("acpi", "r"))
+    charge_level = ""
+    charging = ""
+    for a, b in string.gmatch(fh:read("*l"), ".+: (.+), (.+%%).*") do
+	charging = a
+	charge_level = b
+    end
+    fh:close()
+
+    charge_level_fmt = '%s'
+    if charge_level:len() == 2 then
+	charge_level_fmt = '<span color="#ff0000">%s</span>'
+    end
+
+    if charging ~= 'Discharging' then
+	charging_status = ' [<span color="#eaf51d">⚡</span>]'
+    else
+	charging_status = ''
+    end
+    
+    return string.format("Battery: " .. charge_level_fmt .. "%s | ", charge_level, charging_status)
+end
+
 function update_activeram()
     local used, avail, total
 	for line in io.lines('/proc/meminfo') do
@@ -14,7 +38,7 @@ function update_activeram()
 		elseif key == "MemTotal" then total = tonumber(value) end
 	    end
 	end
-    return string.format("Mem: %d%% (%.2fG/%.2fG, %.2fG free) |", 
+    return string.format("Mem: %d%% (%.2fG/%.2fG, %.2fG free) | ",
 			math.floor(used/total*100), used/1024/1024, total/1024/1024,
 			avail/1024/1024)
     
@@ -33,8 +57,6 @@ local cpu_state = {cpu={prevNonIdleTotal=0, prevTotal=0}}
 for i=0, n_cpu_cores-1, 1 do
     cpu_state[string.format("cpu%d", i)] = {prevNonIdleTotal=0, prevTotal=0}
 end
-
-for k, v in pairs(cpu_state) do print(k, v) end
 
 function update_activecpu()
     local prevTotal, prevIdleTotal, prevNonIdleTotal, total, idleTotal, nonIdleTotal
@@ -58,19 +80,19 @@ function update_activecpu()
 
     cpu_usage = (cpu_state.cpu.nonIdleTotal - cpu_state.cpu.prevNonIdleTotal) /
                 (cpu_state.cpu.total - cpu_state.cpu.prevTotal) * 100
-    if n_cpu_cores == 1 then ret = string.format("CPU: %.1f%% | ", cpu_usage)
+    if n_cpu_cores == 1 then ret = string.format("CPU: %4.1f%% | ", cpu_usage)
     else 
-	ret = string.format("CPU: %.1f%% (", cpu_usage)
-	for i=0, i<n_cpu_cores-1, 1 do
+	ret = string.format("CPU: %4.1f%% (", cpu_usage)
+	for i=0, n_cpu_cores-2, 1 do
 	    curCPU = string.format("cpu%d", i)
 	    cpu_usage = (cpu_state[curCPU].nonIdleTotal - cpu_state[curCPU].prevNonIdleTotal) /
 			(cpu_state[curCPU].total - cpu_state[curCPU].prevTotal) * 100
-	    ret = ret .. string.format("%.1f%% ", cpu_usage)
+	    ret = ret .. string.format("%4.1f%% ", cpu_usage)
 	end
 	curCPU = string.format("cpu%d", n_cpu_cores-1)
 	cpu_usage = (cpu_state[curCPU].nonIdleTotal - cpu_state[curCPU].prevNonIdleTotal) /
 		    (cpu_state[curCPU].total - cpu_state[curCPU].prevTotal) * 100
-	ret = ret .. string.format("%.1f%%) | ", cpu_usage)
+	ret = ret .. string.format("%4.1f%%) | ", cpu_usage)
     end
     
     for k, v in pairs(cpu_state) do
@@ -85,7 +107,8 @@ end
 function update_sysmonitor(widget)
     ram_str = update_activeram()
     cpu_str = update_activecpu()
-    widget:set_markup(cpu_str .. ram_str)
+    batt_str = update_battery()
+    widget:set_markup(cpu_str .. ram_str .. batt_str)
 end
 
 update_sysmonitor(sysmonitor_widget)
