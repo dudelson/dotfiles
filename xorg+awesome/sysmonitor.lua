@@ -1,9 +1,11 @@
 local wibox = require("wibox")
 local awful = require("awful")
 
-sysmonitor_widget = wibox.widget.textbox()
-sysmonitor_widget:set_align("right")
-sysmonitor_widget:set_font("source code pro 9")
+local sysmonitor = {}
+
+sysmonitor.widget = wibox.widget.textbox()
+sysmonitor.widget:set_align("right")
+sysmonitor.widget:set_font("source code pro 9")
 
 function update_battery() 
     fh = assert(io.popen("acpi", "r"))
@@ -41,7 +43,6 @@ function update_activeram()
     return string.format("Mem: %d%% (%.2fG/%.2fG, %.2fG free) | ",
 			math.floor(used/total*100), used/1024/1024, total/1024/1024,
 			avail/1024/1024)
-    
 end
 
 local n_cpu_cores
@@ -104,15 +105,28 @@ function update_activecpu()
     return ret
 end
 
-function update_sysmonitor(widget)
+local frozen = false
+
+function update_sysmonitor()
     ram_str = update_activeram()
     cpu_str = update_activecpu()
     batt_str = update_battery()
-    widget:set_markup(cpu_str .. ram_str .. batt_str)
+    frozen_str = ""
+    if frozen then frozen_str = '[<span color="#16d4de">F</span>] ' end
+    sysmonitor.widget:set_markup(frozen_str .. cpu_str .. ram_str .. batt_str)
 end
 
-update_sysmonitor(sysmonitor_widget)
+function sysmonitor.toggle_freeze()
+    if(frozen) then sysmonitor.timer:start()
+    else sysmonitor.timer:stop() end
+    frozen = not frozen
+    update_sysmonitor()
+end
 
-sysmonitor_timer = timer({ timeout = 1 })
-sysmonitor_timer:connect_signal("timeout", function () update_sysmonitor(sysmonitor_widget) end)
-sysmonitor_timer:start()
+update_sysmonitor()
+
+sysmonitor.timer = timer({ timeout = 1 })
+sysmonitor.timer:connect_signal("timeout", update_sysmonitor )
+sysmonitor.timer:start()
+
+return sysmonitor

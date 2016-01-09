@@ -18,7 +18,7 @@ local naughty = require("naughty")
 -- alt+tab functionality
 local alttab = require("alttab")
 -- homegrown system information widget
-require("sysmonitor")
+local sysmonitor = require("sysmonitor")
 -- calendar widget from wiki
 local cal = require("cal")
 
@@ -202,7 +202,7 @@ for s = 1, screen.count() do
     -- Widgets that are aligned to the right
     local right_layout = wibox.layout.fixed.horizontal()
     -- add my homegrown sysmonitor widget
-    if s == 1 then right_layout:add(sysmonitor_widget) end
+    if s == 1 then right_layout:add(sysmonitor.widget) end
     if s == 1 then right_layout:add(wibox.widget.systray()) end
     right_layout:add(mytextclock)
     right_layout:add(mylayoutbox[s])
@@ -305,6 +305,8 @@ globalkeys = awful.util.table.join(
                   awful.util.eval, nil,
                   awful.util.getdir("cache") .. "/history_eval")
               end),
+    -- pause sysmonitor stats updates
+    awful.key({ modkey },            "s",     sysmonitor.toggle_freeze ),
     -- Alt+tab
     awful.key({"Mod1",          }, "Tab",
 	function ()
