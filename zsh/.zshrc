@@ -102,9 +102,10 @@ alias sl='ls'
 alias history-stat="history 0 | awk '{print \$2}' | sort | uniq -c | sort -n -r | head"
 
 # custom aliases
-#alias feh='feh --scale-down'
-#alias top='htop'
-#alias pacman='yaourt'
+alias feh='feh --scale-down'
+alias top='htop'
+alias pacman='yaourt'
+alias sudovimdiff='SUDO_EDITOR=vimdiff sudoedit'
 
 # fasd aliases
 alias v='f -e vim'
