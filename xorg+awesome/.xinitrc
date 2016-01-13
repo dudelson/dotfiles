@@ -38,6 +38,5 @@ xbindkeys
 xrdb -merge $HOME/.Xdefaults
 
 # start awesome
-export AWESOME_LOG_FILE=~/.cache/awesome/awesome.log
 exec awesome &>> $AWESOME_LOG_FILE
 

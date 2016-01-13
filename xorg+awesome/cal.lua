@@ -43,9 +43,7 @@ function displayMonth(month,year,weekStart)
 		lines = lines .. os.date("%a ",os.time{year=2006,month=1,day=x+wkSt})
 	end
 	-- get length of line so we can center month name
-	print("lines: ", lines)
 	local line_len = lines:len()
-	print("line_len: ", line_len)
 
 	--lines = lines .. "\n" .. os.date(" %V",os.time{year=year,month=month,day=1})
 	lines = lines .. "\n" 
@@ -81,9 +79,7 @@ function displayMonth(month,year,weekStart)
         end
         local header = os.date("%B %Y\n",os.time{year=year,month=month,day=1})
 	
-	print("before: ", line_len, "\n")
 	line_len = line_len - header:len()
-	print("after: ", line_len, "\n")
 
 	local space = " "
 	return space:rep(math.floor(line_len/2)) .. header .. space:rep(math.ceil(line_len/2)) .. "\n" .. lines
