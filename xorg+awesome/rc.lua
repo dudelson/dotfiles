@@ -19,6 +19,8 @@ local naughty = require("naughty")
 local alttab = require("alttab")
 -- homegrown system information widget
 local sysmonitor = require("sysmonitor")
+-- homegrown update notifications widget
+local update_notifications = require("update_notifications")
 -- calendar widget from wiki
 local cal = require("cal")
 
@@ -203,6 +205,8 @@ for s = 1, screen.count() do
     local right_layout = wibox.layout.fixed.horizontal()
     -- add my homegrown sysmonitor widget
     if s == 1 then right_layout:add(sysmonitor.widget) end
+    -- add my homegrown update_notifications widget
+    if s == 1 then right_layout:add(update_notifications.widget) end
     if s == 1 then right_layout:add(wibox.widget.systray()) end
     right_layout:add(mytextclock)
     right_layout:add(mylayoutbox[s])
