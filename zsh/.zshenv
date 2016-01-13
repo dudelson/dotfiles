@@ -10,7 +10,7 @@ export EDITOR='vim'
 export LANG='en_US.UTF-8'
 #export LANGUAGE='en_US.UTF-8'
 export LC_ALL='en_US.UTF-8'
-export PATH=$PATH:/home/david/.gem/ruby/2.2.0/bin
+export PATH=$PATH:/home/david/.gem/ruby/2.2.0/bin:/home/david/.local/bin
 export AWESOME_LOG_FILE=/home/david/.cache/awesome/awesome.log
 # configure fcitx (used for japanese input)
 export GTK_IM_MODULE=fcitx
