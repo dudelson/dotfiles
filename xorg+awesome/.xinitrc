@@ -19,11 +19,7 @@ xrandr --output VGA-0 --mode $NEW_MODE
 # Here's an example of a dual-monitor setup (from nedd)
 #xrandr --output VGA-0 --mode $NEW_MODE --output VGA-1 --mode $NEW_MODE --right-of VGA-0
 
-# configure fcitx (used for japanese input)
-#export GTK_IM_MODULE=fcitx
-#export QT_IM_MODULE=fcitx
-#export XMODIFIERS=@im=fcitx
-# start fcitx
+# start fcitx (japanese input)
 # note that there's no need to check if the daemon is already running. The -r
 # option does this for us
 #fcitx -dr
