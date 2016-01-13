@@ -56,19 +56,7 @@ unsetopt MENU_COMPLETE     # Do not autoselect the first completion entry.
 unsetopt FLOW_CONTROL      # Disable start/stop characters in shell editor.
 
 
-#############################################################################
-##`````````````````````````````````````````````````````````````````````````##
-##`````````````````````````````ENV VARIABLES```````````````````````````````##
-##`````````````````````````````````````````````````````````````````````````##
-#############################################################################
-export HISTFILE="${ZDOTDIR:-$HOME}/.zhistory"   # The path to the history file.
-export HISTSIZE=10000                           # The maximum number of events to save in the internal history.
-export SAVEHIST=10000                           # The maximum number of events to save in the history file.
-export EDITOR='vim'
-export LANG='en_US.UTF-8'
-#export LANGUAGE='en_US.UTF-8'
-#export LC_ALL='en_US.UTF-8'
-
+# Envvars have been moved to ~/.zshenv
 
 #############################################################################
 ##`````````````````````````````````````````````````````````````````````````##
