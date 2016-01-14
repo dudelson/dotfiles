@@ -206,6 +206,21 @@ for s = 1, screen.count() do
     -- add my homegrown sysmonitor widget
     if s == 1 then right_layout:add(sysmonitor.widget) end
     -- add my homegrown update_notifications widget
+
+    -- I have here for your browsing pleasure a wonderfully stupid hack.
+    -- update_notifications.init() calls the shell script `checkupdates`, which
+    -- takes about a second and a half to complete because it opens a network
+    -- connection. This makes awesome slow to start up. To get around this and
+    -- reclaim my glorious fraction-of-a-second loading times, I start a timer
+    -- that calls update_notifications.init() after a small amount of time, then
+    -- turns itself off. This effectively makes the update_notifications widget
+    -- load asynchronously.
+    local update_notifications_timer = timer({ timeout = 1 })
+    update_notifications_timer:connect_signal("timeout", function()
+	update_notifications.init()
+	update_notifications_timer:stop()
+    end)
+    update_notifications_timer:start()
     if s == 1 then right_layout:add(update_notifications.widget) end
     if s == 1 then right_layout:add(wibox.widget.systray()) end
     right_layout:add(mytextclock)

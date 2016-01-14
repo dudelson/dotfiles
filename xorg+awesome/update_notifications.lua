@@ -1,3 +1,19 @@
+---- update_notifications.lua: provides a awesome wm widget which periodically 
+----                           checks for arch linux package updates
+---- 
+---- runs `checkupdates` every <CHECK_INTERVAL> seconds and displays the number
+---- of available package updates in the widget. If more than 10 updates are
+---- available, the number is colored <TEN_PLUS_UPDATES_COLOR>, and if more than
+---- 20 updates are available, the number is colored <TWENTY_PLUS_UPDATES_COLOR>.
+---- By default these colors are orange and red, respectively. Additionally,
+---- when checking for updates, this script will read the <WATCHED_PACKAGES_FILE>.
+---- If any package listed in the <WATCHED_PACKAGES_FILE> is available to be
+---- updated, the output of the widget will be <WATCHED_PACKAGE_AVAILABLE_COLOR>.
+----
+---- Mousing over the widget will display a list of all the packages available
+---- to be updated, exactly as if you had run `checkupdates`. By default,
+---- watched packages in this list are colored <WATCHED_PACKAGE_AVAILABLE_COLOR>.
+
 local awful = require("awful")
 local wibox = require("wibox")
 
@@ -18,24 +34,35 @@ update_notifications.widget = wibox.widget.textbox()
 update_notifications.widget:set_align("right")
 update_notifications.widget:set_font("source code pro 9")
 
-function checkupdates()
+local tooltip
+local tooltip_markup = '<span color="#ff00ff">Hi!</span>'
+
+
+local function checkupdates()
+    tooltip_markup = ''
+
     updates = io.popen('checkupdates')
     watched_packages = io.open(WATCHED_PACKAGES_FILE)
 
     nUpdates = 0
     wp_found = false
     for line in updates:lines() do
-	if not wp_found then
-	    for wp in watched_packages:lines() do
-		if not (string.find(wp, "^%s*#.+$") or string.find(wp, "^%s*$")) then 
-		    if wp == line then 
-			wp_found = true
-			break
-		    end
+	is_wp = false
+	for wp in watched_packages:lines() do
+	    if not (string.find(wp, "^%s*#.+$") or string.find(wp, "^%s*$")) then 
+		if wp == line then 
+		    -- set this package to be a different color in the tooltip
+		    is_wp = true
+		    tooltip_markup = tooltip_markup .. ' <span color="#' .. WATCHED_PACKAGE_AVAILABLE_COLOR .. '">' .. wp .. '</span> \n'
+		    wp_found = true
+		    break
 		end
 	    end
-	    watched_packages:seek("set")
 	end
+	if not is_wp then
+	    tooltip_markup = tooltip_markup .. ' ' .. line .. ' \n'
+	end
+	watched_packages:seek("set")
 	nUpdates = nUpdates+1
     end
 
@@ -57,14 +84,33 @@ function checkupdates()
     awesome_log:flush()
     awesome_log:close()
 
+    tooltip_markup = tooltip_markup:sub(0, tooltip_markup:len()-1)
     update_notifications.widget:set_markup(fmt)
 end
 
--- don't wait for one interval to check for updates when we log in
-checkupdates()
 
-update_notifications.timer = timer({ timeout = CHECK_INTERVAL }) -- run once every 10 minutes
-update_notifications.timer:connect_signal("timeout", checkupdates)
-update_notifications.timer:start()
+function update_notifications.init()
+    tooltip = awful.tooltip({})
+
+    function tooltip:update()
+	-- change font desc to "monospace" if the vertical spacing is bothering you
+	tooltip:set_markup('<span font_desc="source code pro 9">' .. tooltip_markup .. '</span>') 
+    end
+
+    -- don't wait for one interval to check for updates when we log in
+    checkupdates()
+
+    -- add tooltip after checkupdates() has constructed the correct tooltip markup
+    --tooltip_markup = '<span color="#ff00ff">one line</span>\n<span color="#ffff00">twolines</span>'
+    tooltip.update()
+    tooltip:add_to_object(update_notifications.widget)
+    update_notifications.widget:connect_signal("mouse::enter", tooltip.update)
+
+    -- add timer
+    update_notifications.timer = timer({ timeout = CHECK_INTERVAL }) -- run once every 10 minutes
+    update_notifications.timer:connect_signal("timeout", checkupdates)
+    update_notifications.timer:start()
+end
+
 
 return update_notifications
