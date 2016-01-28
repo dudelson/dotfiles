@@ -143,11 +143,6 @@ zle -N self-insert url-quote-magic
 # Load and initialize the completion system, ignoring insecure dirs
 autoload -Uz compinit && compinit -i
 
-# uncomment the next three lines to enable powerline
-#if [[ -r /usr/lib/python3.4/site-packages/powerline/bindings/zsh/powerline.zsh ]]; then
-#    source /usr/lib/python3.4/site-packages/powerline/bindings/zsh/powerline.zsh
-#fi
-
 # fasd
 eval "$(fasd --init auto)"
 
@@ -160,5 +155,10 @@ eval "$(fasd --init auto)"
 bindkey -e
 # prompt
 export PROMPT="%M %{$fg[blue]%}%~%{$reset_color%} %# "
+
+# uncomment the next three lines to enable powerline
+if [[ -r /usr/lib/python2.7/site-packages/powerline/bindings/zsh/powerline.zsh ]]; then
+    source /usr/lib/python2.7/site-packages/powerline/bindings/zsh/powerline.zsh
+fi
 
 
