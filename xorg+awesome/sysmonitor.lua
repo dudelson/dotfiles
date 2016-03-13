@@ -11,7 +11,9 @@ function update_battery()
     fh = assert(io.popen("acpi", "r"))
     charge_level = ""
     charging = ""
-    for a, b in string.gmatch(fh:read("*l"), ".+: (.+), (.+%%).*") do
+    info = fh:read("*l")
+    if(info == nil) then return "" end -- wait for pipe to have some information we can read
+    for a, b in string.gmatch(info, ".+: (.+), (.+%%).*") do
 	charging = a
 	charge_level = b
     end
@@ -113,7 +115,7 @@ function update_sysmonitor()
     batt_str = update_battery()
     frozen_str = ""
     if frozen then frozen_str = '[<span color="#16d4de">F</span>] ' end
-    sysmonitor.widget:set_markup(frozen_str .. cpu_str .. ram_str .. batt_str)
+    sysmonitor.widget:set_markup(" " .. frozen_str .. cpu_str .. ram_str .. batt_str)
 end
 
 function sysmonitor.toggle_freeze()
