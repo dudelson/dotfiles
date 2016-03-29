@@ -104,6 +104,26 @@ augroup vimtex_config
     au User VimtexEventInitPost  VimtexCompile
 augroup END
 
+" unite.vim settings
+function! s:unite_settings()
+    imap <buffer> <C-[> <plug>(unite_exit)
+    imap <buffer> <C-j> <plug>(unite_select_next_line)
+    imap <buffer> <C-k> <plug>(unite_select_previous_line)
+endfunction
+autocmd FileType unite call s:unite_settings()
+
+let g:unite_prompt = '»'
+call unite#filters#matcher_default#use(['matcher_fuzzy'])
+call unite#filters#sorter_default#use(['sorter_rank'])
+"let g:unite_source_history_yank_enable=1
+"let g:unite_source_rec_max_cache_files=5000
+let g:unite_source_grep_command = 'ack'
+let g:unite_source_grep_default_opts = '-i --no-heading --no-color -k -H' 
+let g:unite_source_grep_recursive_opt = ''
+nnoremap <C-l> :Unite -buffer-name=mixed -start-insert -auto-resize buffer file_mru file_rec/async:!<CR> 
+nnoremap <C-k> :Unite -buffer-name=search -no-empty -no-quit -auto-resize grep:.<CR>
+" use line source ??
+
 """""""""""""""""""
 "" Abbreviations ""
 """""""""""""""""""

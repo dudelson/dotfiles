@@ -16,9 +16,6 @@
 [submodule "vim/.vim/bundle/rust"]
 	path = vim/.vim/bundle/rust
 	url = https://github.com/rust-lang/rust.vim.git
-[submodule "vim/.vim/bundle/nerdtree"]
-	path = vim/.vim/bundle/nerdtree
-	url = https://github.com/scrooloose/nerdtree.git
 [submodule "vim/.vim/bundle/airline"]
 	path = vim/.vim/bundle/airline
 	url = https://github.com/bling/vim-airline.git
@@ -34,3 +31,12 @@
 [submodule "vim/.vim/bundle/vimtex"]
 	path = vim/.vim/bundle/vimtex
 	url = https://github.com/lervag/vimtex.git
+[submodule "vim/.vim/bundle/unite"]
+	path = vim/.vim/bundle/unite
+	url = https://github.com/Shougo/unite.vim.git
+[submodule "vim/.vim/bundle/neomru"]
+	path = vim/.vim/bundle/neomru
+	url = https://github.com/Shougo/neomru.vim.git
+[submodule "vim/.vim/bundle/vimproc"]
+	path = vim/.vim/bundle/vimproc
+	url = https://github.com/Shougo/vimproc.vim.git
