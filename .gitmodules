@@ -1,42 +1,42 @@
-[submodule "vim/.vim/bundle/solarized"]
-	path = vim/.vim/bundle/solarized
+[submodule "vim/bundle/solarized"]
+	path = vim/bundle/solarized
 	url = https://github.com/altercation/vim-colors-solarized
-[submodule "vim/.vim/bundle/eunuch"]
-	path = vim/.vim/bundle/eunuch
+[submodule "vim/bundle/eunuch"]
+	path = vim/bundle/eunuch
 	url = https://github.com/tpope/vim-eunuch
-[submodule "vim/.vim/bundle/surround"]
-	path = vim/.vim/bundle/surround
+[submodule "vim/bundle/surround"]
+	path = vim/bundle/surround
 	url = https://github.com/tpope/vim-surround
-[submodule "vim/.vim/bundle/unimpaired"]
-	path = vim/.vim/bundle/unimpaired
+[submodule "vim/bundle/unimpaired"]
+	path = vim/bundle/unimpaired
 	url = https://github.com/tpope/vim-unimpaired
-[submodule "vim/.vim/bundle/syntastic"]
-	path = vim/.vim/bundle/syntastic
+[submodule "vim/bundle/syntastic"]
+	path = vim/bundle/syntastic
 	url = https://github.com/scrooloose/syntastic
-[submodule "vim/.vim/bundle/rust"]
-	path = vim/.vim/bundle/rust
+[submodule "vim/bundle/rust"]
+	path = vim/bundle/rust
 	url = https://github.com/rust-lang/rust.vim.git
-[submodule "vim/.vim/bundle/airline"]
-	path = vim/.vim/bundle/airline
+[submodule "vim/bundle/airline"]
+	path = vim/bundle/airline
 	url = https://github.com/bling/vim-airline.git
-[submodule "vim/.vim/bundle/fugitive"]
-	path = vim/.vim/bundle/fugitive
+[submodule "vim/bundle/fugitive"]
+	path = vim/bundle/fugitive
 	url = https://github.com/tpope/vim-fugitive.git
-[submodule "vim/.vim/bundle/bbye"]
-	path = vim/.vim/bundle/bbye
+[submodule "vim/bundle/bbye"]
+	path = vim/bundle/bbye
 	url = https://github.com/moll/vim-bbye.git
-[submodule "vim/.vim/bundle/simpylfold"]
-	path = vim/.vim/bundle/simpylfold
+[submodule "vim/bundle/simpylfold"]
+	path = vim/bundle/simpylfold
 	url = https://github.com/tmhedberg/SimpylFold.git
-[submodule "vim/.vim/bundle/vimtex"]
-	path = vim/.vim/bundle/vimtex
+[submodule "vim/bundle/vimtex"]
+	path = vim/bundle/vimtex
 	url = https://github.com/lervag/vimtex.git
-[submodule "vim/.vim/bundle/unite"]
-	path = vim/.vim/bundle/unite
+[submodule "vim/bundle/unite"]
+	path = vim/bundle/unite
 	url = https://github.com/Shougo/unite.vim.git
-[submodule "vim/.vim/bundle/neomru"]
-	path = vim/.vim/bundle/neomru
+[submodule "vim/bundle/neomru"]
+	path = vim/bundle/neomru
 	url = https://github.com/Shougo/neomru.vim.git
-[submodule "vim/.vim/bundle/vimproc"]
-	path = vim/.vim/bundle/vimproc
+[submodule "vim/bundle/vimproc"]
+	path = vim/bundle/vimproc
 	url = https://github.com/Shougo/vimproc.vim.git
