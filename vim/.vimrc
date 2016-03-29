@@ -38,8 +38,8 @@ set so=10
 set softtabstop=4 shiftwidth=4 noexpandtab autoindent shiftround smarttab
 
 " preserve code folds between sessions
-autocmd BufWinLeave ?* mkview
-autocmd BufWinEnter ?* silent loadview
+autocmd BufWinLeave * if expand("%") != "" | mkview | endif
+autocmd BufWinEnter * if expand("%") != "" | loadview | endif
 " but don't preserve the current .vimrc settings
 set viewoptions-=options
 
@@ -71,9 +71,10 @@ autocmd BufWinLeave *.py setlocal foldexpr< foldmethod<
 au FileType xml exe ":silent %!xmllint --format --recover - 2>/dev/null"
 
 " syntastic settings
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
+" these three were not playing well with airline, see :h airline-syntastic
+"set statusline+=%#warningmsg#
+"set statusline+=%{SyntasticStatuslineFlag()}
+"set statusline+=%*
 
 "let g:syntastic_error_symbol = '✗'
 "let g:syntastic_warning_symbol = '!'
@@ -91,8 +92,10 @@ let NERDTreeDirArrows = 0
 let g:airline_powerline_fonts = 1
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#whitespace#enabled = 0
+let g:airline#extensions#syntastic#enabled = 1
 
 " vimtex settings
+let g:tex_flavor = "latex"
 let g:vimtex_latexmk_options = "-pdf -dvi-"
 let g:vimtex_view_method = "mupdf"
 augroup vimtex_config
