@@ -85,9 +85,6 @@ let g:syntastic_check_on_wq = 0
 
 let g:syntastic_cpp_compiler_options = "-std=c++11 -fsyntax-only"
 
-" NERDTree settings
-let NERDTreeDirArrows = 0
-
 " airline settings
 let g:airline_powerline_fonts = 1
 let g:airline#extensions#tabline#enabled = 1
@@ -133,7 +130,7 @@ abbr Flase False
 "" Custom Fuctions ""
 """""""""""""""""""""
 
-" Complements the window movement keybindings
+" Implements the window movement keybindings
 function! WinMove(key) 
   let t:curwin = winnr()
   exec "wincmd ".a:key
