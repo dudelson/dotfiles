@@ -124,42 +124,35 @@ function! WinMove(key)
   endif
 endfunction
 
-" For use with latex: inserts new homework template
-function! Newhw(template)
-    let b:templates = {
-	'test': ['test.template', 1]
-    }
-
-    if has_key(b:templates, template)
-	b:absolute_template_path = "/home/david/template.txt"
-	if b:templates[template][1]
-	    let b:hw_number = "parse last number out of current filename
-	    exec "read !sed 's/%hw_number/" . b:hw_number . "/g' " . b:absolute_template_path
-	else
-	    exec "read " . b:absolute_template_path
-	endif
-	" move cursor to first problem ?
-    else
-	call echoerr("Template \"" . template . "\" not found")
-    endif
-endfunction
-
 """"""""""""""""""
 "" Key Bindings ""
 """"""""""""""""""
 
 " set a mapleader that doesn't suck :3
-let mapleader = ","
-let g:mapleader = ","
+let mapleader = "\<Space>"
+let g:mapleader = "\<Space>"
 
 let maplocalleader = "`"
 let g:maplocalleader = "`"
 
+" Escape to return to normal mode is probably the command issued the most,
+" so why move your hands from the home row to do it?
+inoremap jk <ESC>
+inoremap kj <ESC>
+vnoremap jk <ESC>
+vnoremap kj <ESC>
+" Also ween myself off of the old way of escaping
+inoremap <c-[> <NOP>
+vnoremap <c-[> <NOP>
 " Fast save
 nmap <leader>w :w!<CR>
 " Quick quit w/o saving
 nnoremap ZX ZQ
 nnoremap XZ ZQ
+" Quick close all buffers
+nnoremap <leader>z :qa<CR>
+" Quick close all buffers w/o saving
+nnoremap <leader>Z :qa!<CR>
 " Quick shell cmd execution
 nnoremap :: :!
 " Clear highlighting from last search
@@ -192,21 +185,14 @@ noremap <buffer> <silent> k gk
 noremap <buffer> <silent> j gj
 "noremap <buffer> <silent> 0 g0
 "noremap <buffer> <silent> $ g$
-" Fast vertical movement (probably temporary solution)
-nmap <c-j> 10j
-nmap <c-k> 10k
-" Open nerdtree
-nnoremap <leader>t :NERDTree<CR>
-" Yank to system clipboard
-nnoremap gy "+y
-" Past from system clipboard. This overwrites a builtin vim movement!
+" Yank to system clipboard. Text to be yanked should be selected with visual
+" mode
+vnoremap gy "+y
+" Paste from system clipboard. This overwrites a builtin vim movement!
 nnoremap gp "+p 
+nnoremap gP "+P
 " Easy paste that is never overridden by delete
-" TODO: this doesn't work?
 nnoremap <leader>p "0p
-" Experimental unimpaired rebindings
-" TODO: these don't work?
-nnoremap [j :lprev<cr>
-nnoremap ]j :lnext<cr>
-" see `:help unimpaired-toggling` for more keybindings that toggle common
-" settings
+nnoremap <leader>P "0P
+" repeat the last normal mode command in visual mode
+vnoremap . :norm.<CR>
