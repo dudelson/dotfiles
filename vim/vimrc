@@ -28,7 +28,7 @@ set colorcolumn=80
 set cursorline
 
 " text wrap settings
-set textwidth=79 " automatically break lines after this many chars
+"set textwidth=79 " automatically break lines after this many chars
 "set formatoptions=??
 
 " search options 
@@ -37,7 +37,6 @@ set incsearch     " show results incrementally as you type (like google instant 
 set ignorecase    
 set smartcase     " overrides ignorecase if there are capital letters in the search string
 set gdefault      " apply substitutions globally on lines by default
-set showmatch
 
 " get rid of the annoying popping sound on errors
 set noerrorbells
