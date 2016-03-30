@@ -247,7 +247,7 @@ nnoremap <leader>Z :qa!<CR>
 " Quick shell cmd execution
 nnoremap :: :!
 " Clear highlighting from last search
-nnoremap <F3> :let @/ = ""<CR>
+nnoremap <silent> <F3> :let @/ = ""<CR>
 
 " Easy window movement, opening, closing, and swapping
 " lowercase asdf to move to a window in that direction
