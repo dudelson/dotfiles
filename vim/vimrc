@@ -120,6 +120,8 @@ let g:airline_powerline_fonts = 1
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#whitespace#enabled = 0
 let g:airline#extensions#syntastic#enabled = 1
+" disable powerline.vim (because I'm using airline instead)
+let g:powerline_loaded = 1
 
 " vimtex settings
 let g:tex_flavor = "latex"
