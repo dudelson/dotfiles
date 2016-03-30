@@ -33,6 +33,10 @@ xbindkeys
 # merge in ~/.Xdefaults for nice terminal colors
 xrdb -merge $HOME/.Xdefaults
 
+# disable terminal flow control
+# allows ctrl-s and ctrl-q keybindings to be used in applications (e.g. vim)
+stty -ixon
+
 # start awesome
 exec awesome &>> $AWESOME_LOG_FILE
 
