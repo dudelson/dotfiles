@@ -1,0 +1,38 @@
+global !p
+def isnumber(s):
+    try:
+        int(s)
+    except ValueError:
+        return False
+    return True
+endglobal
+snippet hw "Latex algo hw" b
+\documentclass{4820hw}
+\usepackage{amsmath,amssymb,latexsym}
+\usepackage{utf8}
+\usepackage{url}
+\usepackage{enumitem}
+\usepackage{graphicx}
+
+\name{David Udelson}
+\netid{dru5}
+\homework{${1:1}}
+\problem{${2:1}}
+
+\begin{document}
+
+\maketitle
+
+\begin{exercises}
+    \setcounter{enumi}{`!p
+if isnumber(t[2]):
+    snip.rv = int(t[2])-1
+else:
+    snip.rv = 'ERR'
+`}
+    \item \mbox{}
+    $0
+\end{enumerate}
+\end{exercises}
+\end{document}
+endsnippet
