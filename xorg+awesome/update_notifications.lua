@@ -19,10 +19,12 @@ local wibox = require("wibox")
 
 -------------------------- CONFIGURATION -------------------------- 
 local WATCHED_PACKAGE_AVAILABLE_COLOR = "16d4de"
-local TWENTY_PLUS_UPDATES_COLOR = "ff0000"
-local TEN_PLUS_UPDATES_COLOR = "ff7300"
-
 local WATCHED_PACKAGES_FILE = "/home/david/.watched_packages"
+
+local tiers = {
+    [25] = "ff7300",
+    [50] = "ff0000",
+}
 
 -- interval at which we check for new updates (in seconds)
 local CHECK_INTERVAL = 600
@@ -37,6 +39,20 @@ update_notifications.widget:set_font("source code pro 9")
 local tooltip
 local tooltip_markup = '<span color="#ff00ff">Hi!</span>'
 
+local function get_tier_color(n_packages)
+    -- this block sorts the tiers by key so that we iterate over them in order
+    -- this operation is well-defined because the keys into tier will always
+    -- be integers
+    sorted_tiers = {}
+    for k in pairs(tiers) do table.insert(sorted_tiers, k) end
+    table.sort(sorted_tiers)
+    -- iterate over the tiers in increasing order
+    cur_color = nil
+    for k, v in ipairs(sorted_tiers) do
+	if n_packages >= v then cur_color = tiers[v] else break end
+    end
+    return cur_color
+end
 
 local function checkupdates()
     tooltip_markup = ''
@@ -66,14 +82,13 @@ local function checkupdates()
 	nUpdates = nUpdates+1
     end
 
+    tier_color = get_tier_color(nUpdates)
     if wp_found then
 	fmt = '<span color="#' .. WATCHED_PACKAGE_AVAILABLE_COLOR .. '">' .. nUpdates .. '</span> | '
-    elseif nUpdates >= 20 then
-	fmt = '<span color="#' .. TWENTY_PLUS_UPDATES_COLOR .. '">' .. nUpdates .. '</span> | '
-    elseif nUpdates >= 10 then
-	fmt = '<span color="#' .. TEN_PLUS_UPDATES_COLOR .. '">' .. nUpdates .. '</span> | '
     elseif nUpdates == 0 then
 	fmt = ''
+    elseif tier_color ~= nil then
+	fmt = '<span color="#' .. tier_color .. '">' .. nUpdates .. '</span> | '
     else
 	fmt = nUpdates .. ' | '
     end
