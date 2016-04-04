@@ -43,3 +43,6 @@
 [submodule "vim/bundle/ultisnips"]
 	path = vim/bundle/ultisnips
 	url = https://github.com/SirVer/ultisnips.git
+[submodule "vim/bundle/airline-themes"]
+	path = vim/bundle/airline-themes
+	url = https://github.com/vim-airline/vim-airline-themes.git
