@@ -135,11 +135,10 @@ augroup END
 
 " unite.vim settings
 function! s:unite_settings()
-    imap <buffer> <C-q> <plug>(unite_exit)
     imap <buffer> <C-j> <plug>(unite_select_next_line)
     imap <buffer> <C-k> <plug>(unite_select_previous_line)
-    nmap <buffer> <C-j> <plug>(unite_select_next_line)
-    nmap <buffer> <C-k> <plug>(unite_select_previous_line)
+    nmap <buffer> <C-j> <plug>(unite_loop_cursor_down)
+    nmap <buffer> <C-k> <plug>(unite_loop_cursor_up)
 endfunction
 autocmd FileType unite call s:unite_settings()
 
@@ -263,7 +262,7 @@ map <leader>cw       :wincmd q<cr>
 map <leader>r        <C-W>r
 
 " Close buffer (depends on bbye plugin)
-nnoremap <leader>cb      :Bdelete<cr>
+nnoremap <leader>cc      :Bdelete<cr>
 
 " Intuitive movement, even with wrapped lines
 noremap <buffer> <silent> k gk
