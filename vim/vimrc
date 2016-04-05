@@ -289,3 +289,5 @@ nnoremap <C-g> :Unite -buffer-name=search -no-empty -no-quit -auto-resize grep:.
 " use line source ??
 " close unite.vim search window
 nnoremap <leader>cs :exec "bd " . bufnr("[unite] - search")<CR>
+" open ctags definitions in new horizontal split
+nnoremap <C-\> <C-w><C-]>
