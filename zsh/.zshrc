@@ -91,9 +91,21 @@ alias history-stat="history 0 | awk '{print \$2}' | sort | uniq -c | sort -n -r 
 
 # custom aliases
 alias feh='feh --scale-down'
+# use `maim` to screenshot the entire screen to a file
+# screenshot the selected area to a file
+alias maims='maim -s -p 1 -c 1,0,0,0.1 --nokeyboard'
+# screenshot the entire screen to the clipboard
+alias maimc='notify-send "Taking screenshot to clipboard in 3 seconds...";
+             maim -d 3 --format=png /dev/stdout | xclip -selection c -t image/png'
+# screenshot the selected area to the clipboard
+alias maimsc='maim -s -p 1 -c 1,0,0,0.1 --nokeyboard --format=png /dev/stdout | xclip -selection c -t image/png'
 alias top='htop'
 alias pacman='yaourt'
 alias sudovimdiff='SUDO_EDITOR=vimdiff sudoedit'
+alias gdb='gdb -q'
+alias objdump='objdump -M intel'
+
+# place temporary aliases and variables here
 
 # fasd aliases
 alias v='f -e vim'
@@ -157,8 +169,8 @@ bindkey -e
 export PROMPT="%M %{$fg[blue]%}%~%{$reset_color%} %# "
 
 # uncomment the next three lines to enable powerline
-if [[ -r /usr/lib/python2.7/site-packages/powerline/bindings/zsh/powerline.zsh ]]; then
-    source /usr/lib/python2.7/site-packages/powerline/bindings/zsh/powerline.zsh
-fi
+#if [[ -r /usr/lib/python3.5/site-packages/powerline/bindings/zsh/powerline.zsh ]]; then
+#    source /usr/lib/python3.5/site-packages/powerline/bindings/zsh/powerline.zsh
+#fi
 
 
