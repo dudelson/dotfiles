@@ -109,6 +109,7 @@ alias objdump='objdump -M intel'
 
 # fasd aliases
 alias v='f -e vim'
+alias e='f -e emacs'
 alias o='a -e xdg-open'
 alias l='a -e ls'
 alias c='a -e cs'
