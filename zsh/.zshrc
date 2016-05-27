@@ -55,6 +55,8 @@ setopt AUTO_PARAM_SLASH    # If completed parameter is a directory, add a traili
 unsetopt MENU_COMPLETE     # Do not autoselect the first completion entry.
 unsetopt FLOW_CONTROL      # Disable start/stop characters in shell editor.
 
+# other options
+setopt INTERACTIVECOMMENTS # allow bash-style comments on the command line
 
 # Envvars have been moved to ~/.zshenv
 
