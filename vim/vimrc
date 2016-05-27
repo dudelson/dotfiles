@@ -292,6 +292,6 @@ nnoremap <C-l> :Unite -buffer-name=mixed -start-insert -auto-resize buffer file_
 nnoremap <C-g> :Unite -buffer-name=search -no-empty -no-quit -auto-resize grep:.<CR>
 " use line source ??
 " close unite.vim search window
-nnoremap <leader>cs :exec "bd " . bufnr("[unite] - search")<CR>
+nnoremap <silent> <leader>cs :exec "bd " . bufnr("[unite] - search")<CR>
 " open ctags definitions in new horizontal split
 nnoremap <C-\> <C-w><C-]>
