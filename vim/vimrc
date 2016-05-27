@@ -269,8 +269,8 @@ map <leader>r        <C-W>r
 nnoremap <leader>cc      :Bdelete<cr>
 
 " Intuitive movement, even with wrapped lines
-noremap <buffer> <silent> k gk
-noremap <buffer> <silent> j gj
+noremap <silent> <expr> j (v:count == 0 ? 'gj' : 'j')
+noremap <silent> <expr> k (v:count == 0 ? 'gk' : 'k')
 "noremap <buffer> <silent> 0 g0
 "noremap <buffer> <silent> $ g$
 " Yank to system clipboard. Text to be yanked should be selected with visual
