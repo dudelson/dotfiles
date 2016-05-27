@@ -533,5 +533,5 @@ end
 
 --run_once("nm-applet")  -- networkmanager
 --run_once("volumeicon") -- volumeicon
---run_once("cbatticon -u 1 -c 'sudo s2disk'")  -- battery level indicator
 --run_once("dropbox")    -- dropbox
+--run_once("udiskie")    -- automounting of usbs
