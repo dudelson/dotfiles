@@ -81,6 +81,10 @@ set ttyfast
 " these allow us to undo changes, even after closing and reopening a file
 set undofile
 
+" allow project-specific .vimrc files to be sourced
+set exrc
+set secure
+
 " the sweet spot for timeoutlen
 " low enough that the transition from insert mode to normal mode feels
 " seamless, high enough that key combos can be executed at a reasonable
