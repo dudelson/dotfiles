@@ -1,7 +1,7 @@
 -- note that we have restarted awesome in the log file
 log_file_path = os.getenv("AWESOME_LOG_FILE")
 f = io.open(log_file_path, "a")
-f:write("--RESTART--\n")
+f:write("--RESTART " .. os.date("%a %b %d %X") .. "--\n")
 f:close()
 
 -- Standard awesome library
@@ -208,14 +208,13 @@ for s = 1, screen.count() do
     -- add my homegrown update_notifications widget
 
     -- I have here for your browsing pleasure a wonderfully stupid hack.
-    -- update_notifications.init() calls the shell script `checkupdates`, which
-    -- takes about a second and a half to complete because it opens a network
-    -- connection. This makes awesome slow to start up. To get around this and
-    -- reclaim my glorious fraction-of-a-second loading times, I start a timer
-    -- that calls update_notifications.init() after a small amount of time, then
-    -- turns itself off. This effectively makes the update_notifications widget
-    -- load asynchronously.
-    local update_notifications_timer = timer({ timeout = 1 })
+    -- update_notifications.init() takes about a second and a half to complete
+    -- because it opens a network connection. This makes awesome slow to start
+    -- up. To get around this and reclaim my glorious fraction-of-a-second
+    -- loading times, I start a timer that calls update_notifications.init()
+    -- after a small amount of time, then turns itself off. This effectively
+    -- makes the update_notifications widget load asynchronously.
+    local update_notifications_timer = timer({ timeout = 5 })
     update_notifications_timer:connect_signal("timeout", function()
 	update_notifications.init()
 	update_notifications_timer:stop()
