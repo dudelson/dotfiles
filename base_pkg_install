@@ -1,0 +1,87 @@
+#!/bin/bash
+
+SCRIPT_DIR="$(dirname $0)"
+NATIVE_PACKAGES="$(grep -v "^#" $SCRIPT_DIR/pkglist_native.txt)"
+AUR_PACKAGES="$(grep -v "^#" $SCRIPT_DIR/pkglist_aur.txt)"
+
+function die() {
+    echo
+    echo "Done!"
+    echo
+    exit
+}
+
+function install_native()  {
+    echo "Make sure to edit pkglist_native.txt so that only the packages"
+    echo "you want to install are uncommented."
+    echo
+    echo "The following packages will be installed:"
+    echo $(echo $NATIVE_PACKAGES | tr '\n' '  ')
+    read -p "Continue? (y/n) " -n 1 cont
+    if [ $cont != "y" ]; then
+	die
+    fi
+
+    echo
+    sudo pacman -S $NATIVE_PACKAGES
+}
+
+function install_aur() {
+    echo "Installing curl..."
+    sudo pacman -S curl
+    echo "Downloading yaourt from AUR..."
+    curl -o yaourt.tar.gz https://aur.archlinux.org/cgit/aur.git/snapshot/yaourt.tar.gz
+    echo "Extracting yaourt..."
+    tar xvf yaourt.tar.gz
+    echo "Installing yaourt..."
+    cd yaourt
+    makepkg -sri
+
+    echo "Yaourt installation complete."
+    echo
+    echo "Make sure to edit pkglist_aur.txt so that only the packages"
+    echo "you want to install are uncommented."
+    echo
+    echo "The following AUR packages will be installed:"
+    echo $(echo $AUR_PACKAGES | tr '\n' ' ')
+    read -p "Continue? (y/n) " -n 1 cont
+    if [ $cont != "y" ]; then
+	die
+    fi
+
+    echo
+    yaourt -S $AUR_PACKAGES
+}
+
+if [ "$1" == "-h" ]; then
+    echo "Usage"
+    echo "    -h: print this help message"
+    echo "    --aur: only attempt to install AUR packages"
+    echo "    --native: only attempt to install native packages"
+    echo
+    echo
+    exit
+elif [ "$1" == "--aur" ]; then
+    install_aur
+    die
+elif [ "$1" == "--native" ]; then
+    install_native
+    die
+else
+    install_native
+    echo
+    read -p "Install yaourt and AUR packages? (y/n) " -n 1 cont
+    if [ $cont != "y" ]; then
+	echo
+	echo "Done!"
+	exit
+    fi
+
+    echo
+    install_aur
+    die
+fi
+
+unset install_native
+unset install_aur
+unset die

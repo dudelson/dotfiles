@@ -1,50 +1,45 @@
-#!/usr/bin/env python2
+#!/bin/bash
 
-import argparse
+echo Updating local file system from repo...
 
-update = [
-    'other/.toprc ~/.toprc',
-    'vim/.vimrc ~/.vimrc',
-    'vim/.vim ~',
-    'weechat/.weechat ~',
-    'xorg+awesome/alttab ~/.config/awesome',
-    'xorg+awesome/rc.lua ~/.config/awesome',
-    'xorg+awesome/.Xdefaults ~/.Xdefaults',
-    'xorg+awesome/.xinitrc ~/.xinitrc'
-    'zsh/.zlogin ~/.zlogin',
-    'zsh/.zshrc ~/.zshrc'
-]
+set -o verbose
 
-if [ -z "$1" ]; then
-    echo usage: "$0 <repo|system>"
-    exit
-elif [ "$1" = "repo" ]; then
-    echo Updating repo from local file system...
-else
-    echo Updating local file system from repo...
+# git config
+cp git/.gitignore_core ~
+git config --global core.excludesfile '~/.gitignore_core'
+cp -R git/.git_template ~
+git config --global init.templatedir '~/.git_template'
 
-    echo cp other/.toprc ~/.toprc
-    cp other/.toprc ~/.toprc
+# vim config
+mkdir -p ~/.vim
+cp -R vim/.vim ~
+cp vim/.vimrc ~/.vim/vimrc
+ln -s ~/.vim/vimrc ~/.vimrc
 
-    echo cp vim/.vimrc ~/.vimrc
-    cp vim/.vimrc ~/.vimrc
-    echo cp -R /vim/.vim ~/.vim
-    cp -R /vim/.vim ~/.vim
+# weechat config
+cp -R weechat ~/.weechat
 
-    echo cp -R weechat ~/.weechat
-    cp -R weechat ~/.weechat
+# xorg config
+cp xorg+awesome/.Xdefaults ~
+cp xorg+awesome/.xinitrc ~
 
-    echo cp -R xorg+awesome/alttab ~/.config/awesome/alttab
-    cp -R xorg+awesome/alttab ~/.config/awesome/alttab
-    echo cp xorg+awesome/rc.lua ~/.config/awesome/rc.lua
-    cp xorg+awesome/rc.lua ~/.config/awesome/rc.lua
-    echo cp xorg+awesome/.Xdefaults ~/.Xdefaults
-    cp xorg+awesome/.Xdefaults ~/.Xdefaults
-    echo cp xorg+awesome/.xinitrc ~/.xinitrc
-    cp xorg+awesome/.xinitrc ~/.xinitrc
+# awesome wm config
+mkdir -p ~/.config/awesome
+cp -R xorg+awesome/alttab ~/.config/awesome
+cp xorg+awesome/rc.lua ~/.config/awesome
+cp xorg+awesome/cal.lua ~/.config/awesome
+cp xorg+awesome/sysmonitor.lua ~/.config/awesome
+cp xorg+awesome/update_notifications.lua ~/.config/awesome
 
-    echo cp zsh/.zlogin ~/.zlogin
-    cp zsh/.zlogin ~/.zlogin
-    echo cp zsh/.zshrc ~/.zshrc
-    cp zsh/.zshrc ~/.zshrc
-fi
+# zsh config
+cp zsh/.zlogin ~
+cp zsh/.zshrc ~
+cp zsh/.zshenv ~
+
+# other config
+cp other/.toprc ~
+
+unset -o verbose
+
+echo Done!
+echo You will probably need to edit ~/.xinitrc.

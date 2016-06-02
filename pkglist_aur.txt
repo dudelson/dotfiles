@@ -1,0 +1,32 @@
+### note that yaourt and package_query are not listed here
+### because they are installed as prerequisites for installing
+### the programs listed in this file
+
+#acpi_call-dkms
+#advancecomp
+downgrade
+dropbox
+fasd
+fluxgui
+global
+#golly
+#laptop-mode-tools
+#libappindicator-gtk3
+#libappindicator-sharp
+#linux-drm-intel-nightly
+#linux-drm-intel-nightly-docs
+#linux-drm-intel-nightly-headers
+#mcrypt
+#memtest86-efi
+networkmanager-dispatcher-chrony
+pycp
+#python34
+#steam-fonts
+#texlive-local-comment
+#texlive-local-enumitem
+#texlive-localmanager-git
+#texlive-local-visualtikz
+#tuxedo-wmi-dkms
+urxvt-perls-git
+#uswsusp-git
+virtualbox-ext-oracle
