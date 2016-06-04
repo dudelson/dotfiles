@@ -29,6 +29,15 @@ function install_native()  {
 function install_aur() {
     echo "Installing curl..."
     sudo pacman -S curl
+
+    echo "Downloading package-query from AUR..."
+    curl -o package-query.tar.gz https://aur.archlinux.org/cgit/aur.git/snapshot/package-query.tar.gz
+    echo "Extracting package-query..."
+    tar xvf package-query.tar.gz
+    echo "Installing package-query..."
+    cd package-query
+    makepkg -sri
+
     echo "Downloading yaourt from AUR..."
     curl -o yaourt.tar.gz https://aur.archlinux.org/cgit/aur.git/snapshot/yaourt.tar.gz
     echo "Extracting yaourt..."
@@ -53,11 +62,40 @@ function install_aur() {
     yaourt -S $AUR_PACKAGES
 }
 
+function install_infinality() {
+    echo "Adding key 962DDE58 to pacman keyring..."
+    sudo pacman-key -r 962DDE58 
+    pacman-key -f 962DDE58 
+    sudo pacman-key --lsign-key 962DDE58 
+
+    echo "Adding infinality repositories to pacman.conf..."
+    sudo echo "[infinality-bundle]" >> /etc/pacman.conf
+    sudo echo "Server = http://bohoomil.com/repo/$arch" >> /etc/pacman.conf
+    sudo echo "" >> /etc/pacman.conf
+    sudo echo "[infinality-bundle-fonts]" >> /etc/pacman.conf
+    sudo echo "Server = http://bohoomil.com/repo/fonts" >> /etc/pacman.conf
+
+    echo "Updating pacman database..."
+    sudo pacman -Syu
+
+    echo "Installing infinality..."
+    sudo pacman -S infinality-bundle
+
+    echo "Installing infinality fonts..."
+    sudo pacman -S infinality-bundle-fonts
+
+    echo "Infinality installation complete"
+}
+
+### note: default behavior is to install native and aur packages.
+###       If infinality is desired, it must be explicitly enabled with the
+###       --infinality switch. 
 if [ "$1" == "-h" ]; then
     echo "Usage"
     echo "    -h: print this help message"
     echo "    --aur: only attempt to install AUR packages"
     echo "    --native: only attempt to install native packages"
+    echo "    --infinality: attempt to install infinality fonts in addition to whatever else is being installed"
     echo
     echo
     exit
@@ -67,21 +105,38 @@ elif [ "$1" == "--aur" ]; then
 elif [ "$1" == "--native" ]; then
     install_native
     die
+elif [ "$1" == "--infinality" ]; then
+    install_infinality
+    die
 else
     install_native
     echo
+
     read -p "Install yaourt and AUR packages? (y/n) " -n 1 cont
     if [ $cont != "y" ]; then
 	echo
 	echo "Done!"
 	exit
     fi
-
     echo
+
     install_aur
+    echo
+
+    read -p "Install infinality?" -n 1 cont
+    if [ $cont != "y" ]; then
+	echo
+	echo "Done!"
+	exit
+    fi
+    echo
+
+    install_infinality
+
     die
 fi
 
 unset install_native
 unset install_aur
+unset install_infinality
 unset die
