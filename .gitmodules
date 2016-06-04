@@ -46,6 +46,6 @@
 [submodule "vim/bundle/airline-themes"]
 	path = vim/bundle/airline-themes
 	url = https://github.com/vim-airline/vim-airline-themes.git
-[submodule ".spacemacs.d/snippets"]
-	path = .spacemacs.d/snippets
+[submodule "spacemacs/snippets"]
+	path = spacemacs/snippets
 	url = https://github.com/AndreaCrotti/yasnippet-snippets.git
