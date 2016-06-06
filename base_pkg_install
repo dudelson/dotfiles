@@ -19,7 +19,7 @@ function install_native()  {
     echo $(echo $NATIVE_PACKAGES | tr '\n' '  ')
     read -p "Continue? (y/n) " -n 1 cont
     if [ $cont != "y" ]; then
-	die
+    die
     fi
 
     echo
@@ -28,7 +28,7 @@ function install_native()  {
 
 function install_aur() {
     echo "Installing curl..."
-    sudo pacman -S curl
+    sudo pacman -S curl yajl
 
     echo "Downloading package-query from AUR..."
     curl -o package-query.tar.gz https://aur.archlinux.org/cgit/aur.git/snapshot/package-query.tar.gz
@@ -55,7 +55,7 @@ function install_aur() {
     echo $(echo $AUR_PACKAGES | tr '\n' ' ')
     read -p "Continue? (y/n) " -n 1 cont
     if [ $cont != "y" ]; then
-	die
+    die
     fi
 
     echo
@@ -69,11 +69,11 @@ function install_infinality() {
     sudo pacman-key --lsign-key 962DDE58 
 
     echo "Adding infinality repositories to pacman.conf..."
-    sudo echo "[infinality-bundle]" >> /etc/pacman.conf
-    sudo echo "Server = http://bohoomil.com/repo/$arch" >> /etc/pacman.conf
-    sudo echo "" >> /etc/pacman.conf
-    sudo echo "[infinality-bundle-fonts]" >> /etc/pacman.conf
-    sudo echo "Server = http://bohoomil.com/repo/fonts" >> /etc/pacman.conf
+    echo "[infinality-bundle]"                     | sudo tee --append /etc/pacman.conf
+    echo "Server = http://bohoomil.com/repo/$arch" | sudo tee --append /etc/pacman.conf
+    echo ""                                        | sudo tee --append /etc/pacman.conf
+    echo "[infinality-bundle-fonts]"               | sudo tee --append /etc/pacman.conf
+    echo "Server = http://bohoomil.com/repo/fonts" | sudo tee --append /etc/pacman.conf
 
     echo "Updating pacman database..."
     sudo pacman -Syu
@@ -114,9 +114,9 @@ else
 
     read -p "Install yaourt and AUR packages? (y/n) " -n 1 cont
     if [ $cont != "y" ]; then
-	echo
-	echo "Done!"
-	exit
+    echo
+    echo "Done!"
+    exit
     fi
     echo
 
@@ -125,9 +125,9 @@ else
 
     read -p "Install infinality?" -n 1 cont
     if [ $cont != "y" ]; then
-	echo
-	echo "Done!"
-	exit
+    echo
+    echo "Done!"
+    exit
     fi
     echo
 

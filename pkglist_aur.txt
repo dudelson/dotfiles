@@ -7,7 +7,9 @@
 downgrade
 dropbox
 fasd
-fluxgui
+### note that flux requires multilib packages
+### so it's probably best to manually install it later
+#fluxgui
 global
 #golly
 #laptop-mode-tools

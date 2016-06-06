@@ -14,7 +14,6 @@ awesome
 #bluez-utils
 #borg
 #bumblebee
-cairo-infinality-ultimate
 #chromium
 chrony
 #cloc
@@ -36,8 +35,6 @@ etckeeper
 #feh
 firefox
 flashplugin
-fontconfig-infinality-ultimate
-freetype2-infinality-ultimate
 gdb
 #gimp
 git
