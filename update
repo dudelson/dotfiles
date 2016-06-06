@@ -56,7 +56,7 @@ touch ~/.watched_packages
 
 cd $OLDDIR
 
-unset -o verbose
+set +o verbose
 
 echo Done!
 echo You will probably need to edit ~/.xinitrc.
