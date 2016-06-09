@@ -69,11 +69,11 @@ function install_infinality() {
     sudo pacman-key --lsign-key 962DDE58 
 
     echo "Adding infinality repositories to pacman.conf..."
-    echo "[infinality-bundle]"                     | sudo tee --append /etc/pacman.conf
-    echo "Server = http://bohoomil.com/repo/$arch" | sudo tee --append /etc/pacman.conf
-    echo ""                                        | sudo tee --append /etc/pacman.conf
-    echo "[infinality-bundle-fonts]"               | sudo tee --append /etc/pacman.conf
-    echo "Server = http://bohoomil.com/repo/fonts" | sudo tee --append /etc/pacman.conf
+    echo '[infinality-bundle]'                     | sudo tee --append /etc/pacman.conf
+    echo 'Server = http://bohoomil.com/repo/$arch' | sudo tee --append /etc/pacman.conf
+    echo ''                                        | sudo tee --append /etc/pacman.conf
+    echo '[infinality-bundle-fonts]'               | sudo tee --append /etc/pacman.conf
+    echo 'Server = http://bohoomil.com/repo/fonts' | sudo tee --append /etc/pacman.conf
 
     echo "Updating pacman database..."
     sudo pacman -Syu
