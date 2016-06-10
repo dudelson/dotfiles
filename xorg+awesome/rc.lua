@@ -94,10 +94,44 @@ end
 -- {{{ Tags
 -- Define a tag table which hold all screen tags.
 tags = {}
+
+-- Here's the default tags code
 for s = 1, screen.count() do
     -- Each screen has its own tag table.
     tags[s] = awful.tag({ 1, 2, 3, 4, 5, 6, 7, 8, 9 }, s, layouts[1])
 end
+
+-- Here's my custom tags setup from datto, which illustrate how to setup
+-- multiple custom tags on multiple monitors
+--[[
+tags_left = {
+    names = { "broswer", 2, 3, 4, 5, 6, 7, 8, 9 },
+    layout = { layouts[1], layouts[1], layouts[1], layouts[1], layouts[1],
+               layouts[1], layouts[1], layouts[1], layouts[1]
+}}
+
+tags_center = {
+    names = { "main", "emacs", 3, 4, 5, 6, 7, 8, 9 },
+    layout = { layouts[2], layouts[8], layouts[1], layouts[1], layouts[1],
+               layouts[1], layouts[1], layouts[1], layouts[1]
+}}
+
+tags_right = {
+    names = { "hipchat", 2, 3, 4, 5, 6, 7, 8, 9 },
+    layout = { layouts[2], layouts[1], layouts[1], layouts[1], layouts[1],
+               layouts[1], layouts[1], layouts[1], layouts[1]
+}}
+
+-- defining these screen numbers help to keep monitors straight, both in this
+-- section and in other sections
+leftScreen   = screen["DisplayPort-0"].index
+centerScreen = screen["HDMI-0"].index       
+rightScreen  = screen["DVI-0"].index        
+
+tags[leftScreen]   = awful.tag(tags_left.names,   leftScreen  , tags_left.layout  )
+tags[centerScreen] = awful.tag(tags_center.names, centerScreen, tags_center.layout)
+tags[rightScreen]  = awful.tag(tags_right.names,  rightScreen , tags_right.layout )
+--]]
 -- }}}
 
 -- {{{ Menu
@@ -268,13 +302,11 @@ globalkeys = awful.util.table.join(
     --[[ with multiple monitors
     awful.key({ modkey,           }, "j",
         function ()
-            --awful.client.focus.byidx(-1)
 	    awful.client.focus.global_bydirection("left");
             if client.focus then client.focus:raise() end
         end),
     awful.key({ modkey,           }, "k",
         function ()
-            --awful.client.focus.byidx( 1)
 	    awful.client.focus.global_bydirection("right");
             if client.focus then client.focus:raise() end
     --]]
@@ -313,6 +345,28 @@ globalkeys = awful.util.table.join(
 
     awful.key({ modkey, "Control" }, "n", awful.client.restore),
 
+    -- Example of keybindings to focus specific tags
+    -- "Mod1" is left alt
+    --[[
+    awful.key({ modkey, "Mod1"   }, "m", function () 
+	awful.tag.viewonly(tags[centerScreen][1]) 
+	awful.screen.focus(centerScreen)
+    end),
+    awful.key({ modkey, "Mod1"   }, "b", function ()
+	awful.tag.viewonly(tags[leftScreen][1]) 
+	awful.screen.focus(leftScreen)
+    end),
+    -- "space" is for spacemacs
+    awful.key({ modkey, "Mod1"   }, "space", function ()
+	awful.tag.viewonly(tags[centerScreen][2]) 
+	awful.screen.focus(centerScreen)
+    end),
+    awful.key({ modkey, "Mod1"   }, "h", function ()
+	awful.tag.viewonly(tags[rightScreen][1]) 
+	awful.screen.focus(rightScreen)
+    end),
+    --]]
+
     -- Prompt
     awful.key({ modkey },            "x",     function () mypromptbox[mouse.screen]:run() end),
 
@@ -342,7 +396,15 @@ globalkeys = awful.util.table.join(
 	function()
 	    awful.util.spawn(os.date('maim /tmp/screenshot_%Y-%m-%d_%X.png'), false)
 	end
+    ),
+    -- lock screen
+    --[[
+    awful.key({ modkey, "Shift" }, "l",
+	function()
+	    awful.util.spawn('lock')
+	end
     )
+    --]]
 )
 
 clientkeys = awful.util.table.join(
@@ -430,15 +492,26 @@ awful.rules.rules = {
                      raise = true,
                      keys = clientkeys,
                      buttons = clientbuttons } },
-    { rule = { class = "MPlayer" },
+    { rule_any = { class = {"MPlayer", "pinentry", "Gimp", "feh"} },
       properties = { floating = true } },
-    { rule = { class = "pinentry" },
-      properties = { floating = true } },
-    { rule = { class = "gimp" },
-      properties = { floating = true } },
-    -- Set Firefox to always map on tags number 2 of screen 1.
-    -- { rule = { class = "Firefox" },
-    --   properties = { tag = tags[1][2] } },
+    -- Examples of rules to stick certain applications to specific tags on 
+    -- specific monitors
+    --[[
+    -- Set Firefox to always map on tag 1 of left monitor
+    { rule = { class = "Firefox" },
+      properties = { tag = tags[leftScreen][1] } },
+    -- Set hipchat to always map on tag 1 of right monitor
+    { rule = { instance = "hipchat4" },
+      properties = { tag = tags[rightScreen][1] } },
+    -- Set emacs to always map on tag 2 of center monitor
+    { rule = { class = "Emacs" },
+      properties = { tag = tags[centerScreen][2] } },
+    -- this rule fixes a problem with urxvt and emacs where the desktop
+    -- was visible along the bottom and right edges of the screen
+    { rule_any = { class = { "Emacs", "URxvt" } },
+      properties = { size_hints_honor = false } },
+    --]]
+
 }
 -- }}}
 
@@ -530,7 +603,8 @@ function run_once(cmd)
     awful.util.spawn_with_shell("pgrep -u $USER -x " .. findme .. " > /dev/null || (" .. cmd .. ")")
 end
 
---run_once("nm-applet")  -- networkmanager
---run_once("volumeicon") -- volumeicon
---run_once("dropbox")    -- dropbox
---run_once("udiskie")    -- automounting of usbs
+--run_once("sh ~/.fehbg")    -- set wallpaper
+--run_once("nm-applet")      -- networkmanager
+--run_once("volumeicon")     -- volumeicon
+--run_once("dropbox")        -- dropbox
+--run_once("udiskie")        -- automounting of usbs
