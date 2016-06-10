@@ -69,10 +69,19 @@ URxvt.keysym.M-u:           perl:url-select:select_next
 URxvt.keysym.M-Escape:      perl:keyboard-select:activate
 URxvt.keysym.M-s:           perl:keyboard-select:search
 URxvt.transparent:          false
-! To try to get transparency working, change the above line to "true", and
-! uncomment the following two lines
-!URxvt*inheritPixmap:        true
-!URxvt*.shading:             110
+
+# to enable true transparency, first install "compton" and make sure it starts
+# when X starts by uncommenting the following line in ~/.xinitrc:
+#
+#    compton &
+#
+# Then, uncomment the following two lines
+# (don't worry about the "URxvt.transparent" setting above, it doesn't matter)
+#urxvt*depth: 32
+#urxvt*background: [75]#002b36
+# The number in brackets is the percent opacity. This is what should be adjusted
+# to tweak the transparency level.
+
 URxvt.scrollBar:            false
 URxvt.right_scrollBar:      true
 URxvt.geometry:             100x30
