@@ -7,6 +7,11 @@ sysmonitor.widget = wibox.widget.textbox()
 sysmonitor.widget:set_align("right")
 sysmonitor.widget:set_font("source code pro 9")
 
+-- these two lines suppress constant error messages when run on something
+-- without a battery
+local unused1, unused2, retcode = os.execute('stat /sys/class/power_supply/BAT0')
+HAS_BATTERY = (retcode == 0)
+
 function update_battery() 
     fh = assert(io.popen("acpi", "r"))
     charge_level = ""
@@ -112,7 +117,7 @@ local frozen = false
 function update_sysmonitor()
     ram_str = update_activeram()
     cpu_str = update_activecpu()
-    batt_str = update_battery()
+    if HAS_BATTERY then batt_str = update_battery() else batt_str = '' end
     frozen_str = ""
     if frozen then frozen_str = '[<span color="#16d4de">F</span>] ' end
     sysmonitor.widget:set_markup(" " .. frozen_str .. cpu_str .. ram_str .. batt_str)

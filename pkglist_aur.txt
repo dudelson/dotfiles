@@ -12,6 +12,7 @@ fasd
 #fluxgui
 global
 #golly
+i3lock-fancy-git
 #laptop-mode-tools
 #libappindicator-gtk3
 #libappindicator-sharp
@@ -20,7 +21,7 @@ global
 #linux-drm-intel-nightly-headers
 #mcrypt
 #memtest86-efi
-networkmanager-dispatcher-chrony
+#networkmanager-dispatcher-chrony
 pycp
 #python34
 #steam-fonts
