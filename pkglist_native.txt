@@ -115,7 +115,7 @@ unzip
 #vagrant
 #vicious
 virtualbox
-virtualbox-guest-iso
+virtualbox-guest-utils
 virtualbox-host-dkms
 volumeicon
 weechat
