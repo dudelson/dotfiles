@@ -16,9 +16,6 @@ i3lock-fancy-git
 #laptop-mode-tools
 #libappindicator-gtk3
 #libappindicator-sharp
-#linux-drm-intel-nightly
-#linux-drm-intel-nightly-docs
-#linux-drm-intel-nightly-headers
 #mcrypt
 #memtest86-efi
 #networkmanager-dispatcher-chrony
