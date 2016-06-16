@@ -30,3 +30,4 @@ pycp
 urxvt-perls-git
 #uswsusp-git
 virtualbox-ext-oracle
+zsh-autosuggestions

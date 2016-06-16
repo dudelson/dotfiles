@@ -57,6 +57,7 @@ unsetopt FLOW_CONTROL      # Disable start/stop characters in shell editor.
 
 # other options
 setopt INTERACTIVECOMMENTS # allow bash-style comments on the command line
+zstyle ':completion:*' menu select # TAB highlights selection, just like in the fish shell
 
 # Envvars have been moved to ~/.zshenv
 
@@ -160,6 +161,11 @@ autoload -Uz compinit && compinit -i
 
 # fasd
 eval "$(fasd --init auto)"
+
+# syntax highlighting
+source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+# autosuggestions (broken in conjunction with syntax highlighting as of june 2016)
+#source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 #############################################################################
 ##`````````````````````````````````````````````````````````````````````````##
