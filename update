@@ -8,44 +8,36 @@ OLDDIR=$(pwd)
 cd $(dirname $0)
 
 # git config
-cp git/.gitignore_core ~
+ln -s git/gitignore_core ~/.gitignore_core
 git config --global core.excludesfile '~/.gitignore_core'
-cp -R git/.git_template ~
+ln -s git/git_template ~/.git_template
 git config --global init.templatedir '~/.git_template'
 
 # vim config
 git submodule init
 git submodule update
 
-cp -R vim ~/.vim
-ln -s ~/.vim/vimrc ~/.vimrc
+ln -s vim ~/.vim
+ln -s vim/vimrc ~/.vimrc
 
 # emacs config
-cp -R spacemacs ~/.spacemacs.d
+ln -s spacemacs ~/.spacemacs.d
 git clone https://github.com/syl20bnr/spacemacs.git ~/.emacs.d
 
 # weechat config
-cp -R weechat ~/.weechat
+ln -s weechat ~/.weechat
 
 # xorg config
-cp xorg+awesome/.Xdefaults ~
-cp xorg+awesome/.xinitrc ~
+ln -s xorg/.Xdefaults ~/.Xdefaults
+ln -s xorg/.xinitrc ~/.xinitrc
 
 # awesome wm config
-mkdir -p ~/.config/awesome
-cp -R xorg+awesome/alttab ~/.config/awesome
-cp xorg+awesome/rc.lua ~/.config/awesome
-cp xorg+awesome/cal.lua ~/.config/awesome
-cp xorg+awesome/sysmonitor.lua ~/.config/awesome
-cp xorg+awesome/update_notifications.lua ~/.config/awesome
+ln -s awesome ~/.config/awesome
 
 # zsh config
-cp zsh/.zlogin ~
-cp zsh/.zshrc ~
-cp zsh/.zshenv ~
-
-# other config
-cp other/.toprc ~
+ln -s zsh/zlogin ~/.zlogin
+ln -s zsh/zshenv ~/.zshenv
+ln -s zsh/zshrc ~/.zshrc
 
 # note that there's probably a more robust way to do this 
 # e.g. this will break if the path of $AWESOME_LOG_FILE changes
@@ -59,4 +51,4 @@ cd $OLDDIR
 set +o verbose
 
 echo Done!
-echo You will probably need to edit ~/.xinitrc.
+echo You will probably need to edit ~/.xinitrc, ~/.zshrc, and ~/.config/awesome/rc.lua
