@@ -5,39 +5,39 @@ echo Updating local file system from repo...
 set -o verbose
 
 OLDDIR=$(pwd)
-cd $(dirname $0)
+DIR=$(dirname $0)
 
 # git config
-ln -s git/gitignore_core ~/.gitignore_core
+ln -s $DIR/git/gitignore_core ~/.gitignore_core
 git config --global core.excludesfile '~/.gitignore_core'
-ln -s git/git_template ~/.git_template
+ln -s $DIR/git/git_template ~/.git_template
 git config --global init.templatedir '~/.git_template'
 
 # vim config
 git submodule init
 git submodule update
 
-ln -s vim ~/.vim
-ln -s vim/vimrc ~/.vimrc
+ln -s $DIR/vim ~/.vim
+ln -s $DIR/vim/vimrc ~/.vimrc
 
 # emacs config
-ln -s spacemacs ~/.spacemacs.d
+ln -s $DIR/spacemacs ~/.spacemacs.d
 git clone https://github.com/syl20bnr/spacemacs.git ~/.emacs.d
 
 # weechat config
-ln -s weechat ~/.weechat
+ln -s $DIR/weechat ~/.weechat
 
 # xorg config
-ln -s xorg/.Xdefaults ~/.Xdefaults
-ln -s xorg/.xinitrc ~/.xinitrc
+ln -s $DIR/xorg/.Xdefaults ~/.Xdefaults
+ln -s $DIR/xorg/.xinitrc ~/.xinitrc
 
 # awesome wm config
-ln -s awesome ~/.config/awesome
+ln -s $DIR/awesome ~/.config/awesome
 
 # zsh config
-ln -s zsh/zlogin ~/.zlogin
-ln -s zsh/zshenv ~/.zshenv
-ln -s zsh/zshrc ~/.zshrc
+ln -s $DIR/zsh/zlogin ~/.zlogin
+ln -s $DIR/zsh/zshenv ~/.zshenv
+ln -s $DIR/zsh/zshrc ~/.zshrc
 
 # note that there's probably a more robust way to do this 
 # e.g. this will break if the path of $AWESOME_LOG_FILE changes
@@ -45,8 +45,6 @@ mkdir -p ~/.cache/awesome
 touch ~/.cache/awesome/awesome.log
 
 touch ~/.watched_packages
-
-cd $OLDDIR
 
 set +o verbose
 
