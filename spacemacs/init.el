@@ -36,6 +36,7 @@ values."
      gtags
      ;; markdown
      org
+     rust
      semantic
      ;; (shell :variables
      ;;        shell-default-height 30
