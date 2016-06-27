@@ -50,7 +50,7 @@ set so=10
 " make sure tab width is 4 when displaying, editing, and indenting text
 " but keep actual tab width at default (8) to preserve formatting in 
 " other text editors 
-set softtabstop=4 shiftwidth=4 noexpandtab autoindent shiftround smarttab
+set softtabstop=4 shiftwidth=4 expandtab autoindent shiftround smarttab
 
 " Use the same symbols as TextMate for tabstops and EOLs
 set listchars=tab:▸\ ,eol:¬
