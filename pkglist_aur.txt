@@ -21,6 +21,10 @@ i3lock-fancy-git
 #networkmanager-dispatcher-chrony
 pycp
 #python34
+### these two packages are necessary to get code completion to work
+### for rust in emacs
+#rust-racer
+#rust-src
 #steam-fonts
 #texlive-local-comment
 #texlive-local-enumitem

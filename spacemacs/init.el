@@ -34,6 +34,7 @@ values."
      emacs-lisp
      git
      gtags
+     lua
      ;; markdown
      org
      rust
@@ -260,8 +261,18 @@ before packages are loaded. If you are unsure, you should try in setting them in
    sp-highlight-wrap-overlay nil
    sp-highlight-wrap-tag-overlay nil
 
+   ;; enable rust code completion
+   rust-enable-racer t
+
    ;; add a space between line numbers and the first column of text
    ;linum-format "%d "
+   )
+
+  (setq
+   ;; point racer to the rust source code
+   racer-rust-src-path "/usr/src/rust/src"
+   ;; try to make the autocompletions not look terrible
+   company-tooltip-align-annotations t
    )
   )
 
