@@ -166,7 +166,7 @@ values."
    ;; auto-save the file in-place, `cache' to auto-save the file to another
    ;; file stored in the cache directory and `nil' to disable auto-saving.
    ;; (default 'cache)
-   dotspacemacs-auto-save-file-location 'cache
+   dotspacemacs-auto-save-file-location 'original
    ;; Maximum number of rollback slots to keep in the cache. (default 5)
    dotspacemacs-max-rollback-slots 5
    ;; If non nil then `ido' replaces `helm' for some commands. For now only
@@ -339,6 +339,8 @@ you should place your code here."
   (add-hook 'prog-mode-hook (lambda () (spacemacs/toggle-fill-column-indicator-on) nil))
   ;; don't color delimiters in C-like code
   (add-hook 'c-mode-hook (lambda () (rainbow-delimiters-mode -1)))
+  ;; auto-refersh magit status buffer when files change
+  (add-hook 'after-save-hook 'magit-after-save-refresh-status)
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   (define-abbrev-table 'global-abbrev-table '(
