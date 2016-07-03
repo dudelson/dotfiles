@@ -60,6 +60,7 @@ values."
    '(
      nlinum
      nlinum-relative
+     highlight-escape-sequences
      )
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '()
@@ -347,6 +348,28 @@ you should place your code here."
   (setq save-abbrevs nil)
   ;; turn on abbrev mode globally
   (setq-default abbrev-mode t)
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; highlight escape sequences
+  (hes-mode)
+  ;; highlight format strings in C-like languages
+  (defvar font-lock-format-specifier-face		
+    'font-lock-format-specifier-face
+    "Face name to use for format specifiers.")
+
+  (defface font-lock-format-specifier-face
+    '((t (:foreground "OrangeRed1")))
+    "Font Lock mode face used to highlight format specifiers."
+    :group 'font-lock-faces)
+
+  (add-hook 'c-mode-common-hook
+            (lambda ()
+              (font-lock-add-keywords nil
+                                      '(("[^%]\\(%\\([[:digit:]]+\\$\\)?[-+' #0*]*\\([[:digit:]]*\\|\\*\\|\\*[[:digit:]]+\\$\\)\\(\\.\\([[:digit:]]*\\|\\*\\|\\*[[:digit:]]+\\$\\)\\)?\\([hlLjzt]\\|ll\\|hh\\)?\\([aAbdiuoxXDOUfFeEgGcCsSpn]\\|\\[\\^?.[^]]*\\]\\)\\)"
+                                         1 font-lock-format-specifier-face t)
+                                        ("\\(%%\\)" 
+                                         1 font-lock-format-specifier-face t)) )))
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; temporary nlinum setup (waiting for nlinum layer in next stable release)
   (require 'nlinum-relative)
