@@ -36,6 +36,10 @@ values."
      gtags
      lua
      ;; markdown
+     ;; wait for next stable release before using this layer
+     ;; fixes problem with linum where opening any helm buffer causes the line
+     ;; numbers to all become "1"
+     ;;nlinum
      org
      rust
      semantic
@@ -52,7 +56,11 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '()
+   dotspacemacs-additional-packages
+   '(
+     nlinum
+     nlinum-relative
+     )
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '()
    ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
@@ -214,7 +222,7 @@ values."
    ;; If non nil line numbers are turned on in all `prog-mode' and `text-mode'
    ;; derivatives. If set to `relative', also turns on relative line numbers.
    ;; (default nil)
-   dotspacemacs-line-numbers 'relative
+   dotspacemacs-line-numbers nil
    ;; If non-nil smartparens-strict-mode will be enabled in programming modes.
    ;; (default nil)
    dotspacemacs-smartparens-strict-mode nil
@@ -260,19 +268,6 @@ before packages are loaded. If you are unsure, you should try in setting them in
    sp-highlight-pair-overlay nil
    sp-highlight-wrap-overlay nil
    sp-highlight-wrap-tag-overlay nil
-
-   ;; enable rust code completion
-   rust-enable-racer t
-
-   ;; add a space between line numbers and the first column of text
-   ;linum-format "%d "
-   )
-
-  (setq
-   ;; point racer to the rust source code
-   racer-rust-src-path "/usr/src/rust/src"
-   ;; try to make the autocompletions not look terrible
-   company-tooltip-align-annotations t
    )
   )
 
@@ -288,8 +283,9 @@ you should place your code here."
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; VARIABLES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (setq-default
-   ;; escape everything with "jk"
+   ;; escape everything with "jk" or "kj"
    evil-escape-key-sequence "jk"
+   evil-escape-unordered-key-sequence t
    ;; tab settings
    tab-width 4
    evil-shift-round nil
@@ -303,6 +299,16 @@ you should place your code here."
    ;; make tab key behave as expected
    tab-always-indent t
    c-tab-always-indent t
+   ;; enable rust code completion
+   rust-enable-racer t
+   )
+  (setq
+   ;; point racer to the rust source code
+   racer-rust-src-path "/usr/src/rust/src"
+   ;; try to make the autocompletions not look terrible
+   company-tooltip-align-annotations t
+   ;; temporary improvement to linum formatting
+   linum-relative-format "%4s "
    )
   (defvaralias 'c-basic-offset 'tab-width)
   (defvaralias 'cperl-indent-level 'tab-width)
@@ -334,30 +340,23 @@ you should place your code here."
   (add-hook 'c-mode-hook (lambda () (rainbow-delimiters-mode -1)))
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-
-
-  ;; This stuff is specific to OS prac, and should be removed soon
-  ;; It's here because project-specific configuration seems confusing...
-  (setq-default indent-tabs-mode nil)
-  ;; if indent-tabs-mode is off, untabify before saving
-  (add-hook 'write-file-hooks
-            (lambda () (if (not indent-tabs-mode)
-                           (untabify (point-min) (point-max)))
-              nil ))
-  ;; turn whitespace on by default to make sure that the above settings are working
-  (add-hook 'c-mode-hook 'spacemacs/toggle-whitespace-on)
-
   (define-abbrev-table 'global-abbrev-table '(
-                                              ("scoket" "socket")
-                                              ("Scoket" "Socket")
-                                              ("miniscoket" "minisocket")
-                                              ("Miniscoket" "Minisocket")
                                               ("Flase" "False")
     ))
   ;; stop asking whether to save newly added abbrev when quitting emacs
   (setq save-abbrevs nil)
   ;; turn on abbrev mode globally
   (setq-default abbrev-mode t)
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; temporary nlinum setup (waiting for nlinum layer in next stable release)
+  (require 'nlinum-relative)
+  (nlinum-relative-setup-evil)                    ;; setup for evil
+  (add-hook 'prog-mode-hook 'nlinum-relative-mode)
+  (add-hook 'text-mode-hook 'nlinum-relative-mode)
+  (setq nlinum-relative-redisplay-delay 0)      ;; delay
+  (setq nlinum-relative-current-symbol "")      ;; or "" for display current line number
+  (setq nlinum-relative-offset 0)
+  (setq nlinum-format "%d ")
  )
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -367,7 +366,8 @@ you should place your code here."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(org-indent-indentation-per-level 4)
+ '(paradox-github-token t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -378,4 +378,6 @@ you should place your code here."
  '(font-lock-keyword-face ((t (:foreground "#859900" :weight normal))))
  '(font-lock-preprocessor-face ((t (:foreground "#cb4b16"))))
  '(font-lock-variable-name-face ((t (:foreground "#839496"))))
- '(helm-selection ((t (:background "#073642" :underline nil)))))
+ '(helm-selection ((t (:background "#073642" :underline nil))))
+ '(linum ((t (:background "#073642" :foreground "#586e75"))))
+ '(linum-relative-current-face ((t (:inherit linum :background "#002b36" :foreground "#839496" :weight bold)))))
