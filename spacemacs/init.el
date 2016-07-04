@@ -340,7 +340,7 @@ you should place your code here."
   ;; don't color delimiters in C-like code
   (add-hook 'c-mode-hook (lambda () (rainbow-delimiters-mode -1)))
   ;; auto-refersh magit status buffer when files change
-  (add-hook 'after-save-hook 'magit-after-save-refresh-status)
+  ;(add-hook 'after-save-hook 'magit-after-save-refresh-status)
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   (define-abbrev-table 'global-abbrev-table '(
