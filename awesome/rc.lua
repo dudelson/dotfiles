@@ -608,3 +608,5 @@ end
 --run_once("volumeicon")     -- volumeicon
 --run_once("dropbox")        -- dropbox
 --run_once("udiskie")        -- automounting of usbs
+-- this automatically locks the screen after 5 minutes of inactivity
+run_once("xautolock -time 5 -locker lock -detectsleep &")
