@@ -31,6 +31,7 @@ values."
       )
      ;; better-defaults
      c-c++
+     fasd
      emacs-lisp
      git
      gtags
@@ -61,6 +62,7 @@ values."
      nlinum
      nlinum-relative
      highlight-escape-sequences
+     rust-snippets
      )
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '()
