@@ -287,6 +287,8 @@ you should place your code here."
    ;; escape everything with "jk" or "kj"
    evil-escape-key-sequence "jk"
    evil-escape-unordered-key-sequence t
+   ;; don't move the cursor back by 1 when exiting insert mode
+   evil-move-cursor-back nil
    ;; tab settings
    tab-width 4
    evil-shift-round nil
