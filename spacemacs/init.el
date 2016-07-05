@@ -329,6 +329,12 @@ you should place your code here."
   ;; less awkward keybinding for expanding snippets
   ;; note: this overrides `evil-scroll-line-up`
   (define-key evil-insert-state-map (kbd "C-y") 'hippie-expand)
+  ;; remap this function to a more intuitive key *and* free up C-a in insert mode
+  (define-key evil-insert-state-map (kbd "C-p") 'evil-paste-last-insertion)
+  ;; jump to beginning of (text) line in normal mode
+  (define-key evil-insert-state-map (kbd "C-a") (kbd "C-o ^"))
+  ;; jump to end of line in normal mode
+  (define-key evil-insert-state-map (kbd "C-e") (kbd "C-o $"))
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
