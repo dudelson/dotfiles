@@ -62,7 +62,6 @@ values."
      nlinum
      nlinum-relative
      highlight-escape-sequences
-     rust-snippets
      )
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '()
@@ -168,7 +167,7 @@ values."
    ;; auto-save the file in-place, `cache' to auto-save the file to another
    ;; file stored in the cache directory and `nil' to disable auto-saving.
    ;; (default 'cache)
-   dotspacemacs-auto-save-file-location 'original
+   dotspacemacs-auto-save-file-location 'cache
    ;; Maximum number of rollback slots to keep in the cache. (default 5)
    dotspacemacs-max-rollback-slots 5
    ;; If non nil then `ido' replaces `helm' for some commands. For now only
@@ -291,9 +290,6 @@ you should place your code here."
    evil-escape-unordered-key-sequence t
    ;; don't move the cursor back by 1 when exiting insert mode
    evil-move-cursor-back nil
-   ;; tab settings
-   tab-width 4
-   evil-shift-round nil
    ;; 10 lines of context at top and bottom of screen (and no jumpiness)
    scroll-margin 10
    scroll-conservatively 1000000
@@ -302,8 +298,6 @@ you should place your code here."
    ;; whitespace visualization settings
    whitespace-style '(face trailing tabs spaces space-before-tab indentation space-after-tab space-mark tab-mark)
    ;; make tab key behave as expected
-   tab-always-indent t
-   c-tab-always-indent t
    ;; enable rust code completion
    rust-enable-racer t
    )
@@ -315,8 +309,40 @@ you should place your code here."
    ;; temporary improvement to linum formatting
    linum-relative-format "%4s "
    )
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; TAB SETTINGS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; I've found it's easiest to put all tab- and indentation-related settings in
+  ;; one place, because they're sort of tricky to get right, and this prevents
+  ;; me from going crazy.
+ (setq
+  ;; prevent `<' and `>' from rounding to the nearest tabstop
+  evil-shift-round nil
+  ;; prevent unexpected tab behavior
+  tab-always-indent t
+  c-tab-always-indent t
+  )
+  ;; true tab characters are displayed as being <tab-width> spaces wide
+  ;; it's best to have these three settings always agree with each other to
+  ;; prevent interoperability problems with editors that can't separate tab width
+  ;; from indentation settings
+  ;; - from https://www.emacswiki.org/emacs/IndentationBasics
+  (setq-default tab-width 4)
   (defvaralias 'c-basic-offset 'tab-width)
   (defvaralias 'cperl-indent-level 'tab-width)
+
+  ;; set the tab-stop list according to the tab width
+  (setq tab-stop-list (number-sequence tab-width 120 tab-width))
+
+  ;; text-mode indentation settings
+  ;; In text-mode, I want zero tab shenanigans.
+  (add-hook 'text-mode-hook (lambda () (setq indent-line-function 'insert-tab)))
+
+  ;; org-mode indentation settings
+  ;; This one's a work in progress...
+  (setq org-indent-indentation-per-level 4)
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -401,7 +427,6 @@ you should place your code here."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(org-indent-indentation-per-level 4)
  '(paradox-github-token t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
