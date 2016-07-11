@@ -399,12 +399,20 @@ you should place your code here."
                                     (org-tags-match-list-sublevels nil)))))
                                   ("2" "Average priority action items"
                                    ((tags-todo "+PRIORITY=\"B\""
-                                               ((org-agenda-overriding-header "Priority B")
-                                                (org-tags-match-list-sublevels nil)))))
+                                    ((org-agenda-overriding-header "Priority B")
+                                     (org-tags-match-list-sublevels nil)))))
                                   ("3" "Low priority action items"
                                    ((tags-todo "+PRIORITY=\"C\""
-                                               ((org-agenda-overriding-header "Priority C")
-                                                (org-tags-match-list-sublevels nil))))))
+                                    ((org-agenda-overriding-header "Priority C")
+                                     (org-tags-match-list-sublevels nil)))))
+                                  ("d" "David's planner view"
+                                   ((agenda "")
+                                    (tags-todo "+PRIORITY=\"A\""
+                                     ((org-agenda-skip-function
+                                       '(org-agenda-skip-entry-if 'scheduled))
+                                      (org-agenda-overriding-header
+                                       "High Priority Unscheduled Tasks"))))))
+     org-agenda-tags-column -100
      )
      ;; (defun dudelson/test ()
      ;;   (interactive)
