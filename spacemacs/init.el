@@ -339,10 +339,6 @@ you should place your code here."
   ;; text-mode indentation settings
   ;; In text-mode, I want zero tab shenanigans.
   (add-hook 'text-mode-hook (lambda () (setq indent-line-function 'insert-tab)))
-
-  ;; org-mode indentation settings
-  ;; This one's a work in progress...
-  (setq org-indent-indentation-per-level 4)
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -379,6 +375,47 @@ you should place your code here."
   ;(add-hook 'after-save-hook 'magit-after-save-refresh-status)
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ORG MODE ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; All org-mode settings need to be grouped
+  ;; because spacemacs does not use the org-mode version that ships with emacs.
+  ;; Thus any calls to org-mode functions or any attempt to set org-mode variables
+  ;; outside of this `with-eval-after-load' statement will load the default org-mode
+  ;; package instead of the spacemacs one, and will cause org-mode to behave weirdly.
+  (with-eval-after-load 'org
+    ;; indentation settings
+    ;; This one's a work in progress...
+    (setq
+     org-indent-indentation-per-level 4
+     org-todo-keywords '((sequence "TODO(t)" "|" "WAITING(w)" "ON HOLD(h)" "DONE(d)"))
+     org-todo-keyword-faces '(
+                              ("WAITING" . (:foreground "#b58900" :weight bold))
+                              ("ON HOLD" . (:foreground "#dc322f" :weight bold))
+                              )
+     org-agenda-custom-commands '(("1" "High priority action items"
+                                   ((tags-todo "+PRIORITY=\"A\""
+                                    ((org-agenda-overriding-header "Priority A")
+                                    (org-tags-match-list-sublevels nil)))))
+                                  ("2" "Average priority action items"
+                                   ((tags-todo "+PRIORITY=\"B\""
+                                               ((org-agenda-overriding-header "Priority B")
+                                                (org-tags-match-list-sublevels nil)))))
+                                  ("3" "Low priority action items"
+                                   ((tags-todo "+PRIORITY=\"C\""
+                                               ((org-agenda-overriding-header "Priority C")
+                                                (org-tags-match-list-sublevels nil))))))
+     )
+     ;; (defun dudelson/test ()
+     ;;   (interactive)
+     ;;   ((org-insert-heading-respect-content)
+     ;;    (evil-insert)))
+
+     ;; (define-key evil-insert-state-map (kbd "C-return") 'dudelson/test)
+  )
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (define-abbrev-table 'global-abbrev-table '(
                                               ("Flase" "False")
     ))
@@ -427,6 +464,7 @@ you should place your code here."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(org-agenda-files (quote ("~/Dropbox/org/spacemacs.org" "~/Dropbox/org/stuffff.org")))
  '(paradox-github-token t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
