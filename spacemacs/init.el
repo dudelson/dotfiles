@@ -336,17 +336,22 @@ you should place your code here."
   ;; set the tab-stop list according to the tab width
   (setq tab-stop-list (number-sequence tab-width 120 tab-width))
 
+  ;; automatically indent when return is pressed
+  (global-set-key (kbd "RET") 'newline-and-indent)
+
   ;; text-mode indentation settings
   ;; In text-mode, I want zero tab shenanigans.
-  (add-hook 'text-mode-hook (lambda () (setq indent-line-function 'insert-tab)))
+  ;; This was the only way I could think of to get the tab key to reliably insert
+  ;; a tab, but not simultaneously screw up things like `cc' and `o' in evil normal
+  ;; state, which also depend on `insert-line-function'.
+  (add-hook 'text-mode-hook (lambda ()
+                              (define-key evil-insert-state-local-map (kbd "<tab>")
+                                (lambda () (interactive) (insert-tab)))))
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; KEY BINDINGS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;; automatically indent when return is pressed
-  (global-set-key (kbd "RET") 'newline-and-indent)
-
   ;; navagate by visual lines
   (define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
   (define-key evil-normal-state-map (kbd "k") 'evil-previous-visual-line)
