@@ -420,6 +420,8 @@ you should place your code here."
      ;;    (evil-insert)))
 
      ;; (define-key evil-insert-state-map (kbd "C-return") 'dudelson/test)
+    (evil-set-initial-state 'org-agenda-mode 'emacs)
+    (define-key org-agenda-mode-map (kbd "C-*") 'org-agenda-filter-remove-all)
   )
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
