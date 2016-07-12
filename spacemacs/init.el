@@ -307,7 +307,7 @@ you should place your code here."
    ;; try to make the autocompletions not look terrible
    company-tooltip-align-annotations t
    ;; temporary improvement to linum formatting
-   linum-relative-format "%4s "
+   linum-relative-format "%5s"
    )
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -387,7 +387,16 @@ you should place your code here."
     ;; indentation settings
     ;; This one's a work in progress...
     (setq
+     ;; make subheadings indented by 4 spaces
      org-indent-indentation-per-level 4
+     ;; also make plain sublists indented by 4 spaces
+     org-list-indent-offset 2
+     ;; my custom todo keywords
+     ;; TODO items are those I plan to start in the immediate future
+     ;; WAITING items are those I have started and am waiting for events out of
+     ;;     my control to transpire before I can check off
+     ;; ON HOLD items are those which I have postponed doing for the time being
+     ;; DONE items have been completed
      org-todo-keywords '((sequence "TODO(t)" "|" "WAITING(w)" "ON HOLD(h)" "DONE(d)"))
      org-todo-keyword-faces '(
                               ("WAITING" . (:foreground "#b58900" :weight bold))
