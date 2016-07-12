@@ -426,18 +426,28 @@ you should place your code here."
                                        '(org-agenda-skip-entry-if 'scheduled))
                                       (org-agenda-overriding-header
                                        "High Priority Unscheduled Tasks"))))))
+     ;; Make the tags not squished to the left in the agenda
+     ;; Here they are right-aligned to column 100
      org-agenda-tags-column -100
      org-lowest-priority 69    ;; Priorities are in the range "A" to "E"
      org-default-priority 67   ;; Default priority is "C"
      )
-     ;; (defun dudelson/test ()
-     ;;   (interactive)
-     ;;   ((org-insert-heading-respect-content)
-     ;;    (evil-insert)))
 
-     ;; (define-key evil-insert-state-map (kbd "C-return") 'dudelson/test)
+    ;; C-RET and M-RET automatically enter insert state
+    (define-key org-mode-map (kbd "C-<return>") (lambda ()
+                                                  (interactive)
+                                                  (org-insert-heading-respect-content)
+                                                  (evil-insert 1)))
+    (define-key org-mode-map (kbd "M-<return>") (lambda ()
+                                                  (interactive)
+                                                  (org-meta-return)
+                                                  (evil-insert 1)))
     ;; (evil-set-initial-state 'org-agenda-mode 'emacs)
     ;;(define-key org-agenda-mode-map (kbd "C-*") 'org-agenda-filter-remove-all)
+
+
+    ;; This is a cheap hack until I figure out a more robust way to change agenda
+    ;; views within the agenda
     (spacemacs/set-leader-keys-for-major-mode 'org-agenda-mode "a" 'org-agenda)
     ;; (spacemacs/set-leader-keys-for-major-mode 'org-agenda-mode "1"
     ;;   (lambda ()
