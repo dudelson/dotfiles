@@ -393,15 +393,15 @@ you should place your code here."
                               ("WAITING" . (:foreground "#b58900" :weight bold))
                               ("ON HOLD" . (:foreground "#dc322f" :weight bold))
                               )
-     org-agenda-custom-commands '(("1" "High priority action items"
+     org-agenda-custom-commands '(("1" "Highest priority action items"
                                    ((tags-todo "+PRIORITY=\"A\""
                                     ((org-agenda-overriding-header "Priority A")
                                     (org-tags-match-list-sublevels nil)))))
-                                  ("2" "Average priority action items"
+                                  ("2" "High priority action items"
                                    ((tags-todo "+PRIORITY=\"B\""
                                     ((org-agenda-overriding-header "Priority B")
                                      (org-tags-match-list-sublevels nil)))))
-                                  ("3" "Low priority action items"
+                                  ("3" "Average priority action items"
                                    ((tags-todo "+PRIORITY=\"C\""
                                     ((org-agenda-overriding-header "Priority C")
                                      (org-tags-match-list-sublevels nil)))))
@@ -411,8 +411,15 @@ you should place your code here."
                                      ((org-agenda-skip-function
                                        '(org-agenda-skip-entry-if 'scheduled))
                                       (org-agenda-overriding-header
+                                       "Highest Priority Unscheduled Tasks")))
+                                    (tags-todo "+PRIORITY=\"B\""
+                                     ((org-agenda-skip-function
+                                       '(org-agenda-skip-entry-if 'scheduled))
+                                      (org-agenda-overriding-header
                                        "High Priority Unscheduled Tasks"))))))
      org-agenda-tags-column -100
+     org-lowest-priority 69    ;; Priorities are in the range "A" to "E"
+     org-default-priority 67   ;; Default priority is "C"
      )
      ;; (defun dudelson/test ()
      ;;   (interactive)
@@ -420,8 +427,17 @@ you should place your code here."
      ;;    (evil-insert)))
 
      ;; (define-key evil-insert-state-map (kbd "C-return") 'dudelson/test)
-    (evil-set-initial-state 'org-agenda-mode 'emacs)
-    (define-key org-agenda-mode-map (kbd "C-*") 'org-agenda-filter-remove-all)
+    ;; (evil-set-initial-state 'org-agenda-mode 'emacs)
+    ;;(define-key org-agenda-mode-map (kbd "C-*") 'org-agenda-filter-remove-all)
+    (spacemacs/set-leader-keys-for-major-mode 'org-agenda-mode "a" 'org-agenda)
+    ;; (spacemacs/set-leader-keys-for-major-mode 'org-agenda-mode "1"
+    ;;   (lambda ()
+        ;; (interactive)
+        ;; (org-agenda-run-series "TEST"
+                               ;; ((tags-todo "+PRIORITY=\"C\""
+                               ;;             ((org-agenda-overriding-header "Priority C")
+                               ;;              (org-tags-match-list-sublevels nil)))))
+                               ;; ))
   )
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
