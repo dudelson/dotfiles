@@ -235,7 +235,7 @@ vnoremap kj <ESC>
 inoremap <c-[> <NOP>
 vnoremap <c-[> <NOP>
 " Fast save
-nmap <leader>w :w!<CR>
+nmap <leader>fs :w!<CR>
 " Quick quit w/o saving
 nnoremap ZX ZQ
 nnoremap XZ ZQ
@@ -251,22 +251,22 @@ nnoremap <silent> <F3> :let @/ = ""<CR>
 " Easy window movement, opening, closing, and swapping
 " lowercase asdf to move to a window in that direction
 " if there is no window in that direction, create one
-map <leader>a        :call WinMove('h')<cr>
-map <leader>s        :call WinMove('j')<cr>
-map <leader>d        :call WinMove('k')<cr>
-map <leader>f        :call WinMove('l')<cr>
+map <leader>wh        :call WinMove('h')<cr>
+map <leader>wj        :call WinMove('j')<cr>
+map <leader>wk        :call WinMove('k')<cr>
+map <leader>wl        :call WinMove('l')<cr>
 " uppercase ASDF to swap windows
-map <leader>A        :wincmd H<cr>
-map <leader>S        :wincmd J<cr>
-map <leader>D        :wincmd K<cr>
-map <leader>F        :wincmd L<cr>
+map <leader>wH        :wincmd H<cr>
+map <leader>wJ        :wincmd J<cr>
+map <leader>wK        :wincmd K<cr>
+map <leader>wL        :wincmd L<cr>
 " close a window
-map <leader>cw       :wincmd q<cr>
+map <leader>wc       :wincmd q<cr>
 " rotate windows
-map <leader>r        <C-W>r
+map <leader>wR        <C-W>r
 
 " Close buffer (depends on bbye plugin)
-nnoremap <leader>cc      :Bdelete<cr>
+nnoremap <leader>bd      :Bdelete<cr>
 
 " Intuitive movement, even with wrapped lines
 noremap <silent> <expr> j (v:count == 0 ? 'gj' : 'j')
