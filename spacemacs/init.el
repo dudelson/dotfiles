@@ -364,6 +364,34 @@ you should place your code here."
   (define-key evil-insert-state-map (kbd "C-a") (kbd "C-o ^"))
   ;; jump to end of line in normal mode
   (define-key evil-insert-state-map (kbd "C-e") (kbd "C-o $"))
+
+  ;; `SPC o o' opens my planner from anywhere in emacs
+  (defvar dudelson/toggle-planner-enabled nil
+    "Whether the planner view is enabled")
+  (defvar dudelson/toggle-planner-window-config nil
+    "Saves the window config so it can be restored later")
+  (defun dudelson/toggle-planner ()
+    "Toggles my custom planner view
+When toggled on, displays my org file on the left, and my custom agenda on the right.
+When toggled off, restores the window layout from before the last time it was toggled on"
+    (interactive)
+    (if dudelson/toggle-planner-enabled
+        ;; restore previous window configuration
+        (set-window-configuration dudelson/toggle-planner-window-config)
+      ;; otherwise store window configuration so it can be restored later
+      (setq dudelson/toggle-planner-window-config (current-window-configuration))
+      (find-file "~/Dropbox/org/stuffff.org")
+      (delete-other-windows)
+      ;; here's a hack to open the agenda, since I don't know a better way to open
+      ;; a custom agenda
+      (setq unread-command-events (listify-key-sequence ",ad"))
+      )
+    ;; toggle the thingy
+    (setq dudelson/toggle-planner-enabled (not (symbol-value dudelson/toggle-planner-enabled)))
+    (message "Toggled planner view %s" dudelson/toggle-planner-enabled))
+
+  (spacemacs/set-leader-keys "oo" 'dudelson/toggle-planner)
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
