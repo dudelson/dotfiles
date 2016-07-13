@@ -434,6 +434,8 @@ you should place your code here."
      ;; Make the tags not squished to the left in the agenda
      ;; Here they are right-aligned to column 100
      org-agenda-tags-column -100
+     ;; don't insert a CLOSED timestamp when I complete a task
+     org-log-done nil
      org-lowest-priority 69    ;; Priorities are in the range "A" to "E"
      org-default-priority 67   ;; Default priority is "C"
      )
