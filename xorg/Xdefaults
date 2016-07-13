@@ -77,6 +77,8 @@ URxvt.transparent:          false
 !
 ! Then, uncomment the following two lines
 ! (don't worry about the "URxvt.transparent" setting above, it doesn't matter)
+!urxvt*depth: 32
+!urxvt*background: [75]#002b36
 ! The number in brackets is the percent opacity. This is what should be adjusted
 ! to tweak the transparency level.
 
