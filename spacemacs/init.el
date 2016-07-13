@@ -352,9 +352,6 @@ you should place your code here."
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; KEY BINDINGS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;; navagate by visual lines
-  (define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
-  (define-key evil-normal-state-map (kbd "k") 'evil-previous-visual-line)
   ;; less awkward keybinding for expanding snippets
   ;; note: this overrides `evil-scroll-line-up`
   (define-key evil-insert-state-map (kbd "C-y") 'hippie-expand)
@@ -364,6 +361,49 @@ you should place your code here."
   (define-key evil-insert-state-map (kbd "C-a") (kbd "C-o ^"))
   ;; jump to end of line in normal mode
   (define-key evil-insert-state-map (kbd "C-e") (kbd "C-o $"))
+
+
+  ;; Trying to build good habits
+  ;; These functions limit me to one keypress per second in evil-normal-state
+  ;; In the case of j and k, I should be using a count
+  ;; In the case of h and l, I should be using f and t instead
+
+  ;; these vars store the last time that their respective key was pressed, in
+  ;; the format returned by `current-time'
+  (defvar dudelson/evil-habit-builder-last-keypress-j (current-time))
+  (defvar dudelson/evil-habit-builder-last-keypress-k (current-time))
+  (defvar dudelson/evil-habit-builder-last-keypress-h (current-time))
+  (defvar dudelson/evil-habit-builder-last-keypress-l (current-time))
+  (defun dudelson/evil-habit-builder (key cmd)
+    "Prevents the victim (user) from pressing the h, j, k, or l keys more than once a second in evil-normal-state"
+    (let* ((cur (current-time))
+           (prev
+            (cond
+             ((string= key "j") 'dudelson/evil-habit-builder-last-keypress-j)
+             ((string= key "k") 'dudelson/evil-habit-builder-last-keypress-k)
+             ((string= key "h") 'dudelson/evil-habit-builder-last-keypress-h)
+             ((string= key "l") 'dudelson/evil-habit-builder-last-keypress-l)
+             (t "o shit waddup") ; this should never happen
+             ))
+           (delta (time-subtract cur (symbol-value prev))))
+      (if (>= 1 (nth 1 delta))
+          (message
+           (cond
+            ((or (string= key "j") (string= key "k")) "Use a count!")
+            ((or (string= key "h") (string= key "l")) "Use f or t!")))
+        (call-interactively (symbol-function cmd)))
+      (set prev cur)
+    ))
+  ;; now let's build those damn habits!
+  (define-key evil-normal-state-map (kbd "j") (lambda () (interactive)
+                  (dudelson/evil-habit-builder "j" 'evil-next-visual-line)))
+  (define-key evil-normal-state-map (kbd "k") (lambda () (interactive)
+                  (dudelson/evil-habit-builder "k" 'evil-previous-visual-line)))
+  (define-key evil-normal-state-map (kbd "h") (lambda () (interactive)
+                  (dudelson/evil-habit-builder "h" 'evil-backward-char)))
+  (define-key evil-normal-state-map (kbd "l") (lambda () (interactive)
+                  (dudelson/evil-habit-builder "l" 'evil-forward-char)))
+
 
   ;; `SPC o o' opens my planner from anywhere in emacs
   (defvar dudelson/toggle-planner-enabled nil
@@ -492,6 +532,7 @@ When toggled off, restores the window layout from before the last time it was to
                                ;;             ((org-agenda-overriding-header "Priority C")
                                ;;              (org-tags-match-list-sublevels nil)))))
                                ;; ))
+
   )
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
