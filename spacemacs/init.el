@@ -478,10 +478,11 @@ When toggled off, restores the window layout from before the last time it was to
      ;;     my control to transpire before I can check off
      ;; ON HOLD items are those which I have postponed doing for the time being
      ;; DONE items have been completed
-     org-todo-keywords '((sequence "TODO(t)" "|" "WAITING(w)" "ON HOLD(h)" "DONE(d)"))
+     org-todo-keywords '((sequence "TODO(t)" "SCHED(s)" "|" "WAITING(w)" "ON HOLD(h)" "DONE(d)"))
      org-todo-keyword-faces '(
                               ("WAITING" . (:foreground "#b58900" :weight bold))
                               ("ON HOLD" . (:foreground "#dc322f" :weight bold))
+                              ("SCHED" . (:foreground "#6c71c4" :weight bold))
                               )
      org-agenda-custom-commands '(("1" "Highest priority action items"
                                    ((tags-todo "+PRIORITY=\"A\""
