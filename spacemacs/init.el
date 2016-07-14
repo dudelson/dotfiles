@@ -511,10 +511,20 @@ When toggled off, restores the window layout from before the last time it was to
      ;; Make the tags not squished to the left in the agenda
      ;; Here they are right-aligned to column 100
      org-agenda-tags-column -100
-     ;; don't insert a CLOSED timestamp when I complete a task
-     org-log-done nil
+     org-log-done nil ;; don't insert a CLOSED timestamp when I complete a task
      org-lowest-priority 69    ;; Priorities are in the range "A" to "E"
      org-default-priority 67   ;; Default priority is "C"
+     ;; refile settings
+     org-refile-targets '((nil :maxlevel . 9) (org-agenda-files :maxlevel . 9))
+     org-outline-path-complete-in-steps nil         ;; Refile in a single go
+     org-refile-use-outline-path t                  ;; Show full paths for refiling
+     ;; capture settings
+     org-default-notes-file (concat org-directory "/stuffff.org")
+     org-capture-templates
+     `(("t" "TODO" entry (file+headline ,(concat org-directory "/stuffff.org") "captured")
+        "* TODO %?\n")
+       ("s" "SCHED" entry (file+headline ,(concat org-directory "/stuffff.org") "captured")
+        "* SCHED %?\n"))
      )
 
     ;; C-RET and M-RET automatically enter insert state
@@ -526,6 +536,9 @@ When toggled off, restores the window layout from before the last time it was to
                                                   (interactive)
                                                   (org-meta-return)
                                                   (evil-insert 1)))
+    ;; `org-refile' is bound to ,R by default, but ,r is also free, and I don't
+    ;; want to hit shift if I don't have to
+    (spacemacs/set-leader-keys-for-major-mode 'org-mode "r" 'org-refile)
     ;; (evil-set-initial-state 'org-agenda-mode 'emacs)
     ;;(define-key org-agenda-mode-map (kbd "C-*") 'org-agenda-filter-remove-all)
 
@@ -594,7 +607,6 @@ When toggled off, restores the window layout from before the last time it was to
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(org-agenda-files (quote ("~/Dropbox/org/spacemacs.org" "~/Dropbox/org/stuffff.org")))
  '(paradox-github-token t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
