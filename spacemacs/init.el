@@ -374,9 +374,11 @@ you should place your code here."
   (defvar dudelson/evil-habit-builder-last-keypress-k (current-time))
   (defvar dudelson/evil-habit-builder-last-keypress-h (current-time))
   (defvar dudelson/evil-habit-builder-last-keypress-l (current-time))
-  (defun dudelson/evil-habit-builder (key cmd)
+  (defun dudelson/evil-habit-builder (key cmd arg)
     "Prevents the victim (user) from pressing the h, j, k, or l keys more than once a second in evil-normal-state"
-    (let* ((cur (current-time))
+    (if (= arg 1)
+        (progn
+          (let* ((cur (current-time))
            (prev
             (cond
              ((string= key "j") 'dudelson/evil-habit-builder-last-keypress-j)
@@ -391,18 +393,19 @@ you should place your code here."
            (cond
             ((or (string= key "j") (string= key "k")) "Use a count!")
             ((or (string= key "h") (string= key "l")) "Use f or t!")))
-        (call-interactively (symbol-function cmd)))
+          (funcall cmd arg))
       (set prev cur)
-    ))
+      ))
+      (funcall cmd arg)))
   ;; now let's build those damn habits!
-  (define-key evil-normal-state-map (kbd "j") (lambda () (interactive)
-                  (dudelson/evil-habit-builder "j" 'evil-next-visual-line)))
-  (define-key evil-normal-state-map (kbd "k") (lambda () (interactive)
-                  (dudelson/evil-habit-builder "k" 'evil-previous-visual-line)))
-  (define-key evil-normal-state-map (kbd "h") (lambda () (interactive)
-                  (dudelson/evil-habit-builder "h" 'evil-backward-char)))
-  (define-key evil-normal-state-map (kbd "l") (lambda () (interactive)
-                  (dudelson/evil-habit-builder "l" 'evil-forward-char)))
+  (define-key evil-normal-state-map (kbd "j") (lambda (arg) (interactive "p")
+                  (dudelson/evil-habit-builder "j" 'evil-next-visual-line arg)))
+  (define-key evil-normal-state-map (kbd "k") (lambda (arg) (interactive "p")
+                  (dudelson/evil-habit-builder "k" 'evil-previous-visual-line arg)))
+  (define-key evil-normal-state-map (kbd "h") (lambda (arg) (interactive "p")
+                  (dudelson/evil-habit-builder "h" 'evil-backward-char arg)))
+  (define-key evil-normal-state-map (kbd "l") (lambda (arg) (interactive "p")
+                  (dudelson/evil-habit-builder "l" 'evil-forward-char arg)))
 
 
   ;; `SPC o o' opens my planner from anywhere in emacs
