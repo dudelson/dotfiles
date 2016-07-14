@@ -460,6 +460,14 @@ When toggled off, restores the window layout from before the last time it was to
     ;; indentation settings
     ;; This one's a work in progress...
     (setq
+     ;; default place to look for org files
+     org-directory "~/Dropbox/org"
+     ;; files that appear in the agenda
+     org-agenda-files (list
+                       (concat org-directory "/stuffff.org")
+                       (concat org-directory "/spacemacs.org")
+                       (concat org-directory "/datto.org")
+                       )
      ;; make subheadings indented by 4 spaces
      org-indent-indentation-per-level 4
      ;; also make plain sublists indented by 4 spaces
