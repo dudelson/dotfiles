@@ -449,6 +449,8 @@ When toggled off, restores the window layout from before the last time it was to
   (add-hook 'c-mode-hook (lambda () (rainbow-delimiters-mode -1)))
   ;; auto-refersh magit status buffer when files change
   ;(add-hook 'after-save-hook 'magit-after-save-refresh-status)
+  ;; disable evilification of Info pages
+  (evil-set-initial-state 'Info-mode 'emacs)
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
