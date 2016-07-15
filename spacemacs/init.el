@@ -470,6 +470,7 @@ When toggled off, restores the window layout from before the last time it was to
                        (concat org-directory "/stuffff.org")
                        (concat org-directory "/spacemacs.org")
                        (concat org-directory "/datto.org")
+                       (concat org-directory "/laptop.org")
                        )
      ;; make subheadings indented by 4 spaces
      org-indent-indentation-per-level 4
