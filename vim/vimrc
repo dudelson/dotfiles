@@ -26,6 +26,10 @@ set colorcolumn=80
 " highlight the line the cursor is on (can be toggled with unimpaired)
 set cursorline
 
+" allows me to move to another buffer without abandoning the previous buffer
+" see :h hidden, :h abandon
+set hidden
+
 " text wrap settings
 "set textwidth=79 " automatically break lines after this many chars
 "set formatoptions=??
