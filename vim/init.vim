@@ -2,14 +2,33 @@ execute pathogen#infect()
 " automatically generate helptags for all plugins
 execute pathogen#helptags()  
 
-filetype on
+" vim-specific settings
+if !has('nvim')
+    filetype on
+    filetype plugin indent on
+
+    " make backspace behave like it is supposed to
+    set backspace=eol,start,indent
+
+    set encoding=utf-8
+
+    set autoindent smarttab
+
+    set hlsearch      " highlight the search term
+    set incsearch     " show results incrementally as you type (like google instant search)
+
+    set ttyfast
+
+    set laststatus=2  " always show the statusline
+
+    " enable wildmenu for advanced tab completion in command mode
+    set wildmenu
+endif
+
 syntax on
-filetype plugin indent on
 
 " there are many known security issues involving modelines, best to disable them
 set modelines=0
-
-set encoding=utf-8
 
 " solarized setup
 set background=dark
@@ -35,8 +54,6 @@ set hidden
 "set formatoptions=??
 
 " search options 
-set hlsearch      " highlight the search term
-set incsearch     " show results incrementally as you type (like google instant search)
 set ignorecase    
 set smartcase     " overrides ignorecase if there are capital letters in the search string
 set gdefault      " apply substitutions globally on lines by default
@@ -45,41 +62,35 @@ set gdefault      " apply substitutions globally on lines by default
 set noerrorbells
 set visualbell
 
-" make backspace behave like it is supposed to
-set backspace=eol,start,indent
-
 " keep 10 lines of context when moving vertically
 set so=10
 
 " make sure tab width is 4 when displaying, editing, and indenting text
 " but keep actual tab width at default (8) to preserve formatting in 
 " other text editors 
-set softtabstop=4 shiftwidth=4 expandtab autoindent shiftround smarttab
+set softtabstop=4 shiftwidth=4 expandtab shiftround
 
 " Use the same symbols as TextMate for tabstops and EOLs
 set listchars=tab:▸\ ,eol:¬
 
-" preserve code folds between sessions
-autocmd BufWinLeave * if expand("%") != "" | mkview | endif
-autocmd BufWinEnter * if expand("%") != "" | loadview | endif
-" but don't preserve the current .vimrc settings
-set viewoptions-=options
+" this feature does not appear to work in nvim as of 7/25/16
+if !has('nvim')
+    " preserve code folds between sessions
+    autocmd BufWinLeave * if expand("%") != "" | mkview | endif
+    autocmd BufWinEnter * if expand("%") != "" | loadview | endif
+    " but don't preserve the current .vimrc settings
+    set viewoptions-=options
+endif
 
 " autosave
 au FocusLost * nested silent! wa
 
-" always show the statusline
-set laststatus=2
 set showtabline=2
 set noshowmode
 " show partial commands (in visual mode, shows size of selected area)
 set showcmd
 
-" enable wildmenu for advanced tab completion in command mode
-set wildmenu
 set wildmode=list:longest
-
-set ttyfast
 
 " make vim create "undo files" whenever we edit a file
 " these allow us to undo changes, even after closing and reopening a file

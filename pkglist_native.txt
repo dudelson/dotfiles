@@ -70,6 +70,7 @@ maim
 #mtools
 mupdf
 ncdu
+neovim
 #networkmanager
 #network-manager-applet
 #networkmanager-openconnect
@@ -86,8 +87,10 @@ pm-utils
 #powertop
 #pv
 python
+python-neovim
 python2
 #python2-imagesize
+python2-neovim
 python2-pip
 #python-pillow
 python-pip

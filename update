@@ -13,12 +13,16 @@ git config --global core.excludesfile '~/.gitignore_core'
 ln -s $DIR/git/git_template ~/.git_template
 git config --global init.templatedir '~/.git_template'
 
-# vim config
+# vim and neovim config
 git submodule init
 git submodule update
 
+### vim
 ln -s $DIR/vim ~/.vim
-ln -s $DIR/vim/vimrc ~/.vimrc
+ln -s $DIR/vim/init.vim ~/.vimrc
+
+### neovim
+ln -s $DIR/vim ~/.config/nvim
 
 # emacs config
 ln -s $DIR/spacemacs ~/.spacemacs.d

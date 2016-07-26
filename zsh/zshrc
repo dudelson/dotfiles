@@ -103,7 +103,8 @@ alias maimc='notify-send "Taking screenshot to clipboard in 3 seconds...";
 alias maimsc='maim -s -p 1 -c 1,0,0,0.1 --nokeyboard --format=png /dev/stdout | xclip -selection c -t image/png'
 alias top='htop'
 alias pacman='yaourt'
-alias sudovimdiff='SUDO_EDITOR=vimdiff sudoedit'
+alias vim='nvim'
+alias sudovimdiff='SUDO_EDITOR="nvim -d" sudoedit'
 alias gdb='gdb -q'
 alias objdump='objdump -M intel'
 alias zmv='noglob zmv -W'
@@ -111,7 +112,7 @@ alias zmv='noglob zmv -W'
 # place temporary aliases and variables here
 
 # fasd aliases
-alias v='f -e vim'
+alias v='f -e nvim'
 alias e='f -e emacs'
 alias o='a -e xdg-open'
 alias l='d -e "ls --group-directories-first --color=auto"'
