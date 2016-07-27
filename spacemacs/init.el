@@ -405,8 +405,8 @@ succession more than once a second without a count"
                 (cond
                  ((= key ?j) 'evil-next-visual-line)
                  ((= key ?k) 'evil-previous-visual-line)
-                 ((= key ?h) 'evil-forward-char)
-                 ((= key ?l) 'evil-backward-char)
+                 ((= key ?h) 'evil-backward-char)
+                 ((= key ?l) 'evil-forward-char)
                  (t nil) ; should never happen
                 ) count))
           (set prev cur)))
