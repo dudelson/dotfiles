@@ -36,7 +36,7 @@ values."
      git
      gtags
      lua
-     ;; markdown
+     markdown
      ;; wait for next stable release before using this layer
      ;; fixes problem with linum where opening any helm buffer causes the line
      ;; numbers to all become "1"
@@ -374,38 +374,51 @@ you should place your code here."
   (defvar dudelson/evil-habit-builder-last-keypress-k (current-time))
   (defvar dudelson/evil-habit-builder-last-keypress-h (current-time))
   (defvar dudelson/evil-habit-builder-last-keypress-l (current-time))
-  (defun dudelson/evil-habit-builder (key cmd arg)
-    "Prevents the victim (user) from pressing the h, j, k, or l keys more than once a second in evil-normal-state"
-    (if (= arg 1)
-        (progn
-          (let* ((cur (current-time))
+  (defun dudelson/evil-habit-builder (count)
+    "Prevents the victim (user) from pressing the h, j, k, or l keys in
+succession more than once a second without a count"
+    (interactive "p")
+    (let* ((r (recent-keys))
+           (key (aref r (- (length r) 1)))
+           (prev-key (aref r (- (length r) 2)))
+           (cur (current-time))
            (prev
             (cond
-             ((string= key "j") 'dudelson/evil-habit-builder-last-keypress-j)
-             ((string= key "k") 'dudelson/evil-habit-builder-last-keypress-k)
-             ((string= key "h") 'dudelson/evil-habit-builder-last-keypress-h)
-             ((string= key "l") 'dudelson/evil-habit-builder-last-keypress-l)
+             ((= key ?j) 'dudelson/evil-habit-builder-last-keypress-j)
+             ((= key ?k) 'dudelson/evil-habit-builder-last-keypress-k)
+             ((= key ?h) 'dudelson/evil-habit-builder-last-keypress-h)
+             ((= key ?l) 'dudelson/evil-habit-builder-last-keypress-l)
              (t "o shit waddup") ; this should never happen
              ))
            (delta (time-subtract cur (symbol-value prev))))
-      (if (>= 1 (nth 1 delta))
-          (message
-           (cond
-            ((or (string= key "j") (string= key "k")) "Use a count!")
-            ((or (string= key "h") (string= key "l")) "Use f or t!")))
-          (funcall cmd arg))
-      (set prev cur)
-      ))
-      (funcall cmd arg)))
+
+      ;; predicate checks if user pressed the same key twice consecutively,
+      ;; without using a count, in the space of less than a second
+          (if (and (= key prev-key) (= count 1) (= 0 (nth 1 delta)))
+               ;; then
+               (message
+                (cond
+                 ((or (= key ?j) (= key ?k)) "Use a count!")
+                 ((or (= key ?h) (= key ?l)) "Use f or t!")))
+               ;; else
+               (funcall
+                (cond
+                 ((= key ?j) 'evil-next-visual-line)
+                 ((= key ?k) 'evil-previous-visual-line)
+                 ((= key ?h) 'evil-forward-char)
+                 ((= key ?l) 'evil-backward-char)
+                 (t nil) ; should never happen
+                ) count))
+          (set prev cur)))
+
+  ;; ensure that evil-habit-builder is non-repeatable (because it is a motion)
+  (evil-set-command-property 'dudelson/evil-habit-builder :repeat nil)
+
   ;; now let's build those damn habits!
-  (define-key evil-normal-state-map (kbd "j") (lambda (arg) (interactive "p")
-                  (dudelson/evil-habit-builder "j" 'evil-next-visual-line arg)))
-  (define-key evil-normal-state-map (kbd "k") (lambda (arg) (interactive "p")
-                  (dudelson/evil-habit-builder "k" 'evil-previous-visual-line arg)))
-  (define-key evil-normal-state-map (kbd "h") (lambda (arg) (interactive "p")
-                  (dudelson/evil-habit-builder "h" 'evil-backward-char arg)))
-  (define-key evil-normal-state-map (kbd "l") (lambda (arg) (interactive "p")
-                  (dudelson/evil-habit-builder "l" 'evil-forward-char arg)))
+  (define-key evil-normal-state-map (kbd "h") 'dudelson/evil-habit-builder)
+  (define-key evil-normal-state-map (kbd "j") 'dudelson/evil-habit-builder)
+  (define-key evil-normal-state-map (kbd "k") 'dudelson/evil-habit-builder)
+  (define-key evil-normal-state-map (kbd "l") 'dudelson/evil-habit-builder)
 
 
   ;; `SPC o o' opens my planner from anywhere in emacs
