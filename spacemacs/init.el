@@ -35,6 +35,8 @@ values."
      emacs-lisp
      git
      gtags
+     java
+     javascript
      lua
      markdown
      ;; wait for next stable release before using this layer
@@ -42,6 +44,7 @@ values."
      ;; numbers to all become "1"
      ;;nlinum
      org
+     react
      rust
      semantic
      ;; (shell :variables
@@ -52,6 +55,7 @@ values."
      syntax-checking
      unimpaired
      ;; version-control
+     yaml
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -62,6 +66,7 @@ values."
      nlinum
      nlinum-relative
      highlight-escape-sequences
+     android-mode
      )
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '()
@@ -304,6 +309,13 @@ you should place your code here."
   (setq
    ;; point racer to the rust source code
    racer-rust-src-path "/usr/src/rust/src"
+   ;; point android-mode to android sdk
+   android-mode-sdk-dir "/home/david/.local/android/android-sdk-linux"
+   ;; fix "can't find project root" error when creating android projects
+   android-mode-builder 'gradle
+   android-mode-root-file-plist '(ant "AndroidManifest.xml"
+                                  maven "AndroidManifest.xml"
+                                  gradle "gradlew")
    ;; try to make the autocompletions not look terrible
    company-tooltip-align-annotations t
    ;; temporary improvement to linum formatting
@@ -347,6 +359,14 @@ you should place your code here."
   (add-hook 'text-mode-hook (lambda ()
                               (define-key evil-insert-state-local-map (kbd "<tab>")
                                 (lambda () (interactive) (insert-tab)))))
+  ;; javascript/react indentation settings
+  (setq-default
+   js2-basic-offset tab-width
+   css-indent-offset tab-width
+   web-mode-markup-indent-offset tab-width
+   web-mode-css-indent-offset tab-width
+   web-mode-code-indent-offset tab-width
+   web-mode-attr-indent-offset tab-width)
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
