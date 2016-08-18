@@ -253,7 +253,7 @@ for s = 1, screen.count() do
 	update_notifications.init()
 	update_notifications_timer:stop()
     end)
-    update_notifications_timer:start()
+    if s == 1 then update_notifications_timer:start() end
     if s == 1 then right_layout:add(update_notifications.widget) end
     if s == 1 then right_layout:add(wibox.widget.systray()) end
     right_layout:add(mytextclock)
@@ -309,7 +309,7 @@ globalkeys = awful.util.table.join(
         function ()
 	    awful.client.focus.global_bydirection("right");
             if client.focus then client.focus:raise() end
-    --]]
+        end),
 
     awful.key({ modkey,           }, "w", function () mymainmenu:show() end),
 
