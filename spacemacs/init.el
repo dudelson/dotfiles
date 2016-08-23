@@ -504,7 +504,6 @@ When toggled off, restores the window layout from before the last time it was to
      org-agenda-files (list
                        (concat org-directory "/stuffff.org")
                        (concat org-directory "/spacemacs.org")
-                       (concat org-directory "/datto.org")
                        (concat org-directory "/laptop.org")
                        )
      ;; make subheadings indented by 4 spaces
@@ -552,7 +551,7 @@ When toggled off, restores the window layout from before the last time it was to
      org-agenda-tags-column -100
      org-log-done nil ;; don't insert a CLOSED timestamp when I complete a task
      org-lowest-priority 69    ;; Priorities are in the range "A" to "E"
-     org-default-priority 67   ;; Default priority is "C"
+     org-default-priority 68   ;; Default priority is "D"
      ;; refile settings
      org-refile-targets '((nil :maxlevel . 9) (org-agenda-files :maxlevel . 9))
      org-outline-path-complete-in-steps nil         ;; Refile in a single go
@@ -646,6 +645,9 @@ When toggled off, restores the window layout from before the last time it was to
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(org-agenda-files
+   (quote
+    ("~/Dropbox/org/stuffff.org" "~/Dropbox/org/spacemacs.org" "~/Dropbox/org/laptop.org")))
  '(paradox-github-token t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
