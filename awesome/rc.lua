@@ -609,5 +609,6 @@ end
 --run_once("volumeicon")     -- volumeicon
 --run_once("dropbox")        -- dropbox
 --run_once("udiskie")        -- automounting of usbs
+--run_once("xflux -z 14850") -- so my screen doesn't kill my eyes at night
 -- this automatically locks the screen after 5 minutes of inactivity
-run_once("xautolock -time 5 -locker lock -detectsleep &")
+--run_once("xautolock -time 5 -locker lock -detectsleep &")
