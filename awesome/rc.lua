@@ -248,12 +248,12 @@ for s = 1, screen.count() do
     -- loading times, I start a timer that calls update_notifications.init()
     -- after a small amount of time, then turns itself off. This effectively
     -- makes the update_notifications widget load asynchronously.
-    local update_notifications_timer = timer({ timeout = 5 })
-    update_notifications_timer:connect_signal("timeout", function()
-	update_notifications.init()
-	update_notifications_timer:stop()
-    end)
-    if s == 1 then update_notifications_timer:start() end
+    --local update_notifications_timer = timer({ timeout = 5 })
+    --update_notifications_timer:connect_signal("timeout", function()
+	--update_notifications.init()
+	--update_notifications_timer:stop()
+    --end)
+    --if s == 1 then update_notifications_timer:start() end
     if s == 1 then right_layout:add(update_notifications.widget) end
     if s == 1 then right_layout:add(wibox.widget.systray()) end
     right_layout:add(mytextclock)
