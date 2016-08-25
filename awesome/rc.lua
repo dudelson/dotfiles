@@ -310,6 +310,7 @@ globalkeys = awful.util.table.join(
 	    awful.client.focus.global_bydirection("right");
             if client.focus then client.focus:raise() end
         end),
+    --]]
 
     awful.key({ modkey,           }, "w", function () mymainmenu:show() end),
 
