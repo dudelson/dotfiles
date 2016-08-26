@@ -518,11 +518,12 @@ When toggled off, restores the window layout from before the last time it was to
      ;;     my control to transpire before I can check off
      ;; ON HOLD items are those which I have postponed doing for the time being
      ;; DONE items have been completed
-     org-todo-keywords '((sequence "TODO(t)" "SCHED(s)" "|" "WAITING(w)" "ON HOLD(h)" "DONE(d)"))
+     org-todo-keywords '((sequence "TODO(t)" "SCHED(s)" "HW(r)" "|" "WAITING(w)" "ON HOLD(h)" "DONE(d)"))
      org-todo-keyword-faces '(
                               ("WAITING" . (:foreground "#b58900" :weight bold))
                               ("ON HOLD" . (:foreground "#dc322f" :weight bold))
                               ("SCHED" . (:foreground "#6c71c4" :weight bold))
+                              ("HW" . (:foreground "#cb4b16" :weight bold))
                               )
      org-agenda-custom-commands '(("1" "Highest priority action items"
                                    ((tags-todo "+PRIORITY=\"A\""
@@ -536,6 +537,10 @@ When toggled off, restores the window layout from before the last time it was to
                                    ((tags-todo "+PRIORITY=\"C\""
                                     ((org-agenda-overriding-header "Priority C")
                                      (org-tags-match-list-sublevels nil)))))
+                                  ("R" "Homework"
+                                   ((todo "HW"
+                                               ((org-agenda-overriding-header "Homework")
+                                                (org-tags-match-list-sublevels nil)))))
                                   ("d" "David's planner view"
                                    ((agenda "")
                                     (tags-todo "+PRIORITY=\"A\""
@@ -547,7 +552,12 @@ When toggled off, restores the window layout from before the last time it was to
                                      ((org-agenda-skip-function
                                        '(org-agenda-skip-entry-if 'scheduled))
                                       (org-agenda-overriding-header
-                                       "High Priority Unscheduled Tasks"))))))
+                                       "High Priority Unscheduled Tasks")))
+                                    (todo "HW"
+                                           ((org-agenda-skip-function
+                                             '(org-agenda-skip-entry-if 'scheduled))
+                                            (org-agenda-overriding-header
+                                             "Homework"))))))
      ;; Make the tags not squished to the left in the agenda
      ;; Here they are right-aligned to column 100
      org-agenda-tags-column -100
