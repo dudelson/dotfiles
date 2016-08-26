@@ -43,7 +43,9 @@ values."
      ;; fixes problem with linum where opening any helm buffer causes the line
      ;; numbers to all become "1"
      ;;nlinum
+     ocaml
      org
+     python
      react
      rust
      semantic
