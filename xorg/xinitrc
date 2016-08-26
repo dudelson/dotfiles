@@ -5,9 +5,9 @@
 DISPLAY_WIDTH=1920
 DISPLAY_HEIGHT=1080
 
-#MODELINE=$(cvt $DISPLAY_WIDTH $DISPLAY_HEIGHT | grep Modeline)
-#NEW_MODE=$(echo $MODELINE | awk '{ print $2 }')
-#xrandr --newmode $(echo $MODELINE | cut -d " " -f 2-)
+MODELINE=$(cvt $DISPLAY_WIDTH $DISPLAY_HEIGHT | grep Modeline)
+NEW_MODE=$(echo $MODELINE | awk '{ print $2 }')
+xrandr --newmode $(echo $MODELINE | cut -d " " -f 2-)
 # Be sure to replace "VGA-0" and "VGA-1" with your monitor(s) in the lines below
 # Also if you wanna figure out how to script this part and make this a little
 # more robust, that'd be cool too
