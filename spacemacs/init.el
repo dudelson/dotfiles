@@ -543,6 +543,11 @@ When toggled off, restores the window layout from before the last time it was to
                                                 (org-tags-match-list-sublevels nil)))))
                                   ("d" "David's planner view"
                                    ((agenda "")
+                                    (todo "HW"
+                                     ((org-agenda-skip-function
+                                       '(org-agenda-skip-entry-if 'scheduled))
+                                      (org-agenda-overriding-header
+                                       "Homework")))
                                     (tags-todo "+PRIORITY=\"A\""
                                      ((org-agenda-skip-function
                                        '(org-agenda-skip-entry-if 'scheduled))
@@ -552,12 +557,7 @@ When toggled off, restores the window layout from before the last time it was to
                                      ((org-agenda-skip-function
                                        '(org-agenda-skip-entry-if 'scheduled))
                                       (org-agenda-overriding-header
-                                       "High Priority Unscheduled Tasks")))
-                                    (todo "HW"
-                                           ((org-agenda-skip-function
-                                             '(org-agenda-skip-entry-if 'scheduled))
-                                            (org-agenda-overriding-header
-                                             "Homework"))))))
+                                       "High Priority Unscheduled Tasks"))))))
      ;; Make the tags not squished to the left in the agenda
      ;; Here they are right-aligned to column 100
      org-agenda-tags-column -100
@@ -575,6 +575,9 @@ When toggled off, restores the window layout from before the last time it was to
         "* TODO %?\n")
        ("s" "SCHED" entry (file+headline ,(concat org-directory "/stuffff.org") "captured")
         "* SCHED %?\n"))
+
+     ;; deadline settings
+     org-deadline-warning-days 1
      )
 
     ;; C-RET and M-RET automatically enter insert state
