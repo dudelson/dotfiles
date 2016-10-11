@@ -46,7 +46,7 @@ values."
      ;; wait for next stable release before using this layer
      ;; fixes problem with linum where opening any helm buffer causes the line
      ;; numbers to all become "1"
-     ;;nlinum
+     nlinum
      ocaml
      org
      pdf-tools
@@ -69,8 +69,6 @@ values."
    ;; configuration in `dotspacemacs/user-config'.
    dotspacemacs-additional-packages
    '(
-     nlinum
-     nlinum-relative
      highlight-escape-sequences
      android-mode
      )
@@ -235,7 +233,7 @@ values."
    ;; If non nil line numbers are turned on in all `prog-mode' and `text-mode'
    ;; derivatives. If set to `relative', also turns on relative line numbers.
    ;; (default nil)
-   dotspacemacs-line-numbers nil
+   dotspacemacs-line-numbers 'relative
    ;; If non-nil smartparens-strict-mode will be enabled in programming modes.
    ;; (default nil)
    dotspacemacs-smartparens-strict-mode nil
@@ -645,17 +643,6 @@ When toggled off, restores the window layout from before the last time it was to
                                          1 font-lock-format-specifier-face t)
                                         ("\\(%%\\)" 
                                          1 font-lock-format-specifier-face t)) )))
-
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;; temporary nlinum setup (waiting for nlinum layer in next stable release)
-  (require 'nlinum-relative)
-  (nlinum-relative-setup-evil)                    ;; setup for evil
-  (add-hook 'prog-mode-hook 'nlinum-relative-mode)
-  (add-hook 'text-mode-hook 'nlinum-relative-mode)
-  (setq nlinum-relative-redisplay-delay 0)      ;; delay
-  (setq nlinum-relative-current-symbol "")      ;; or "" for display current line number
-  (setq nlinum-relative-offset 0)
-  (setq nlinum-format "%d ")
  )
 
 ;; Do not write anything past this comment. This is where Emacs will
