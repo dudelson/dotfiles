@@ -38,6 +38,10 @@ values."
      java
      javascript
      lua
+     (latex
+      :variables
+      latex-build-command "LaTeX"
+      )
      markdown
      ;; wait for next stable release before using this layer
      ;; fixes problem with linum where opening any helm buffer causes the line
@@ -321,7 +325,8 @@ you should place your code here."
    ;; try to make the autocompletions not look terrible
    company-tooltip-align-annotations t
    ;; temporary improvement to linum formatting
-   linum-relative-format "%5s"
+   ;; set latex pdf viewer
+   TeX-view-program-selection '((output-pdf "PDF Tools"))
    )
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
