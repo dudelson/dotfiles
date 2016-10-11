@@ -83,6 +83,7 @@ openssh
 #otf-ipafont
 #p7zip
 pm-utils
+popper-glib
 #portaudio
 #powertop
 #pv
