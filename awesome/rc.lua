@@ -23,6 +23,8 @@ local sysmonitor = require("sysmonitor")
 local update_notifications = require("update_notifications")
 -- calendar widget from wiki
 local cal = require("cal")
+-- homegrown caffeine widget
+local caffeine = require("caffeine")
 
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
@@ -239,6 +241,8 @@ for s = 1, screen.count() do
     local right_layout = wibox.layout.fixed.horizontal()
     -- add my homegrown sysmonitor widget
     if s == 1 then right_layout:add(sysmonitor.widget) end
+    -- add my caffeine widget
+    if s == 1 then right_layout:add(caffeine.widget) end
     -- add my homegrown update_notifications widget
 
     -- I have here for your browsing pleasure a wonderfully stupid hack.
