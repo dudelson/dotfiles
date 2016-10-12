@@ -600,12 +600,10 @@ client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_n
 -- this function ensures that two instances of each icon do not appear in the
 -- event that awesome wm is restarted
 function run_once(cmd)
-    findme = cmd
-    firstspace = cmd:find(" ")
-    if firstspace then
-	findme = cmd:sub(0, firstspace-1)
-    end
-    awful.util.spawn_with_shell("pgrep -u $USER -x " .. findme .. " > /dev/null || (" .. cmd .. ")")
+  -- really clumsy way of getting 0th whitespace-delimited token from cmd
+  firstspace = cmd:find(" ")
+  if firstspace then findme = cmd:sub(0, firstspace-1) else findme = cmd end
+  awful.util.spawn_with_shell("pgrep -u $USER \"" .. findme .. "\" > /dev/null || (" .. cmd .. ")")
 end
 
 --run_once("sh ~/.fehbg")    -- set wallpaper
