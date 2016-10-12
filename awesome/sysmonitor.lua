@@ -9,8 +9,7 @@ sysmonitor.widget:set_font("source code pro 9")
 
 -- these three lines suppress constant error messages when run on something
 -- without a battery
-local h = io.popen('stat /sys/class/power_supply/BAT0')
-local retcode = {h:close()}
+local retcode = {os.execute('stat /sys/class/power_supply/BAT0 &> /dev/null')}
 HAS_BATTERY = (tonumber(retcode[3]) == 0)
 
 function update_battery() 
