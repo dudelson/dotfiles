@@ -33,6 +33,12 @@ values."
      c-c++
      fasd
      emacs-lisp
+     (evil-snipe
+      :variables
+      evil-snipe-enable-alternate-f-and-t-behaviors t
+      evil-snipe-scope 'visible
+      evil-snipe-repeat-scope 'visible
+      )
      git
      gtags
      java
@@ -51,6 +57,10 @@ values."
      org
      pdf-tools
      python
+     (ranger
+      :variables
+      ranger-cleanup-eagerly t
+      )
      react
      rust
      semantic
@@ -386,7 +396,12 @@ you should place your code here."
   (define-key evil-insert-state-map (kbd "C-a") (kbd "C-o ^"))
   ;; jump to end of line in normal mode
   (define-key evil-insert-state-map (kbd "C-e") (kbd "C-o $"))
-
+  ;; C-s is /, / is snipe-s, and s is vim normal mode s
+  (define-key evil-normal-state-map (kbd "s") 'evil-substitute)
+  (define-key evil-normal-state-map (kbd "S") 'evil-change-whole-line)
+  (define-key evil-normal-state-map (kbd "/") 'evil-snipe-s)
+  (define-key evil-normal-state-map (kbd "?") 'evil-snipe-S)
+  (define-key evil-normal-state-map (kbd "C-s") 'evil-search-forward)
 
   ;; Trying to build good habits
   ;; These functions limit me to one keypress per second in evil-normal-state
@@ -444,7 +459,6 @@ succession more than once a second without a count"
   (define-key evil-normal-state-map (kbd "j") 'dudelson/evil-habit-builder)
   (define-key evil-normal-state-map (kbd "k") 'dudelson/evil-habit-builder)
   (define-key evil-normal-state-map (kbd "l") 'dudelson/evil-habit-builder)
-
 
   ;; `SPC o o' opens my planner from anywhere in emacs
   (defvar dudelson/toggle-planner-enabled nil
@@ -627,7 +641,7 @@ When toggled off, restores the window layout from before the last time it was to
   ;; highlight escape sequences
   (hes-mode)
   ;; highlight format strings in C-like languages
-  (defvar font-lock-format-specifier-face		
+  (defvar font-lock-format-specifier-face
     'font-lock-format-specifier-face
     "Face name to use for format specifiers.")
 
@@ -673,8 +687,6 @@ When toggled off, restores the window layout from before the last time it was to
  '(font-lock-preprocessor-face ((t (:foreground "#cb4b16"))))
  '(font-lock-variable-name-face ((t (:foreground "#839496"))))
  '(helm-selection ((t (:background "#073642" :underline nil))))
- '(linum ((t (:background "#073642" :foreground "#586e75"))))
- '(linum-relative-current-face ((t (:inherit linum :background "#002b36" :foreground "#839496" :weight bold))))
  '(org-level-1 ((t (:inherit nil :foreground "#de322f" :height 1.0))))
  '(org-level-2 ((t (:inherit nil :foreground "#859900" :height 1.0))))
  '(org-level-3 ((t (:inherit nil :foreground "#268bd2" :height 1.0))))
