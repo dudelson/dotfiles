@@ -402,6 +402,10 @@ you should place your code here."
   (define-key evil-normal-state-map (kbd "/") 'evil-snipe-s)
   (define-key evil-normal-state-map (kbd "?") 'evil-snipe-S)
   (define-key evil-normal-state-map (kbd "C-s") 'evil-search-forward)
+  ;; I can't use C-x in emacs for decrementing numbers, so rebind these to
+  ;; + and - instead
+  (define-key evil-normal-state-map (kbd "+") 'evil-numbers/inc-at-pt)
+  (define-key evil-normal-state-map (kbd "-") 'evil-numbers/dec-at-pt)
 
   ;; Trying to build good habits
   ;; These functions limit me to one keypress per second in evil-normal-state
