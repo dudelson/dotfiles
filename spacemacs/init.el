@@ -500,10 +500,10 @@ When toggled off, restores the window layout from before the last time it was to
   ;; don't color delimiters in C-like code
   (add-hook 'c-mode-hook (lambda () (rainbow-delimiters-mode -1)))
   ;; save buffer on focus lost
-  (add-hook 'focus-out-hook 'save-buffer)
+  ;; (add-hook 'focus-out-hook 'save-buffer)
   ;; disable relative line numbers on focus lost
-  (add-hook 'focus-out-hook 'nlinum-relative-off)
-  (add-hook 'focus-in-hook 'nlinum-relative-on)
+  ;; (add-hook 'focus-out-hook 'nlinum-relative-off)
+  ;; (add-hook 'focus-in-hook 'nlinum-relative-on)
   ;; auto-refersh magit status buffer when files change
   ;(add-hook 'after-save-hook 'magit-after-save-refresh-status)
   ;; disable evilification of Info pages
