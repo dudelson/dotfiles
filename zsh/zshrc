@@ -121,6 +121,7 @@ alias l='d -e "ls --group-directories-first --color=auto"'
 typeset -Ag abbreviations
 abbreviations=(
     "Ia"    "| awk"
+    "Ic"    "| xclip -sel c"
     "Ig"    "| ag"
     "Ih"    "| head"
     "Il"    "| less"
