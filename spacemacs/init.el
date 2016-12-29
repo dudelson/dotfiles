@@ -18,6 +18,7 @@ values."
    ;; of a list then all discovered layers will be installed.
    dotspacemacs-configuration-layers
    '(
+     csv
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
@@ -32,6 +33,7 @@ values."
      ;; better-defaults
      c-c++
      fasd
+     finance
      emacs-lisp
      (evil-snipe
       :variables
@@ -48,10 +50,9 @@ values."
       :variables
       latex-build-command "LaTeX"
       )
-     markdown
-     ;; wait for next stable release before using this layer
-     ;; fixes problem with linum where opening any helm buffer causes the line
-     ;; numbers to all become "1"
+     (markdown
+      ;; :variables markdown-live-preview-engine 'vmd
+      )
      nlinum
      ocaml
      org
@@ -680,11 +681,8 @@ When toggled off, restores the window layout from before the last time it was to
     ("~/Dropbox/org/stuffff.org" "~/Dropbox/org/spacemacs.org" "~/Dropbox/org/laptop.org")))
  '(package-selected-packages
    (quote
-    (pdf-tools tablist fcitx async hydra iedit auto-complete rust-mode anaconda-mode yasnippet company smartparens evil undo-tree flycheck request helm helm-core markdown-mode alert projectile magit magit-popup git-commit with-editor f js2-mode s yapfify uuidgen py-isort pug-mode org-projectile org-download livid-mode skewer-mode simple-httpd live-py-mode link-hint git-link eyebrowse evil-visual-mark-mode evil-unimpaired evil-ediff dumb-jump company-shell company-emacs-eclim column-enforce-mode cargo yaml-mode ws-butler window-numbering which-key web-mode web-beautify volatile-highlights vi-tilde-fringe utop use-package tuareg toml-mode toc-org tagedit stickyfunc-enhance srefactor spacemacs-theme spaceline solarized-theme smooth-scrolling smeargle slim-mode scss-mode sass-mode restart-emacs rainbow-delimiters racer quelpa pyvenv pytest pyenv-mode py-yapf popwin pip-requirements persp-mode pcre2el paradox page-break-lines orgit org-repo-todo org-present org-pomodoro org-plus-contrib org-bullets open-junk-file ocp-indent nlinum-relative neotree move-text mmm-mode merlin markdown-toc magit-gitflow macrostep lua-mode lorem-ipsum linum-relative leuven-theme less-css-mode json-mode js2-refactor js-doc jade-mode info+ indent-guide ido-vertical-mode hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation highlight-escape-sequences help-fns+ helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-make helm-gtags helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger gh-md ggtags flycheck-rust flycheck-pos-tip flx-ido fish-mode fill-column-indicator fasd fancy-battery expand-region exec-path-from-shell evil-visualstar evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-args evil-anzu eval-sexp-fu emmet-mode elisp-slime-nav eclim disaster define-word cython-mode company-web company-tern company-statistics company-racer company-quickhelp company-c-headers company-anaconda coffee-mode cmake-mode clean-aindent-mode clang-format buffer-move bracketed-paste auto-yasnippet auto-highlight-symbol auto-compile android-mode aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
- '(paradox-github-token t)
- '(yas-snippet-dirs
-   (quote
-    ("/home/david/.emacs.d/private/snippets/" yas-installed-snippets-dir "/home/david/.emacs.d/layers/auto-completion/snippets"))))
+    (ledger-mode flycheck-ledger csv-mode pdf-tools tablist fcitx async hydra iedit auto-complete rust-mode anaconda-mode yasnippet company smartparens evil undo-tree flycheck request helm helm-core markdown-mode alert projectile magit magit-popup git-commit with-editor f js2-mode s yapfify uuidgen py-isort pug-mode org-projectile org-download livid-mode skewer-mode simple-httpd live-py-mode link-hint git-link eyebrowse evil-visual-mark-mode evil-unimpaired evil-ediff dumb-jump company-shell company-emacs-eclim column-enforce-mode cargo yaml-mode ws-butler window-numbering which-key web-mode web-beautify volatile-highlights vi-tilde-fringe utop use-package tuareg toml-mode toc-org tagedit stickyfunc-enhance srefactor spacemacs-theme spaceline solarized-theme smooth-scrolling smeargle slim-mode scss-mode sass-mode restart-emacs rainbow-delimiters racer quelpa pyvenv pytest pyenv-mode py-yapf popwin pip-requirements persp-mode pcre2el paradox page-break-lines orgit org-repo-todo org-present org-pomodoro org-plus-contrib org-bullets open-junk-file ocp-indent nlinum-relative neotree move-text mmm-mode merlin markdown-toc magit-gitflow macrostep lua-mode lorem-ipsum linum-relative leuven-theme less-css-mode json-mode js2-refactor js-doc jade-mode info+ indent-guide ido-vertical-mode hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation highlight-escape-sequences help-fns+ helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-make helm-gtags helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger gh-md ggtags flycheck-rust flycheck-pos-tip flx-ido fish-mode fill-column-indicator fasd fancy-battery expand-region exec-path-from-shell evil-visualstar evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-args evil-anzu eval-sexp-fu emmet-mode elisp-slime-nav eclim disaster define-word cython-mode company-web company-tern company-statistics company-racer company-quickhelp company-c-headers company-anaconda coffee-mode cmake-mode clean-aindent-mode clang-format buffer-move bracketed-paste auto-yasnippet auto-highlight-symbol auto-compile android-mode aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
+ '(paradox-github-token t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
