@@ -1,1 +1,4 @@
 vim/view
+# ignore everything under weechat/ except .conf files
+weechat/*
+!weechat/*.conf
