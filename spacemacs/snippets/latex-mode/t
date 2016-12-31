@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: \texttt{...}
+# key: t
+# --
+\texttt{$0}
