@@ -23,8 +23,15 @@ export PATH=$PATH:/home/david/.local/share/android/android-sdk-linux/platform-to
 export ANDROID_EMULATOR_USE_SYSTEM_LIBS=1
 export ANDROID_HOME=~/.local/share/android/android-sdk-linux
 
+# golang config
+export GOPATH=/home/david/.go
+export PATH="$PATH:$GOPATH/bin"
+
 export AWESOME_LOG_FILE=/home/david/.cache/awesome/awesome.log
 # configure fcitx (used for japanese input)
 export GTK_IM_MODULE=fcitx
 export QT_IM_MODULE=fcitx
 export XMODIFIERS=@im=fcitx
+
+# OPAM configuration
+. /home/david/.opam/opam-init/init.zsh > /dev/null 2> /dev/null || true
