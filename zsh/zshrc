@@ -117,6 +117,12 @@ alias e='f -e emacs'
 alias o='a -e xdg-open'
 alias l='d -e "ls --group-directories-first --color=auto"'
 
+# ledger aliases
+CURRENT_LEDGER_FILE="~/Documents/finance/y2012-2016.txt"
+alias bal="ledger -f $CURRENT_LEDGER_FILE -X \$ --strict --explicit bal"
+alias reg="ledger -f $CURRENT_LEDGER_FILE -X \$ --strict --explicit reg"
+alias lgr="ledger -f $CURRENT_LEDGER_FILE -X \$ --strict --explicit"
+
 # magic aliases (expand with <SPACE>)
 typeset -Ag abbreviations
 abbreviations=(
