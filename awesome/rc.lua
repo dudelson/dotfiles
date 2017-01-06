@@ -286,7 +286,7 @@ globalkeys = awful.util.table.join(
     -- Movement between tags
     awful.key({ modkey,           }, "c",   awful.tag.viewprev       ),
     awful.key({ modkey,           }, "v",   awful.tag.viewnext       ),
-    awful.key({ modkey,           }, "Escape", awful.tag.history.restore),
+    awful.key({ modkey,           }, "z", awful.tag.history.restore),
 
     -- Movement between windows
     --[[ by direction
@@ -414,7 +414,7 @@ globalkeys = awful.util.table.join(
 
 clientkeys = awful.util.table.join(
     awful.key({ modkey,           }, "f",      function (c) c.fullscreen = not c.fullscreen  end),
-    awful.key({ modkey,           }, "z",      function (c) c:kill()                         end),
+    awful.key({ modkey,           }, ",",      function (c) c:kill()                         end),
     awful.key({ modkey, "Control" }, "space",  awful.client.floating.toggle                     ),
     awful.key({ modkey, "Control" }, "Return", function (c) c:swap(awful.client.getmaster()) end),
     awful.key({ modkey,           }, "o",      awful.client.movetoscreen                        ),
