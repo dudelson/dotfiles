@@ -669,6 +669,9 @@ When toggled off, restores the window layout from before the last time it was to
                                          1 font-lock-format-specifier-face t)) )))
  )
 
+ ;; start emacs server
+ (server-start)
+
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
 (custom-set-variables
