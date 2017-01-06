@@ -591,6 +591,8 @@ end)
 
 client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
+-- auto-jump to urgent windows
+client.connect_signal("property::urgent", function(c) awful.client.urgent.jumpto() end)
 -- }}}
 
 
