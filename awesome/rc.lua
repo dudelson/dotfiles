@@ -616,3 +616,7 @@ end
 --run_once("xflux -z 14850") -- so my screen doesn't kill my eyes at night
 -- this automatically locks the screen after 5 minutes of inactivity
 --run_once("xautolock -time 5 -locker lock -detectsleep &")
+-- autostart user-facing applications
+--run_once("urxvt")
+--run_once("emacs")
+--run_once("firefox")
