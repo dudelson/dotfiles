@@ -3,6 +3,10 @@
 # autostarting of user programs has been moved to rc.lua
 
 # start x if not already running
+# this is now handled by the configure_dotfiles script (out of necessity)
+# the startx process will be loaded into the python execution environment at the
+# end of the script, so we still check to see if startx is running, but then run
+# configure_dotfiles instead
 if ! [[ -n $(ps -C startx --no-headers) ]]; then
-    startx &
+    ~/.local/bin/configure_dotfiles &
 fi

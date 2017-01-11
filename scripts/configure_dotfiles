@@ -1,0 +1,41 @@
+#!/usr/bin/env python
+
+'''
+This script is run after user login. It parses my dotfile config
+(~/.config/dotfiles.yml), and sets environment variables which my other
+dotfiles can read in order to be informed of the options I want set.
+This script only works with python 3.
+'''
+
+import os, subprocess
+try:
+    import yaml
+except ImportError:
+    print("PyYaml not found! Please make sure PyYaml is installed for Python 3 and try again.")
+    sys.exit(1)
+
+def set_envvar(name, value):
+    envvar_name = "DUDELSON_CONFIG_" + name
+    if type(value) == bool:
+        envvar_value = '1' if value else '0'
+    else:
+        envvar_value = str(value)
+    os.environ[envvar_name] = envvar_value
+
+if __name__ == '__main__':
+    # set environment variables from YAML
+    path = os.path.expanduser("~/.config/dotfiles.yml")
+    with open(path) as f:
+        data = yaml.load(f)
+        set_envvar('MONITOR_RESOLUTION_X', data['monitor_resolution_x'])
+        set_envvar('MONITOR_RESOLUTION_Y', data['monitor_resolution_y'])
+        set_envvar('N_MONITORS', len(data['monitors']))
+        for i, monitor in enumerate(data['monitors']):
+            var_name = 'MONITOR_' + str(i)
+            set_envvar(var_name, monitor)
+        set_envvar('ENABLE_COMPOSITING', data['enable_compositing'])
+        set_envvar('ENABLE_JAPANESE_IME', data['enable_japanese_ime'])
+        set_envvar('SWAP_CAPS_CTRL', data['swap_caps_ctrl'])
+        set_envvar('ENABLE_POWERLINE', data['enable_powerline'])
+    # start X
+    subprocess.Popen(['startx'])

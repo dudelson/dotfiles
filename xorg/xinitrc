@@ -1,47 +1,52 @@
-# set resolution
-# on some systems this may not be necessary
+# set up displays
 
-# set these two variables to your desired width and height
-DISPLAY_WIDTH=1920
-DISPLAY_HEIGHT=1080
-
-MODELINE=$(cvt $DISPLAY_WIDTH $DISPLAY_HEIGHT | grep Modeline)
+# add a new mode with the correct resolution
+MODELINE=$(cvt $DUDELSON_CONFIG_MONITOR_RESOLUTION_X $DUDELSON_CONFIG_MONITOR_RESOLUTION_Y | grep Modeline)
 NEW_MODE=$(echo $MODELINE | awk '{ print $2 }')
 xrandr --newmode $(echo $MODELINE | cut -d " " -f 2-)
-# Be sure to replace "VGA-0" and "VGA-1" with your monitor(s) in the lines below
-# Also if you wanna figure out how to script this part and make this a little
-# more robust, that'd be cool too
-xrandr --addmode VGA-0 $NEW_MODE
-# You only need this line if you have a second monitor
-#xrandr --addmode VGA-1 $NEW_MODE
-# Single monitor setup
-xrandr --output VGA-0 --mode $NEW_MODE
-# Here's an example of a dual-monitor setup (from nedd)
-#xrandr --output VGA-0 --mode $NEW_MODE --output VGA-1 --mode $NEW_MODE --right-of VGA-0
-# And a triple-monitor setup (from datto)
-# Here, the screen in the middle is marked as primary, and only the monitor
-# on the left is specified, since Xorg automatically orders monitors from
-# left to right, starting with the primary
-#xrandr --output HDMI-0 --primary --output DisplayPort-0 --left-of HDMI-0
 
-# start fcitx (japanese input)
-# note that there's no need to check if the daemon is already running. The -r
-# option does this for us
-#fcitx -dr
+# add the display mode for each monitor
+for i in $(seq 0 $((DUDELSON_CONFIG_N_MONITORS - 1))); do
+    xrandr --addmode $(eval echo \$DUDELSON_CONFIG_MONITOR_$i) $NEW_MODE
+done
 
-# load custom keybindings
-#xbindkeys
+# lay out the monitors relative to each other
+for i in $(seq 0 $((DUDELSON_CONFIG_N_MONITORS - 1))); do
+    if [ $i = "0" ]; then
+        xrandr --output $(eval echo \$DUDELSON_CONFIG_MONITOR_$i) --mode $NEW_MODE --primary
+    else
+        # no --left-of or --right-of options are needed here since we enumerate
+        # over the monitors in left-to-right order, and xorg automatically orders
+        # monitors from left to right, starting with the primary
+        xrandr --output $(eval echo \$DUDELSON_CONFIG_MONITOR_$i) --mode $NEW_MODE
+    fi
+done
 
-# swap caps lock and left ctrl
-#setxkbmap -option "ctrl:swapcaps"
+# start services
 
-# start compositing manager
-# uncomment this line if you want transparent terminals
-#compton &
+if [ $DUDELSON_CONFIG_ENABLE_JAPANESE_IME = "1" ]; then
+    # start fcitx (japanese input)
+    # note that there's no need to check if the daemon is already running. The -r
+    # option does this for us
+    fcitx -dr
+fi
+
+if [ $DUDELSON_CONFIG_SWAP_CAPS_CTRL = "1" ]; then
+    # swap caps lock and left ctrl
+    setxkbmap -option "ctrl:swapcaps"
+fi
+
+
+if [ $DUDELSON_CONFIG_ENABLE_COMPOSITING = "1" ]; then
+    # start compositing manager
+    compton &
+if
 
 # merge in ~/.Xdefaults for nice terminal colors
 xrdb -merge $HOME/.Xdefaults
 
+# run machine-specific configuration
+~/.xinitrc-user
+
 # start awesome
 exec awesome &>> $AWESOME_LOG_FILE
-

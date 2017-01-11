@@ -1,8 +1,5 @@
 -- note that we have restarted awesome in the log file
-log_file_path = os.getenv("AWESOME_LOG_FILE")
-f = io.open(log_file_path, "a")
-f:write("--RESTART " .. os.date("%a %b %d %X") .. "--\n")
-f:close()
+print("-=-=- RESTART " .. os.date("%a %b %d %X") .. " -=-=-")
 
 -- Standard awesome library
 local gears = require("gears")
@@ -25,6 +22,8 @@ local update_notifications = require("update_notifications")
 local cal = require("cal")
 -- homegrown caffeine widget
 local caffeine = require("caffeine")
+-- yaml library for parsing my config
+local yaml = require("yaml")
 
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
@@ -83,6 +82,9 @@ local layouts =
     --awful.layout.suit.max.fullscreen,
     --awful.layout.suit.magnifier
 }
+
+-- read custom configuration yaml
+local dudelson_config = yaml.loadpath("/home/david/.config/dotfiles.yml")
 -- }}}
 
 -- {{{ Wallpaper
@@ -97,43 +99,45 @@ end
 -- Define a tag table which hold all screen tags.
 tags = {}
 
--- Here's the default tags code
-for s = 1, screen.count() do
-    -- Each screen has its own tag table.
-    tags[s] = awful.tag({ 1, 2, 3, 4, 5, 6, 7, 8, 9 }, s, layouts[1])
+-- Layout and name tags based on custom configuration
+local screens = {}
+local default_tags = { 1, 2, 3, 4, 5, 6, 7, 8, 9 }
+local default_layout = { layouts[1], layouts[1], layouts[1], layouts[1], layouts[1],
+                         layouts[1], layouts[1], layouts[1], layouts[1] }
+
+-- initialize screens with default configuration
+for i, name in ipairs(dudelson_config.monitors) do
+  -- append new table to the end of `screens'
+  screens[#screens+1] = {
+    name = name,
+    index = screen[name].index,
+    layout = default_layout,
+    tags = default_tags
+  }
 end
 
--- Here's my custom tags setup from datto, which illustrate how to setup
--- multiple custom tags on multiple monitors
---[[
-tags_left = {
-    names = { "broswer", 2, 3, 4, 5, 6, 7, 8, 9 },
-    layout = { layouts[1], layouts[1], layouts[1], layouts[1], layouts[1],
-               layouts[1], layouts[1], layouts[1], layouts[1]
-}}
+-- apply specialized configuration to screens that contain pinned applications
+-- we also build the apps table in this loop, which is used in subsequent sections
+apps = {}
+for app, screentag in pairs(dudelson_config.application_layout) do
+  local screen = screentag[1]
+  local tag = screentag[2]
+  if     app == "terminal"  then tl = { tag = "term",    layout = layouts[2] }
+  elseif app == "browser"   then tl = { tag = "browser", layout = layouts[8] }
+  elseif app == "emacs"     then tl = { tag = "emacs",   layout = layouts[8] }
+  elseif app == "telegram"  then tl = { tag = "tg",      layout = layouts[8] }
+  else                           tl = { tag = "unknown", layout = layouts[1] }
+  end
+  screens[screen].tags[tag] = tl.tag
+  screens[screen].layout[tag] = tl.layout
+  -- add this app to the apps table
+  apps[app] = { screen = screens[screen].index, tag = tag }
+end
 
-tags_center = {
-    names = { "main", "emacs", 3, 4, 5, 6, 7, 8, 9 },
-    layout = { layouts[2], layouts[8], layouts[1], layouts[1], layouts[1],
-               layouts[1], layouts[1], layouts[1], layouts[1]
-}}
-
-tags_right = {
-    names = { "hipchat", 2, 3, 4, 5, 6, 7, 8, 9 },
-    layout = { layouts[2], layouts[1], layouts[1], layouts[1], layouts[1],
-               layouts[1], layouts[1], layouts[1], layouts[1]
-}}
-
--- defining these screen numbers help to keep monitors straight, both in this
--- section and in other sections
-leftScreen   = screen["DisplayPort-0"].index
-centerScreen = screen["HDMI-0"].index       
-rightScreen  = screen["DVI-0"].index        
-
-tags[leftScreen]   = awful.tag(tags_left.names,   leftScreen  , tags_left.layout  )
-tags[centerScreen] = awful.tag(tags_center.names, centerScreen, tags_center.layout)
-tags[rightScreen]  = awful.tag(tags_right.names,  rightScreen , tags_right.layout )
---]]
+-- apply the above
+for i, s in ipairs(screens) do
+  tags[s.index] = awful.tag(s.tags, s.index, s.layout)
+end
 -- }}}
 
 -- {{{ Menu
@@ -282,14 +286,27 @@ root.buttons(awful.util.table.join(
 -- }}}
 
 -- {{{ Key bindings
-globalkeys = awful.util.table.join(
-    -- Movement between tags
-    awful.key({ modkey,           }, "c",   awful.tag.viewprev       ),
-    awful.key({ modkey,           }, "v",   awful.tag.viewnext       ),
-    awful.key({ modkey,           }, "z", awful.tag.history.restore),
 
-    -- Movement between windows
-    --[[ by direction
+-------------------- keybindings that depend on configuration ------------------
+-- Movement between windows
+local movement_keys = {}
+if #dudelson_config.monitors > 1 then
+  -- with multiple monitors
+  movement_keys = awful.util.table.join(
+    awful.key({ modkey,           }, "j",
+      function ()
+        awful.client.focus.global_bydirection("left");
+        if client.focus then client.focus:raise() end
+    end),
+    awful.key({ modkey,           }, "k",
+      function ()
+        awful.client.focus.global_bydirection("right");
+        if client.focus then client.focus:raise() end
+    end)
+  )
+else
+  -- with just one monitor
+  movement_keys = awful.util.table.join(
     awful.key({ modkey }, "j", function () awful.client.focus.bydirection("down")
         if client.focus then client.focus:raise() end
     end),
@@ -301,20 +318,16 @@ globalkeys = awful.util.table.join(
     end),
     awful.key({ modkey }, "l", function () awful.client.focus.bydirection("right")
         if client.focus then client.focus:raise() end
-    end),
-    --]]
-    --[[ with multiple monitors
-    awful.key({ modkey,           }, "j",
-        function ()
-	    awful.client.focus.global_bydirection("left");
-            if client.focus then client.focus:raise() end
-        end),
-    awful.key({ modkey,           }, "k",
-        function ()
-	    awful.client.focus.global_bydirection("right");
-            if client.focus then client.focus:raise() end
-        end),
-    --]]
+    end)
+  )
+end
+
+----------------- keybindings that don't depend on configuration ---------------
+globalkeys = awful.util.table.join(
+    -- Movement between tags
+    awful.key({ modkey,           }, "c",   awful.tag.viewprev       ),
+    awful.key({ modkey,           }, "v",   awful.tag.viewnext       ),
+    awful.key({ modkey,           }, "z", awful.tag.history.restore),
 
     awful.key({ modkey,           }, "w", function () mymainmenu:show() end),
 
@@ -350,28 +363,6 @@ globalkeys = awful.util.table.join(
 
     awful.key({ modkey, "Control" }, "n", awful.client.restore),
 
-    -- Example of keybindings to focus specific tags
-    -- "Mod1" is left alt
-    --[[
-    awful.key({ modkey, "Mod1"   }, "m", function () 
-	awful.tag.viewonly(tags[centerScreen][1]) 
-	awful.screen.focus(centerScreen)
-    end),
-    awful.key({ modkey, "Mod1"   }, "b", function ()
-	awful.tag.viewonly(tags[leftScreen][1]) 
-	awful.screen.focus(leftScreen)
-    end),
-    -- "space" is for spacemacs
-    awful.key({ modkey, "Mod1"   }, "space", function ()
-	awful.tag.viewonly(tags[centerScreen][2]) 
-	awful.screen.focus(centerScreen)
-    end),
-    awful.key({ modkey, "Mod1"   }, "h", function ()
-	awful.tag.viewonly(tags[rightScreen][1]) 
-	awful.screen.focus(rightScreen)
-    end),
-    --]]
-
     -- Prompt
     awful.key({ modkey },            "x",     function () mypromptbox[mouse.screen]:run() end),
 
@@ -402,15 +393,45 @@ globalkeys = awful.util.table.join(
 	    awful.util.spawn(os.date('maim /tmp/screenshot_%Y-%m-%d_%X.png'), false)
 	end
     ),
-    -- lock screen
-    --[[
-    awful.key({ modkey, "Shift" }, "l",
-	function()
-	    awful.util.spawn('lock')
-	end
-    )
-    --]]
+
+    -- Keybindings to focus specific tags
+    -- "Mod1" is left alt
+    -- jump to terminal tag
+    awful.key({ modkey, "Mod1"   }, "j", function ()
+        awful.tag.viewonly(tags[apps.terminal.screen][apps.terminal.tag])
+        awful.screen.focus(apps.terminal.screen)
+    end),
+    -- jump to browser tag
+    awful.key({ modkey, "Mod1"   }, "k", function ()
+        awful.tag.viewonly(tags[apps.browser.screen][apps.browser.tag])
+        awful.screen.focus(apps.browser.screen)
+    end),
+    -- jump to spacemacs tag
+    awful.key({ modkey, "Mod1"   }, "l", function ()
+        local tag = dudelson_config.application_layout.emacs[2]
+        awful.tag.viewonly(tags[apps.emacs.screen][apps.emacs.tag])
+        awful.screen.focus(apps.emacs.screen)
+    end),
+    -- jump to telegram tag
+    awful.key({ modkey, "Mod1"   }, "i", function ()
+        local tag = dudelson_config.application_layout.telegram[2]
+        awful.tag.viewonly(tags[apps.telegram.screen][apps.telegram.tag])
+        awful.screen.focus(apps.telegram.screen)
+    end)
 )
+
+-- Add the configuration-dependent keybingings to the global keybinding table
+globalkeys = awful.util.table.join(globalkeys, movement_keys)
+
+-- only add keybinding for lock screen if lock screen is enabled
+if dudelson_config.autostart.lock_screen then
+  globalkeys = awful.util.table.join(globalkeys, awful.key(
+    { modkey, "Shift" }, "l",
+    function()
+      awful.util.spawn('lock')
+    end
+  ))
+end
 
 clientkeys = awful.util.table.join(
     awful.key({ modkey,           }, "f",      function (c) c.fullscreen = not c.fullscreen  end),
@@ -499,23 +520,16 @@ awful.rules.rules = {
                      buttons = clientbuttons } },
     { rule_any = { class = {"MPlayer", "pinentry", "Gimp", "feh"} },
       properties = { floating = true } },
-    -- Examples of rules to stick certain applications to specific tags on 
-    -- specific monitors
-    --[[
-    -- Set Firefox to always map on tag 1 of left monitor
     { rule = { class = "Firefox" },
-      properties = { tag = tags[leftScreen][1] } },
-    -- Set hipchat to always map on tag 1 of right monitor
-    { rule = { instance = "hipchat4" },
-      properties = { tag = tags[rightScreen][1] } },
-    -- Set emacs to always map on tag 2 of center monitor
+      properties = { tag = tags[apps.browser.screen][apps.browser.tag] } },
     { rule = { class = "Emacs" },
-      properties = { tag = tags[centerScreen][2] } },
+      properties = { tag = tags[apps.emacs.screen][apps.emacs.tag] } },
+    { rule = { class = "Telegram" },
+      properties = { tag = tags[apps.telegram.screen][apps.telegram.tag] } },
     -- this rule fixes a problem with urxvt and emacs where the desktop
     -- was visible along the bottom and right edges of the screen
     { rule_any = { class = { "Emacs", "URxvt" } },
       properties = { size_hints_honor = false } },
-    --]]
 
 }
 -- }}}
@@ -597,7 +611,7 @@ client.connect_signal("property::urgent", function(c) awful.client.urgent.jumpto
 
 
 
--- spawn tray icons
+-- autostart applications
 
 -- this function ensures that two instances of each icon do not appear in the
 -- event that awesome wm is restarted
@@ -608,15 +622,28 @@ function run_once(cmd)
   awful.util.spawn_with_shell("pgrep -u $USER \"" .. findme .. "\" > /dev/null || (" .. cmd .. ")")
 end
 
---run_once("sh ~/.fehbg")    -- set wallpaper
---run_once("nm-applet")      -- networkmanager
---run_once("volumeicon")     -- volumeicon
---run_once("dropbox")        -- dropbox
---run_once("udiskie")        -- automounting of usbs
---run_once("xflux -z 14850") -- so my screen doesn't kill my eyes at night
--- this automatically locks the screen after 5 minutes of inactivity
---run_once("xautolock -time 5 -locker lock -detectsleep &")
+-- set wallpaper
+if dudelson_config.autostart.wallpaper then run_once("sh ~/.fehbg") end
+-- networkmanager
+if dudelson_config.autostart.network_manager then run_once("nm-applet") end
+-- volumeicon
+if dudelson_config.autostart.volumeicon then run_once("volumeicon") end
+-- dropbox
+if dudelson_config.autostart.dropbox then run_once("dropbox") end
+-- automounting of usbs
+if dudelson_config.autostart.udiskie then run_once("udiskie") end
+-- so my screen doesn't kill my eyes at night
+if dudelson_config.autostart.flux then run_once("xflux -z 14850") end
+-- this user instance of anacron is responsible for running daily backups
+if dudelson_config.autostart.backups then
+  run_once("anacron -t /home/david/.anacron/etc/anacrontab -S /home/david/.anacron/spool &> /home/david/.anacron/anacron.log")
+end
+-- lock the screen automatically after 5 minutes
+if dudelson_config.autostart.lock_screen then
+  run_once("/usr/bin/xautolock -time 5 -locker /bin/lock -detectsleep")
+end
 -- autostart user-facing applications
---run_once("urxvt")
---run_once("emacs")
---run_once("firefox")
+-- start them in the order of least process-intensive to most process-intensive
+run_once("urxvt")
+run_once("emacs")
+run_once("firefox")
