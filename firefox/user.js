@@ -1,8 +1,15 @@
 /* for easier VimFX development */
 user_pref('devtools.chrome.enabled', true);
 
+/* this prevents an annoying issue I used to have with firefox where I would be
+ * scrolling with the touchpad on my laptop, my touchpad gesture would be
+ * misinterpreted, and I would go backwards in my browsing history.
+ */
+user_pref('mousewheel.with_shift.action', 1);
+
 /* From "The Paranoid #! Security Guide" */
 /* http://crunchbang.org/forums/viewtopic.php?id=24722 */
+/*** PLEASE DO NOT APPLY THESE SETTINGS WITHOUT KNOWING WHAT THEY DO! ***/
 
 // // ---disable browser cache:
 // user_pref('browser.cache.disk.enable', false);
