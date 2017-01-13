@@ -245,6 +245,6 @@ export PROMPT="%M %{$fg[blue]%}%~%{$reset_color%} %# "
 
 # uncomment the next three lines to enable powerline
 if [[ ( "$DUDELSON_CONFIG_ENABLE_POWERLINE" == "1" ) &&
-      ( -r /usr/lib/python3.5/site-packages/powerline/bindings/zsh/powerline.zsh ) ]]; then
-    source /usr/lib/python3.5/site-packages/powerline/bindings/zsh/powerline.zsh
+      ( -r /usr/lib/python3.6/site-packages/powerline/bindings/zsh/powerline.zsh ) ]]; then
+    source /usr/lib/python3.6/site-packages/powerline/bindings/zsh/powerline.zsh
 fi
