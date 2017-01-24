@@ -244,7 +244,16 @@ bindkey -M isearch " " self-insert
 export PROMPT="%M %{$fg[blue]%}%~%{$reset_color%} %# "
 
 # uncomment the next three lines to enable powerline
-if [[ ( "$DUDELSON_CONFIG_ENABLE_POWERLINE" == "1" ) &&
-      ( -r /usr/lib/python3.6/site-packages/powerline/bindings/zsh/powerline.zsh ) ]]; then
-    source /usr/lib/python3.6/site-packages/powerline/bindings/zsh/powerline.zsh
+
+# this version doesn't work for some reason, commenting it out for now
+# are the terminal processes spawned using awesome keybindings not children of
+# the awesome-wm process? I can't see the DUDELSON_CONFIG envvars from the shell.
+
+#if [[ ( "$DUDELSON_CONFIG_ENABLE_POWERLINE" == "1" ) &&
+#      ( -r /usr/lib/python3.5/site-packages/powerline/bindings/zsh/powerline.zsh ) ]]; then
+#    source /usr/lib/python3.5/site-packages/powerline/bindings/zsh/powerline.zsh
+#fi
+
+if [[ -r /usr/lib/python3.5/site-packages/powerline/bindings/zsh/powerline.zsh ]]; then
+    source /usr/lib/python3.5/site-packages/powerline/bindings/zsh/powerline.zsh
 fi
