@@ -633,7 +633,7 @@ if dudelson_config.autostart.dropbox then run_once("dropbox") end
 -- automounting of usbs
 if dudelson_config.autostart.udiskie then run_once("udiskie") end
 -- so my screen doesn't kill my eyes at night
-if dudelson_config.autostart.flux then run_once("xflux -l 34.41 -g -135.30") end
+if dudelson_config.autostart.flux then run_once("xflux -l 34.41 -g 135.30") end
 -- this user instance of anacron is responsible for running daily backups
 if dudelson_config.autostart.backups then
   run_once("anacron -t /home/david/.anacron/etc/anacrontab -S /home/david/.anacron/spool &> /home/david/.anacron/anacron.log")
