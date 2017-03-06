@@ -126,6 +126,7 @@ for app, screentag in pairs(dudelson_config.application_layout) do
   elseif app == "browser"   then tl = { tag = "browser", layout = layouts[8] }
   elseif app == "emacs"     then tl = { tag = "emacs",   layout = layouts[8] }
   elseif app == "telegram"  then tl = { tag = "tg",      layout = layouts[8] }
+  elseif app == "IRC"       then tl = { tag = "IRC",     layout = layouts[8] }
   else                           tl = { tag = "unknown", layout = layouts[1] }
   end
   screens[screen].tags[tag] = tl.tag
@@ -408,15 +409,20 @@ globalkeys = awful.util.table.join(
     end),
     -- jump to spacemacs tag
     awful.key({ modkey, "Mod1"   }, "l", function ()
-        local tag = dudelson_config.application_layout.emacs[2]
+        -- local tag = dudelson_config.application_layout.emacs[2]
         awful.tag.viewonly(tags[apps.emacs.screen][apps.emacs.tag])
         awful.screen.focus(apps.emacs.screen)
     end),
     -- jump to telegram tag
     awful.key({ modkey, "Mod1"   }, "i", function ()
-        local tag = dudelson_config.application_layout.telegram[2]
+        -- local tag = dudelson_config.application_layout.telegram[1]
         awful.tag.viewonly(tags[apps.telegram.screen][apps.telegram.tag])
         awful.screen.focus(apps.telegram.screen)
+    end),
+    -- jump to IRC tag
+    awful.key({ modkey, "Mod1"   }, "u", function ()
+        awful.tag.viewonly(tags[apps.IRC.screen][apps.IRC.tag])
+        awful.screen.focus(apps.IRC.screen)
     end)
 )
 
