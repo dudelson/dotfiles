@@ -586,8 +586,6 @@ function run_once(cmd)
   awful.util.spawn_with_shell("pgrep -u $USER \"" .. findme .. "\" > /dev/null || (" .. cmd .. ")")
 end
 
--- set wallpaper
-if dudelson_config.autostart.wallpaper then run_once("sh ~/.fehbg") end
 -- networkmanager
 if dudelson_config.autostart.network_manager then run_once("nm-applet") end
 -- volumeicon
