@@ -88,7 +88,7 @@ function cal.register(mywidget, custom_current_day_format)
     function tooltip:update()
       local month, year = os.date('%m'), os.date('%Y')
       state = {month, year}
-      tooltip:set_markup(string.format('<span font_desc="monospace">%s</span>', displayMonth(month, year, 1)))
+      tooltip:set_markup(string.format('<span foreground="white" font_desc="monospace">%s</span>', displayMonth(month, year, 1)))
     end
     tooltip:update()
   end
@@ -129,7 +129,7 @@ end
 
 function switchMonth(delta)
   state[1] = state[1] + delta
-  local text = string.format('<span font_desc="monospace">%s</span>', displayMonth(state[1], state[2], 1))
+  local text = string.format('<span foreground="white" font_desc="monospace">%s</span>', displayMonth(state[1], state[2], 1))
   tooltip:set_markup(text)
 end
 

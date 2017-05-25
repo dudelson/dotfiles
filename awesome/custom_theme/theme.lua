@@ -48,6 +48,8 @@ theme.tasklist_fg_focus                         = "#d33682"
 theme.tasklist_plain_task_name                  = true
 theme.tasklist_disable_icon                     = true
 theme.useless_gap                               = 0
+theme.tooltip_bg                                = "#535d6c"
+theme.tooltip_fg                                = "#0000ff" -- Apparently this doesn't work... ?
 
 -- widget vars
 local BATTERY_WIDGET_UPDATE_INTERVAL = 61
