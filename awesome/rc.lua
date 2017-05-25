@@ -356,7 +356,56 @@ globalkeys = gears.table.join(
               function ()
                 awful.tag.find_by_name(awful.screen.focused(), "irc"):view_only()
               end,
-              {description = "jump to irc tag", group = "tag"})
+              {description = "jump to irc tag", group = "tag"}),
+
+    -- dynamic tagging
+    awful.key({ modkey, "Shift" }, "a",
+              function ()
+                awful.prompt.run {
+                  prompt = "Run: ",
+                  textbox = mouse.screen.mypromptbox.widget,
+                  exe_callback = function(input)
+                    if not input or #input == 0 then return end
+                    -- get first whitespace-delimited token of input
+                    firstspace = input:find(' ')
+                    if firstspace then tagname = input:sub(0, firstspace-1) else tagname = input end
+                    -- create temp tag and open application in it
+                    local t = awful.tag.add(tagname, { volitile = true, selected = true })
+                    t:view_only()
+                    awful.spawn(input, { floating = true, tag = mouse.screen.selected_tag })
+                  end
+                }
+              end),
+    awful.key({ modkey, "Shift" }, "n",
+              function ()
+                awful.prompt.run {
+                  prompt = "Tag name: ",
+                  textbox = mouse.screen.mypromptbox.widget,
+                  exe_callback = function(input)
+                    if not input or #input == 0 then return end
+                    local t = awful.tag.add(input, { selected = true })
+                    t:view_only()
+                  end
+                }
+              end),
+    awful.key({modkey, "Shift" }, "d",
+              function ()
+                  local t = awful.screen.focused().selected_tag
+                  if not t then return end
+                  t:delete()
+              end),
+    awful.key({ modkey, "Shift" }, "r",
+              function () 
+                  awful.prompt.run {
+                    prompt       = "New tag name: ",
+                    textbox      = awful.screen.focused().mypromptbox.widget,
+                    exe_callback = function(new_name)
+                      if not new_name or #new_name == 0 then return end
+                      local t = awful.screen.focused().selected_tag
+                      if t then t.name = new_name end
+                    end
+                  }
+              end)
 )
 
 -- Add the configuration-dependent keybingings to the global keybinding table
