@@ -96,14 +96,16 @@ local function batf(widget, args)
   local state, charge_lvl_pct = args[1], args[2]
 
   local status_string = ''
-  if state ~= '-' then status_string = '[<span color="#eaf51d">⚡</span>]' end
+  -- CAUTION: below is *not* a hyphen. It is the unicode mathimatical minus
+  -- operator, U+2212.
+  if state ~= '−' then status_string = ' [<span color="#eaf51d">⚡</span>]' end
 
   local pct_string = charge_lvl_pct
   if charge_lvl_pct <= 10 then
     pct_string = string.format('<span color="#ff0000">%s</span>', charge_lvl_pct)
   end
 
-  return string.format('Battery: %s%% %s | ', pct_string, status_string)
+  return string.format('Battery: %s%%%s | ', pct_string, status_string)
 end
 
 local battery_widget = wibox.widget.textbox()
@@ -113,6 +115,10 @@ vicious.register(battery_widget,
                  batf,
                  BATTERY_WIDGET_UPDATE_INTERVAL,
                  "BAT0")
+
+-- expose this function so that we can update the battery widget immediately
+-- when the AC is plugged/unplugged by writing a udev rule
+theme.update_battery_widget = function () vicious.force({ battery_widget }) end
 
 -- Pending package updates
 local function pkgf(widget, args)
