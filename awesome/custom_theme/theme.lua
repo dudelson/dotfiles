@@ -39,7 +39,6 @@ theme.border_focus                              = "#606060"
 theme.border_marked                             = "#3ca4d8"
 theme.menu_border_width                         = 0
 theme.menu_width                                = 130
-theme.menu_submenu_icon                         = theme.confdir .. "/icons/submenu.png"
 theme.menu_fg_normal                            = "#aaaaaa"
 theme.menu_fg_focus                             = "#ff8c00"
 theme.menu_bg_normal                            = "#050505dd"
@@ -50,6 +49,8 @@ theme.tasklist_disable_icon                     = true
 theme.useless_gap                               = 0
 theme.tooltip_bg                                = "#535d6c"
 theme.tooltip_fg                                = "#0000ff" -- Apparently this doesn't work... ?
+theme.taglist_squares_sel                       = theme.confdir .. "/icons/square_a.png"
+theme.taglist_squares_unsel                     = theme.confdir .. "/icons/square_b.png"
 
 -- widget vars
 local BATTERY_WIDGET_UPDATE_INTERVAL = 61
