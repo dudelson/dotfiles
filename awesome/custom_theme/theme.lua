@@ -51,6 +51,19 @@ theme.tooltip_bg                                = "#535d6c"
 theme.tooltip_fg                                = "#0000ff" -- Apparently this doesn't work... ?
 theme.taglist_squares_sel                       = theme.confdir .. "/icons/square_a.png"
 theme.taglist_squares_unsel                     = theme.confdir .. "/icons/square_b.png"
+theme.layout_tile                               = theme.confdir .. "/icons/tile.png"
+theme.layout_tilegaps                           = theme.confdir .. "/icons/tilegaps.png"
+theme.layout_tileleft                           = theme.confdir .. "/icons/tileleft.png"
+theme.layout_tilebottom                         = theme.confdir .. "/icons/tilebottom.png"
+theme.layout_tiletop                            = theme.confdir .. "/icons/tiletop.png"
+theme.layout_fairv                              = theme.confdir .. "/icons/fairv.png"
+theme.layout_fairh                              = theme.confdir .. "/icons/fairh.png"
+theme.layout_spiral                             = theme.confdir .. "/icons/spiral.png"
+theme.layout_dwindle                            = theme.confdir .. "/icons/dwindle.png"
+theme.layout_max                                = theme.confdir .. "/icons/max.png"
+theme.layout_fullscreen                         = theme.confdir .. "/icons/fullscreen.png"
+theme.layout_magnifier                          = theme.confdir .. "/icons/magnifier.png"
+theme.layout_floating                           = theme.confdir .. "/icons/floating.png"
 
 -- widget vars
 local BATTERY_WIDGET_UPDATE_INTERVAL = 61
