@@ -14,24 +14,28 @@ export EDITOR='vim'
 export LANG='en_US.UTF-8'
 #export LANGUAGE='en_US.UTF-8'
 export LC_ALL='en_US.UTF-8'
-export PATH=$PATH:/home/david/.gem/ruby/2.3.0/bin:/home/david/.local/bin
+export PATH=$(getconf PATH):/usr/local/bin:/home/david/.local/bin:/usr/bin/core_perl
 export XDG_CONFIG_HOME=/home/david/.config
 
 # for android
-export PATH=$PATH:/home/david/.local/share/android/android-sdk-linux/tools
 export PATH=$PATH:/home/david/.local/share/android/android-sdk-linux/platform-tools
+export PATH=$PATH:/home/david/.local/share/android/android-sdk-linux/tools
 export ANDROID_EMULATOR_USE_SYSTEM_LIBS=1
 export ANDROID_HOME=~/.local/share/android/android-sdk-linux
 
 # golang config
 export GOPATH=/home/david/.go
-export PATH="$PATH:$GOPATH/bin"
+export PATH=$PATH:$GOPATH/bin
+
+# ruby config
+export GEM_HOME=$(ruby -e 'print Gem.user_dir')
+export PATH=$PATH:/home/david/.gem/ruby/2.4.0/bin
+
+# ocaml config
+. /home/david/.opam/opam-init/init.zsh > /dev/null 2> /dev/null || true
 
 export AWESOME_LOG_FILE=/home/david/.cache/awesome/awesome.log
 # configure fcitx (used for japanese input)
 export GTK_IM_MODULE=fcitx
 export QT_IM_MODULE=fcitx
 export XMODIFIERS=@im=fcitx
-
-# OPAM configuration
-. /home/david/.opam/opam-init/init.zsh > /dev/null 2> /dev/null || true
