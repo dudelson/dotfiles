@@ -58,7 +58,7 @@ end
 -- }}}
 
 -- {{{ Variable definitions
-local theme_path = string.format("%s/dotfiles/awesome/custom_theme/theme.lua", os.getenv("HOME"))
+local theme_path = string.format("%s/s/dot/awesome/custom_theme/theme.lua", os.getenv("HOME"))
 beautiful.init(theme_path)
 
 local modkey     = "Mod4"

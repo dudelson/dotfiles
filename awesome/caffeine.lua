@@ -4,7 +4,7 @@ local awful = require("awful")
 local caffeine = {}
 
 caffeine.widget = wibox.widget.imagebox()
-caffeine.widget:set_image("/home/david/dotfiles/awesome/caffeine_off.png")
+caffeine.widget:set_image("/home/david/s/dot/awesome/caffeine_off.png")
 caffeine.active = false
 
 function on()
@@ -19,7 +19,7 @@ function on()
     awful.util.spawn_with_shell("xset s off -dpms && notify-send 'caffeine on'")
   end
 
-  caffeine.widget:set_image("/home/david/dotfiles/awesome/caffeine_on.png")
+  caffeine.widget:set_image("/home/david/s/dot/awesome/caffeine_on.png")
   caffeine.active = true
 end
 
@@ -33,7 +33,7 @@ function off()
     awful.util.spawn_with_shell("xset s on +dpms && notify-send 'caffeine off'")
   end
 
-  caffeine.widget:set_image("/home/david/dotfiles/awesome/caffeine_off.png")
+  caffeine.widget:set_image("/home/david/s/dot/awesome/caffeine_off.png")
   caffeine.active = false
 end
 

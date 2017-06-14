@@ -21,7 +21,7 @@ local caffeine = require("caffeine")
 local os    = { getenv = os.getenv, setlocale = os.setlocale }
 
 local theme                                     = {}
-theme.confdir                                   = os.getenv("HOME") .. "/dotfiles/awesome/custom_theme"
+theme.confdir                                   = os.getenv("HOME") .. "/s/dot/awesome/custom_theme"
 theme.wallpaper                                 = theme.confdir .. "/wallpaper.jpg"
 theme.font                                      = "source code pro 9"
 theme.menu_bg_normal                            = "#000000"
