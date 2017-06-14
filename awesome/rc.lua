@@ -639,8 +639,6 @@ end
 if dudelson_config.autostart.network_manager then run_once("nm-applet") end
 -- volumeicon
 if dudelson_config.autostart.volumeicon then run_once("volumeicon") end
--- dropbox
-if dudelson_config.autostart.dropbox then run_once("dropbox") end
 -- automounting of usbs
 if dudelson_config.autostart.udiskie then run_once("udiskie") end
 -- so my screen doesn't kill my eyes at night
