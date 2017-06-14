@@ -36,11 +36,10 @@ if [ $DUDELSON_CONFIG_SWAP_CAPS_CTRL = "1" ]; then
     setxkbmap -option "ctrl:swapcaps"
 fi
 
-
 if [ $DUDELSON_CONFIG_ENABLE_COMPOSITING = "1" ]; then
     # start compositing manager
     compton &
-if
+fi
 
 # merge in ~/.Xdefaults for nice terminal colors
 xrdb -merge $HOME/.Xdefaults
