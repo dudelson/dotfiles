@@ -69,7 +69,7 @@ theme.layout_floating                           = theme.confdir .. "/icons/float
 local BATTERY_WIDGET_UPDATE_INTERVAL = 61
 local CPU_WIDGET_UPDATE_INTERVAL = 2
 local MEM_WIDGET_UPDATE_INTERVAL = 10
-local PKG_WIDGET_UPDATE_INTERVAL = 86401 -- check once a day
+local PKG_WIDGET_UPDATE_INTERVAL = 2 * 60 * 60 + 5 -- check about once every 2 hours
 
 -- {{{ Widgets
 -- Textclock
