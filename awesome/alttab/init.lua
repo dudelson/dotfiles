@@ -43,7 +43,7 @@ preview_wbox.border_width = 3
 preview_wbox.ontop = true
 preview_wbox.visible = false
 
-local preview_live_timer = timer({}) --( {timeout = 1/settings.preview_box_fps} )
+local preview_live_timer = gears.timer({}) --( {timeout = 1/settings.preview_box_fps} )
 local preview_widgets = {}
 
 local altTabTable = {}
@@ -306,7 +306,7 @@ local function switch(dir, alt, tab, shift_tab)
    -- if not already there.
    -- This will preserve the history AND enable you to focus on minimized clients
 
-   local t = awful.tag.selected(s)
+   local t = s.selected_tag
    local all = client.get(s)
    
 
@@ -356,7 +356,7 @@ local function switch(dir, alt, tab, shift_tab)
 
    -- preview delay timer
    local previewDelay = settings.preview_box_delay / 1000
-   local previewDelayTimer = timer({timeout = previewDelay})
+   local previewDelayTimer = gears.timer({timeout = previewDelay})
    previewDelayTimer:connect_signal("timeout", function() 
 				       preview_wbox.visible = true
 				       previewDelayTimer:stop()
@@ -367,7 +367,7 @@ local function switch(dir, alt, tab, shift_tab)
 
    -- opacity delay timer
    local opacityDelay = settings.client_opacity_delay / 1000
-   local opacityDelayTimer = timer({timeout = opacityDelay})
+   local opacityDelayTimer = gears.timer({timeout = opacityDelay})
    opacityDelayTimer:connect_signal("timeout", function() 
 				       applyOpacity = true
 				       opacityDelayTimer:stop()

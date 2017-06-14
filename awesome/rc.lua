@@ -632,7 +632,7 @@ function run_once(cmd)
   -- really clumsy way of getting 0th whitespace-delimited token from cmd
   firstspace = cmd:find(" ")
   if firstspace then findme = cmd:sub(0, firstspace-1) else findme = cmd end
-  awful.util.spawn_with_shell("pgrep -u $USER \"" .. findme .. "\" > /dev/null || (" .. cmd .. ")")
+  awful.spawn.with_shell("pgrep -u $USER \"" .. findme .. "\" > /dev/null || (" .. cmd .. ")")
 end
 
 -- networkmanager
