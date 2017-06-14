@@ -416,7 +416,7 @@ if dudelson_config.autostart.lock_screen then
   globalkeys = awful.util.table.join(globalkeys, awful.key(
     { modkey, "Shift" }, "l",
     function()
-      awful.util.spawn('lock')
+      awful.util.spawn('i3lock-fancy')
     end
   ))
 end
@@ -649,7 +649,7 @@ if dudelson_config.autostart.backups then
 end
 -- lock the screen automatically after 5 minutes
 if dudelson_config.autostart.lock_screen then
-  run_once("/usr/bin/xautolock -time 5 -locker /bin/lock -detectsleep")
+  run_once("/usr/bin/xautolock -time 5 -locker i3lock-fancy -detectsleep")
 end
 -- autostart user-facing applications
 -- start them in the order of least process-intensive to most process-intensive
