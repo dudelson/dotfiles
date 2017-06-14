@@ -113,12 +113,12 @@ local function batf(widget, args)
   -- operator, U+2212.
   if state ~= '−' then status_string = ' [<span color="#eaf51d">⚡</span>]' end
 
-  local pct_string = charge_lvl_pct
+  local pct_string = charge_lvl_pct .. '%'
   if charge_lvl_pct <= 10 then
-    pct_string = string.format('<span color="#ff0000">%s</span>', charge_lvl_pct)
+    pct_string = string.format('<span color="#ff0000">%s%%</span>', charge_lvl_pct)
   end
 
-  return string.format('Battery: %s%%%s | ', pct_string, status_string)
+  return string.format('Battery: %s%s | ', pct_string, status_string)
 end
 
 local battery_widget = wibox.widget.textbox()
