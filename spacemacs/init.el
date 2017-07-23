@@ -547,16 +547,17 @@ When toggled off, restores the window layout from before the last time it was to
         (set-window-configuration dudelson/toggle-planner-window-config)
       ;; otherwise store window configuration so it can be restored later
       (setq dudelson/toggle-planner-window-config (current-window-configuration))
-      (find-file "~/s/doc/org/stuffff.org")
+      (find-file "~/s/doc/org/current.org")
       (delete-other-windows)
-      ;; here's a hack to open the agenda, since I don't know a better way to open
-      ;; a custom agenda
-      (setq unread-command-events (listify-key-sequence ",ad"))
-      )
+      (split-window-right-and-focus)
+      (find-file "~/s/doc/notes/notes.md"))
     ;; toggle the thingy
     (setq dudelson/toggle-planner-enabled (not (symbol-value dudelson/toggle-planner-enabled)))
     (message "Toggled planner view %s" dudelson/toggle-planner-enabled))
-
+  (defun dudelson/open-notes ()
+    (interactive)
+    (find-file "~/s/doc/notes/notes.md"))
+  (spacemacs/set-leader-keys "bs" 'dudelson/open-notes)
   (spacemacs/set-leader-keys "oo" 'dudelson/toggle-planner)
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
