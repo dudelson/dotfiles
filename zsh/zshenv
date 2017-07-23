@@ -34,6 +34,9 @@ export PATH=$PATH:/home/david/.gem/ruby/2.4.0/bin
 # ocaml config
 . /home/david/.opam/opam-init/init.zsh > /dev/null 2> /dev/null || true
 
+# rust config
+export PATH=$PATH:/home/david/.cargo/bin
+
 export AWESOME_LOG_FILE=/home/david/.cache/awesome/awesome.log
 # configure fcitx (used for japanese input)
 export GTK_IM_MODULE=fcitx
