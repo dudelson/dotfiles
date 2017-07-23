@@ -5,7 +5,9 @@ const MAPPINGS = {
     'search_history': '<force><c-h>',
     'search_bookmarks': '<force><c-k>',
     'search_titles': '<force><c-j>',
-    'restart': '<c-Q>'
+    'restart': '<c-Q>',
+    'promote_tab': '<c-left>',
+    'demote_tab': '<c-right>'
 };
 
 /* ============================= CUSTOM COMMANDS ============================= */
@@ -74,7 +76,19 @@ const CUSTOM_COMMANDS = [
         description: 'Restart Firefox',
         category: 'tabs',
         order: commands.focus_location_bar.order + 1
-    }, restart]
+    }, restart],
+    [{
+        name: 'promote_tab',
+        description: 'Promote a tree-style tab',
+        category: 'tabs',
+        order: commands.focus_location_bar.order + 1
+    }, (args) => args.vim.window.TreeStyleTabService.promoteCurrentTab() ],
+    [{
+        name: 'demote_tab',
+        description: 'Demote a tree-style tab',
+        category: 'tabs',
+        order: commands.focus_location_bar.order + 1
+    }, (args) => args.vim.window.TreeStyleTabService.demoteCurrentTab() ]
 ];
 
 /* ============================= APPLY THE ABOVE ============================= */
