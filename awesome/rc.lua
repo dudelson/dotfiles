@@ -376,7 +376,7 @@ globalkeys = gears.table.join(
                   end
                 }
               end),
-    awful.key({ modkey, "Shift" }, "n",
+    awful.key({ modkey, altkey }, "n",
               function ()
                 awful.prompt.run {
                   prompt = "Tag name: ",
@@ -388,13 +388,13 @@ globalkeys = gears.table.join(
                   end
                 }
               end),
-    awful.key({modkey, "Shift" }, "d",
+    awful.key({modkey, altkey }, "d",
               function ()
                   local t = awful.screen.focused().selected_tag
                   if not t then return end
                   t:delete()
               end),
-    awful.key({ modkey, "Shift" }, "r",
+    awful.key({ modkey, altkey }, "r",
               function () 
                   awful.prompt.run {
                     prompt       = "New tag name: ",
