@@ -118,11 +118,11 @@ alias o='a -e xdg-open'
 alias l='d -e "ls --group-directories-first --color=auto"'
 
 # ledger aliases
-CURRENT_LEDGER_FILE="~/Documents/finance/y2012-2016.txt"
-alias bal="ledger -f $CURRENT_LEDGER_FILE -X \$ --strict --explicit --invert bal"
-alias reg="ledger -f $CURRENT_LEDGER_FILE -X \$ --strict --explicit reg"
-alias lgr="ledger -f $CURRENT_LEDGER_FILE -X \$ --strict --explicit"
-alias rkn="reckon -f ~/Downloads/EXPORT.CSV -a Assets:Checking -l ~/Documents/finance/y2012-2016.txt -o $CURRENT_LEDGER_FILE --ignore-columns 1,3,6,7,8 --contains-header 1 --date-format \"%m/%d/%y\""
+export LEDGER_FILE="~/s/doc/finance/y$(date +%Y).txt"
+alias bal="ledger -X \$ --strict --explicit --invert bal"
+alias reg="ledger -X \$ --strict --explicit reg"
+alias lgr="ledger -X \$ --strict --explicit"
+alias rkn="reckon -f ~/EXPORT.CSV -a Assets:Checking -l ~/s/doc/finance/y2012-2016.txt -o $LEDGER_FILE --ignore-columns 1,3,6,7,8 --contains-header 1 --date-format \"%m/%d/%y\""
 
 # magic aliases (expand with <SPACE>)
 typeset -Ag abbreviations
