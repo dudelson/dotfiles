@@ -37,12 +37,14 @@ values."
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
      ;; <M-m f e R> (Emacs style) to install them.
      ;; ----------------------------------------------------------------
-     (auto-completion
-      :variables
-      auto-completion-return-key-behavior nil
-      auto-completion-tab-key-behavior 'cycle
-      :disabled-for org
-      )
+     ;; disabled auto-completion for now because it's taking 30-60 seconds to load
+     ;; in places where I don't even need it (like while writing this comment).
+     ;; (auto-completion
+     ;;  :variables
+     ;;  auto-completion-return-key-behavior nil
+     ;;  auto-completion-tab-key-behavior 'cycle
+     ;;  :disabled-for org
+     ;;  )
      ;; better-defaults
      c-c++
      fasd
