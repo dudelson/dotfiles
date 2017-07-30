@@ -570,6 +570,9 @@ When toggled off, restores the window layout from before the last time it was to
     (find-file "~/s/doc/notes/notes.md"))
   (spacemacs/set-leader-keys "bs" 'dudelson/open-notes)
   (spacemacs/set-leader-keys "oo" 'dudelson/toggle-planner)
+  ;; org-capture keybinding that isn't as easily confused with the keybinding for
+  ;; calc-dispatch (SPC a c)
+  (spacemacs/set-leader-keys "oc" 'org-capture)
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -614,6 +617,8 @@ When toggled off, restores the window layout from before the last time it was to
     ;; control is essential for making links by ID work correctly. Therefore,
     ;; move it into the org-directory.
     org-id-locations-file (concat org-directory "/.org-id-locations")
+    ;; prevent org files from opening to random sections when I open them
+    org-startup-folded t
     ;; enable org-mode habit tracking
     org-modules (append org-modules '(org-habit))
     ;; log habits to the "logbook" drawer
@@ -627,10 +632,14 @@ When toggled off, restores the window layout from before the last time it was to
     org-habit-graph-column 80
     ;; do not show the habits in the calendar!
     org-habit-show-habits nil
+
     ;; make subheadings indented by 4 spaces
-    org-indent-indentation-per-level 4
+    org-indent-indentation-per-level 2
     ;; also make plain sublists indented by 4 spaces
     org-list-indent-offset 2
+    ;; enable org-indent-mode globally
+    org-startup-indented t
+
     ;; see https://emacs.stackexchange.com/questions/17502/how-to-navigate-most-efficiently-to-the-start-or-end-of-the-main-text-of-an-org
     ;; note that since spacemacs does a lot of keybinding changes to org-mode,
     ;; this option does *not* make C-a/C-e work in the manner documented, but it
