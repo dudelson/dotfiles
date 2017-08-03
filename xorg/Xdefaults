@@ -86,3 +86,5 @@ URxvt.scrollBar:            false
 URxvt.right_scrollBar:      true
 URxvt.geometry:             100x30
 URxvt*font:                 xft:Source\ Code\ Pro\ Medium:pixelsize=13:antialias=true:hinting=true,xft:Source\ Code\ Pro\ Medium:pixelsize=13:antialias=true:hinting=true
+emacs.useXIM:false
+emacs24.useXIM:false

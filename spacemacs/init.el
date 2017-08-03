@@ -59,6 +59,7 @@ values."
      git
      gtags
      haskell
+     japanese
      java
      javascript
      lua
@@ -101,6 +102,7 @@ values."
      highlight-escape-sequences
      android-mode
      disable-mouse
+     mozc
      )
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '()
@@ -404,7 +406,12 @@ you should place your code here."
    ;; temporary improvement to linum formatting
    ;; set latex pdf viewer
    TeX-view-program-selection '((output-pdf "PDF Tools"))
+   default-input-method "japanese-mozc"
    )
+
+  ;; set path to migemo dictionary file (for japanese layer)
+  (with-eval-after-load "migemo"
+    (setq migemo-dictionary "/usr/share/migemo/utf-8/migemo-dict"))
 
   ;; disable mouse globally
   (global-disable-mouse-mode)
@@ -986,7 +993,7 @@ Callers of this function already widen the buffer view."
     ("~/s/doc/org/stuffff.org" "~/s/doc/org/spacemacs.org" "~/s/doc/org/laptop.org")))
  '(package-selected-packages
    (quote
-    (intero hlint-refactor hindent helm-hoogle haskell-snippets flycheck-haskell company-ghci company-ghc ghc haskell-mode company-cabal cmm-mode powerline ranger spinner log4e multiple-cursors hide-comnt evil-snipe bind-key packed avy auctex tern bind-map highlight haml-mode winum fuzzy flyspell-correct-helm flyspell-correct auto-dictionary ledger-mode flycheck-ledger csv-mode pdf-tools tablist fcitx async hydra iedit auto-complete rust-mode anaconda-mode yasnippet company smartparens evil undo-tree flycheck request helm helm-core markdown-mode alert projectile magit magit-popup git-commit with-editor f js2-mode s yapfify uuidgen py-isort pug-mode org-projectile org-download livid-mode skewer-mode simple-httpd live-py-mode link-hint git-link eyebrowse evil-visual-mark-mode evil-unimpaired evil-ediff dumb-jump company-shell company-emacs-eclim column-enforce-mode cargo yaml-mode ws-butler window-numbering which-key web-mode web-beautify volatile-highlights vi-tilde-fringe utop use-package tuareg toml-mode toc-org tagedit stickyfunc-enhance srefactor spacemacs-theme spaceline solarized-theme smooth-scrolling smeargle slim-mode scss-mode sass-mode restart-emacs rainbow-delimiters racer quelpa pyvenv pytest pyenv-mode py-yapf popwin pip-requirements persp-mode pcre2el paradox page-break-lines orgit org-repo-todo org-present org-pomodoro org-plus-contrib org-bullets open-junk-file ocp-indent nlinum-relative neotree move-text mmm-mode merlin markdown-toc magit-gitflow macrostep lua-mode lorem-ipsum linum-relative leuven-theme less-css-mode json-mode js2-refactor js-doc jade-mode info+ indent-guide ido-vertical-mode hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation highlight-escape-sequences help-fns+ helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-make helm-gtags helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger gh-md ggtags flycheck-rust flycheck-pos-tip flx-ido fish-mode fill-column-indicator fasd fancy-battery expand-region exec-path-from-shell evil-visualstar evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-args evil-anzu eval-sexp-fu emmet-mode elisp-slime-nav eclim disaster define-word cython-mode company-web company-tern company-statistics company-racer company-quickhelp company-c-headers company-anaconda coffee-mode cmake-mode clean-aindent-mode clang-format buffer-move bracketed-paste auto-yasnippet auto-highlight-symbol auto-compile android-mode aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
+    (mozc ddskk pangu-spacing japanese-holidays evil-tutor-ja cdb ccc avy-migemo migemo disable-mouse intero hlint-refactor hindent helm-hoogle haskell-snippets flycheck-haskell company-ghci company-ghc ghc haskell-mode company-cabal cmm-mode powerline ranger spinner log4e multiple-cursors hide-comnt evil-snipe bind-key packed avy auctex tern bind-map highlight haml-mode winum fuzzy flyspell-correct-helm flyspell-correct auto-dictionary ledger-mode flycheck-ledger csv-mode pdf-tools tablist fcitx async hydra iedit auto-complete rust-mode anaconda-mode yasnippet company smartparens evil undo-tree flycheck request helm helm-core markdown-mode alert projectile magit magit-popup git-commit with-editor f js2-mode s yapfify uuidgen py-isort pug-mode org-projectile org-download livid-mode skewer-mode simple-httpd live-py-mode link-hint git-link eyebrowse evil-visual-mark-mode evil-unimpaired evil-ediff dumb-jump company-shell company-emacs-eclim column-enforce-mode cargo yaml-mode ws-butler window-numbering which-key web-mode web-beautify volatile-highlights vi-tilde-fringe utop use-package tuareg toml-mode toc-org tagedit stickyfunc-enhance srefactor spacemacs-theme spaceline solarized-theme smooth-scrolling smeargle slim-mode scss-mode sass-mode restart-emacs rainbow-delimiters racer quelpa pyvenv pytest pyenv-mode py-yapf popwin pip-requirements persp-mode pcre2el paradox page-break-lines orgit org-repo-todo org-present org-pomodoro org-plus-contrib org-bullets open-junk-file ocp-indent nlinum-relative neotree move-text mmm-mode merlin markdown-toc magit-gitflow macrostep lua-mode lorem-ipsum linum-relative leuven-theme less-css-mode json-mode js2-refactor js-doc jade-mode info+ indent-guide ido-vertical-mode hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation highlight-escape-sequences help-fns+ helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-make helm-gtags helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger gh-md ggtags flycheck-rust flycheck-pos-tip flx-ido fish-mode fill-column-indicator fasd fancy-battery expand-region exec-path-from-shell evil-visualstar evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-args evil-anzu eval-sexp-fu emmet-mode elisp-slime-nav eclim disaster define-word cython-mode company-web company-tern company-statistics company-racer company-quickhelp company-c-headers company-anaconda coffee-mode cmake-mode clean-aindent-mode clang-format buffer-move bracketed-paste auto-yasnippet auto-highlight-symbol auto-compile android-mode aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
  '(paradox-github-token t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
