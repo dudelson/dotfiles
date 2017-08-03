@@ -100,6 +100,7 @@ values."
    '(
      highlight-escape-sequences
      android-mode
+     disable-mouse
      )
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '()
@@ -404,6 +405,9 @@ you should place your code here."
    ;; set latex pdf viewer
    TeX-view-program-selection '((output-pdf "PDF Tools"))
    )
+
+  ;; disable mouse globally
+  (global-disable-mouse-mode)
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
