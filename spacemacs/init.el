@@ -592,118 +592,348 @@ When toggled off, restores the window layout from before the last time it was to
   ;; outside of this `with-eval-after-load' statement will load the default org-mode
   ;; package instead of the spacemacs one, and will cause org-mode to behave weirdly.
   (with-eval-after-load 'org
-    ;; indentation settings
-    ;; This one's a work in progress...
     (setq
      ;; default place to look for org files
      org-directory "~/s/doc/org"
      ;; files that appear in the agenda
      org-agenda-files (list
-                       (concat org-directory "/stuffff.org")
-                       (concat org-directory "/spacemacs.org")
-                       (concat org-directory "/laptop.org")
-                       )
-     ;; make subheadings indented by 4 spaces
-     org-indent-indentation-per-level 4
-     ;; also make plain sublists indented by 4 spaces
-     org-list-indent-offset 2
-     ;; my custom todo keywords
-     ;; TODO items are those I plan to start in the immediate future
-     ;; WAITING items are those I have started and am waiting for events out of
-     ;;     my control to transpire before I can check off
-     ;; ON HOLD items are those which I have postponed doing for the time being
-     ;; DONE items have been completed
-     org-todo-keywords '((sequence "TODO(t)" "SCHED(s)" "HW(r)" "|" "WAITING(w)" "ON HOLD(h)" "DONE(d)"))
-     org-todo-keyword-faces '(
-                              ("WAITING" . (:foreground "#b58900" :weight bold))
-                              ("ON HOLD" . (:foreground "#dc322f" :weight bold))
-                              ("SCHED" . (:foreground "#6c71c4" :weight bold))
-                              ("HW" . (:foreground "#cb4b16" :weight bold))
-                              )
-     org-agenda-custom-commands '(("1" "Highest priority action items"
-                                   ((tags-todo "+PRIORITY=\"A\""
-                                    ((org-agenda-overriding-header "Priority A")
-                                    (org-tags-match-list-sublevels nil)))))
-                                  ("2" "High priority action items"
-                                   ((tags-todo "+PRIORITY=\"B\""
-                                    ((org-agenda-overriding-header "Priority B")
-                                     (org-tags-match-list-sublevels nil)))))
-                                  ("3" "Average priority action items"
-                                   ((tags-todo "+PRIORITY=\"C\""
-                                    ((org-agenda-overriding-header "Priority C")
-                                     (org-tags-match-list-sublevels nil)))))
-                                  ("R" "Homework"
-                                   ((todo "HW"
-                                               ((org-agenda-overriding-header "Homework")
-                                                (org-tags-match-list-sublevels nil)))))
-                                  ("d" "David's planner view"
-                                   ((agenda "")
-                                    (todo "HW"
-                                     ((org-agenda-skip-function
-                                       '(org-agenda-skip-entry-if 'scheduled))
-                                      (org-agenda-overriding-header
-                                       "Homework")))
-                                    (tags-todo "+PRIORITY=\"A\""
-                                     ((org-agenda-skip-function
-                                       '(org-agenda-skip-entry-if 'scheduled))
-                                      (org-agenda-overriding-header
-                                       "Highest Priority Unscheduled Tasks")))
-                                    (tags-todo "+PRIORITY=\"B\""
-                                     ((org-agenda-skip-function
-                                       '(org-agenda-skip-entry-if 'scheduled))
-                                      (org-agenda-overriding-header
-                                       "High Priority Unscheduled Tasks"))))))
-     ;; Make the tags not squished to the left in the agenda
-     ;; Here they are right-aligned to column 100
-     org-agenda-tags-column -100
-     org-log-done nil ;; don't insert a CLOSED timestamp when I complete a task
-     org-lowest-priority 69    ;; Priorities are in the range "A" to "E"
-     org-default-priority 68   ;; Default priority is "D"
-     ;; refile settings
-     org-refile-targets '((nil :maxlevel . 9) (org-agenda-files :maxlevel . 9))
-     org-outline-path-complete-in-steps nil         ;; Refile in a single go
-     org-refile-use-outline-path t                  ;; Show full paths for refiling
-     ;; capture settings
-     org-default-notes-file (concat org-directory "/stuffff.org")
-     org-capture-templates
-     `(("t" "TODO" entry (file+headline ,(concat org-directory "/stuffff.org") "captured")
-        "* TODO %?\n")
-       ("s" "SCHED" entry (file+headline ,(concat org-directory "/stuffff.org") "captured")
-        "* SCHED %?\n"))
+                       (concat org-directory "/current.org")
+                       (concat org-directory "/goals.org"))
+    ;; syncing org-id-locations file across devices and keeping it in version
+    ;; control is essential for making links by ID work correctly. Therefore,
+    ;; move it into the org-directory.
+    org-id-locations-file (concat org-directory "/.org-id-locations")
+    ;; enable org-mode habit tracking
+    org-modules (append org-modules '(org-habit))
+    ;; log habits to the "logbook" drawer
+    org-log-into-drawer "LOGBOOK"
+    ;; on the habit-tracking graph in the agenda,
+    ;; show 1 month (30 days) of previous progress and 1 day of future progress
+    org-habit-preceding-days 30
+    org-habit-following-days 1
+    ;; move the habit-tracking graph to the right so that it doesn't cut off the
+    ;; habit name
+    org-habit-graph-column 80
+    ;; do not show the habits in the calendar!
+    org-habit-show-habits nil
+    ;; make subheadings indented by 4 spaces
+    org-indent-indentation-per-level 4
+    ;; also make plain sublists indented by 4 spaces
+    org-list-indent-offset 2
+    ;; see https://emacs.stackexchange.com/questions/17502/how-to-navigate-most-efficiently-to-the-start-or-end-of-the-main-text-of-an-org
+    ;; note that since spacemacs does a lot of keybinding changes to org-mode,
+    ;; this option does *not* make C-a/C-e work in the manner documented, but it
+    ;; does affect the evil-org keybindings ^/$ in the correct way. See the
+    ;; spacemacs documentation for the org layer for more.
+    org-special-ctrl-a/e t
+    ;; my custom todo keywords
+    ;; TODO items are those I plan to start in the immediate future
+    ;; WAITING items are those I have started and am waiting for events out of
+    ;;     my control to transpire before I can check off
+    ;; ON HOLD items are those which I have postponed doing for the time being
+    ;; DONE items have been completed
+    org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "|" "WAITING(w)" "ON HOLD(h)" "DONE(d)")
+      (sequence "HABIT" "|" "COMPLETE(c!)"))
+    org-todo-keyword-faces
+    '(("WAITING" . (:foreground "#b58900" :weight bold))
+      ("ON HOLD" . (:foreground "#dc322f" :weight bold))
+      ("HABIT" . (:foreground "#6c71c4" :weight bold))
+      ("NEXT" . (:foreground "#cb4b16" :weight bold)))
+    ;; Make the tags not squished to the left in the agenda
+    ;; Here they are right-aligned to column 100
+    org-agenda-tags-column -100
+    ;; org-agenda-compact-blocks t
+    org-log-done nil ;; don't insert a CLOSED timestamp when I complete a task
+    org-lowest-priority 69 ;; Priorities are in the range "A" to "E"
+    org-default-priority 68 ;; Default priority is "D"
+    ;; refile settings
+    org-refile-targets '(("current.org" :maxlevel . 9)
+      ("goals.org" :maxlevel . 9)
+      ("kb.org" :maxlevel . 9)
+      ("notnow.org" :maxlevel . 9)
+      ("rwl.org" :maxlevel . 9))
+    org-outline-path-complete-in-steps nil ;; Refile in a single go
+    org-refile-use-outline-path 'file ;; Show full paths for refiling
+    ;; capture settings
+    org-default-notes-file "/home/david/s/doc/notes/notes.md"
+    org-capture-templates
+    ;; most-used templates
 
-     ;; deadline settings
-     org-deadline-warning-days 1
-     )
+    `(("t" "TODO" entry (file+headline ,(concat org-directory "/current.org") "todo")
+       "* TODO %?   :captured:\n" :prepend t)
+      ("h" "thought" entry (file+headline ,(concat org-directory "/current.org") "thoughts")
+       "* %?\n")
+      ("n" "note" entry (file+headline ,(concat org-directory "/current.org") "notes")
+       "* %?\n")
+      ;; templates for rwl.org
+      ("r" "Templates for stuff to read")
+      ("rb" "book" item (file+headline ,(concat org-directory "/rwl.org") "books")
+       "- [ ] %?\n" :prepend t)
+      ("rp" "paper" item (file+headline ,(concat org-directory "/rwl.org") "papers")
+       "- [ ] %?\n" :prepend t)
+      ("w" "Templates for stuff to watch")
+      ("wm" "movie" item (file+headline ,(concat org-directory "/rwl.org") "movies")
+       "- [ ] %?\n" :prepend t)
+      ("wt" "TV show" item (file+headline ,(concat org-directory "/rwl.org") "tv shows")
+       "- [ ] %?\n" :prepend t)
+      ("wa" "anime" item (file+headline ,(concat org-directory "/rwl.org") "anime")
+       "- [ ] %?\n" :prepend t)
+      ("wv" "video" item (file+headline ,(concat org-directory "/rwl.org") "videos")
+       "- [ ] %?\n" :prepend t)
+      ("l" "Templates for stuff to listen to")
+      ("lm" "music")
+      ("lmc" "check out" item (file+headline ,(concat org-directory "/rwl.org") "check out")
+       "- [ ] %?\n" :prepend t)
+      ("lmd" "download" item (file+headline ,(concat org-directory "/rwl.org") "download")
+       "- [ ] %?\n" :prepend t)
+      ("lp" "podcast" item (file+headline ,(concat org-directory "/rwl.org") "podcasts")
+       "- [ ] %?\n" :prepend t)
+      ;; misc template; goes to notes file
+      ("m" "Misc" plain (file "") "%?" :empty-lines 1))
 
-    ;; C-RET and M-RET automatically enter insert state
-    (define-key org-mode-map (kbd "C-<return>") (lambda ()
-                                                  (interactive)
-                                                  (org-insert-heading-respect-content)
-                                                  (evil-insert 1)))
-    (define-key org-mode-map (kbd "M-<return>") (lambda ()
-                                                  (interactive)
-                                                  (org-meta-return)
-                                                  (evil-insert 1)))
-    ;; `org-refile' is bound to ,R by default, but ,r is also free, and I don't
-    ;; want to hit shift if I don't have to
-    (spacemacs/set-leader-keys-for-major-mode 'org-mode "r" 'org-refile)
-    ;; (evil-set-initial-state 'org-agenda-mode 'emacs)
-    ;;(define-key org-agenda-mode-map (kbd "C-*") 'org-agenda-filter-remove-all)
+    ;; deadline settings
+    org-deadline-warning-days 1
+  ;; taken from https://stackoverflow.com/questions/11384516/how-to-make-all-org-files-under-a-folder-added-in-agenda-list-automatically#11384907
+
+  (defun sa-find-org-file-recursively (&optional directory filext)
+    "Return .org and .org_archive files recursively from DIRECTORY.
+    If FILEXT is provided, return files with extension FILEXT instead."
+    (interactive "DDirectory: ")
+    (let* (org-file-list (case-fold-search t) ; filesystems are case sensitive
+                         (file-name-regex "^[^.#].*") ; exclude dot, autosave, and backup files
+
+                         (filext (or filext "org$\\\|org_archive"))
+                         (fileregex (format "%s\\.\\(%s$\\)" file-name-regex filext))
+                         (cur-dir-list (directory-files directory t file-name-regex)))
+      ;; loop over directory listing
+
+      (dolist (file-or-dir cur-dir-list org-file-list) ; returns org-file-list
+        (cond
+         ((file-regular-p file-or-dir) ; regular files
+          (if (string-match fileregex file-or-dir) ; org files
+              (add-to-list 'org-file-list file-or-dir)))
+         ((file-directory-p file-or-dir)
+          (dolist (org-file (sa-find-org-file-recursively file-or-dir
+                                                          filext)
+                            org-file-list) ; add files found to result
+            (add-to-list 'org-file-list org-file)))))))
+  (defvar my/org-habit-show-graphs-everywhere
+    t "If non-nil, show habit graphs in all types of agenda buffers.
+
+Normally, habits display consistency graphs only in
+\"agenda\"-type agenda buffers, not in other types of agenda
+buffers.  Set this variable to any non-nil variable to show
+consistency graphs in all Org mode agendas.")
+  (defun my/org-agenda-mark-habits ()
+    "Mark all habits in current agenda for graph display.
+
+This function enforces `my/org-habit-show-graphs-everywhere' by
+marking all habits in the current agenda as such.  When run just
+before `org-agenda-finalize' (such as by advice; unfortunately,
+`org-agenda-finalize-hook' is run too late), this has the effect
+of displaying consistency graphs for these habits.
+
+When `my/org-habit-show-graphs-everywhere' is nil, this function
+has no effect."
+    (when (and my/org-habit-show-graphs-everywhere
+               (not (get-text-property (point)
+                                       'org-series)))
+      (let ((cursor (point)) item
+            data)
+        (while (setq cursor (next-single-property-change cursor 'org-marker))
+          (setq item (get-text-property cursor 'org-marker))
+          (when (and item
+                     (org-is-habit-p item))
+            (with-current-buffer (marker-buffer item)
+              (setq data (org-habit-parse-todo item)))
+            (put-text-property cursor
+                               (next-single-property-change cursor 'org-marker)
+                               'org-habit-p
+                               data))))))
+  (advice-add #'org-agenda-finalize :before #'my/org-agenda-mark-habits)
+  ;; taken from http://doc.norang.ca/org-mode.html#GTDWeeklyReview
+  (defun bh/is-project-p ()
+    "Any task with a todo keyword subtask"
+    (save-restriction (widen)
+                      (let ((has-subtask)
+                            (subtree-end (save-excursion
+                                           (org-end-of-subtree t)))
+                            (is-a-task (member (nth 2
+                                                    (org-heading-components)) org-todo-keywords-1)))
+                        (save-excursion
+                          (forward-line 1)
+                          (while (and (not has-subtask)
+                                      (< (point) subtree-end)
+                                      (re-search-forward "^\*+ " subtree-end t))
+                            (when (member (org-get-todo-state) org-todo-keywords-1)
+                              (setq has-subtask t))))
+                        (and is-a-task has-subtask))))
+  ;; note that this function is exactly the same as bh/is-project-p except for the
+  ;; last line
+  (defun bh/is-task-p ()
+    "Any task with a todo keyword and no subtask"
+    (save-restriction (widen)
+                      (let ((has-subtask)
+                            (subtree-end (save-excursion
+                                           (org-end-of-subtree t)))
+                            (is-a-task (member (nth 2
+                                                    (org-heading-components)) org-todo-keywords-1)))
+                        (save-excursion
+                          (forward-line 1)
+                          (while (and (not has-subtask)
+                                      (< (point) subtree-end)
+                                      (re-search-forward "^\*+ " subtree-end t))
+                            (when (member (org-get-todo-state) org-todo-keywords-1)
+                              (setq has-subtask t))))
+                        (and is-a-task
+                             (not has-subtask)))))
+  (defun bh/find-project-task ()
+    "Move point to the parent (project) task if any"
+    (save-restriction (widen)
+                      (let ((parent-task (save-excursion
+                                           (org-back-to-heading 'invisible-ok)
+                                           (point))))
+                        (while (org-up-heading-safe)
+                          (when (member (nth 2
+                                             (org-heading-components)) org-todo-keywords-1)
+                            (setq parent-task (point))))
+                        (goto-char parent-task)
+                        parent-task)))
+  (defun bh/is-project-subtree-p ()
+    "Any task with a todo keyword that is in a project subtree.
+Callers of this function already widen the buffer view."
+    (let ((task (save-excursion
+                  (org-back-to-heading 'invisible-ok)
+                  (point))))
+      (save-excursion
+        (bh/find-project-task)
+        (if (equal (point) task)
+            nil
+          t))))
+  ;; any TODO keyword that is a child of another TODO keyword. So for the purposes
+  ;; of this function, leaf nodes are also subprojects
+  (defun bh/is-subproject-p ()
+    "Any task which is a subtask of another project"
+    (let ((is-subproject)
+          (is-a-task (member (nth 2
+                                  (org-heading-components)) org-todo-keywords-1)))
+      (save-excursion
+        (while (and (not is-subproject)
+                    (org-up-heading-safe))
+          (when (member (nth 2
+                             (org-heading-components)) org-todo-keywords-1)
+            (setq is-subproject t))))
+      (and is-a-task is-subproject)))
+  (defun bh/skip-non-stuck-projects ()
+    "Skip trees that are not stuck projects"
+    ;; (bh/list-sublevels-for-projects-indented)
+    (save-restriction (widen)
+                      (let ((next-headline (save-excursion
+                                             (or (outline-next-heading)
+                                                 (point-max)))))
+                        (if (bh/is-project-p)
+                            (let* ((subtree-end (save-excursion
+                                                  (org-end-of-subtree t)))
+                                   (has-next))
+                              (save-excursion
+                                (forward-line 1)
+                                (while (and (not has-next)
+                                            (< (point) subtree-end)
+                                            (re-search-forward "^\\*+ NEXT " subtree-end
+                                                               t))
+                                  (unless (member "WAITING" (org-get-tags-at))
+                                    (setq has-next t))))
+                              (if has-next next-headline nil)) ; a stuck project, has subtasks but no next task
+                          next-headline))))
+  (defun bh/skip-non-projects ()
+    "Skip trees that are not projects"
+    ;; (bh/list-sublevels-for-projects-indented)
+    (if (save-excursion
+          (bh/skip-non-stuck-projects))
+        (save-restriction (widen)
+                          (let ((subtree-end (save-excursion
+                                               (org-end-of-subtree t))))
+                            (cond
+                             ((bh/is-project-p) nil)
+                             ((and (bh/is-project-subtree-p)
+                                   (not (bh/is-task-p))) nil)
+                             (t subtree-end))))
+      (save-excursion
+        (org-end-of-subtree t))))
+  ;; variables which use custom functions defined above
+  (setq
+   ;; files that are candidates for searches in addition to agenda files
+   org-agenda-text-search-extra-files
+   (append
+    (sa-find-org-file-recursively (concat org-directory "/dates")) (sa-find-org-file-recursively (concat org-directory "/topics"))
+   (list (concat org-directory "/kb.org")
+         (concat org-directory "/notnow.org")
+         (concat org-directory "/rwl.org")))
+  org-agenda-custom-commands
+  '(("r" "Captured/To Review"
+     ((tags "captured|review"
+            ((org-agenda-overriding-header "Captured/To Review")
+             (org-tags-match-list-sublevels nil)))))
+    ("x" "Stuck Projects")
+    ("d" "David's planner view"
+     ((tags-todo "STYLE=\"habit\"+SCHEDULED<\"<tomorrow>\""
+                 ((org-agenda-overriding-header "Habits")))
+      (tags-todo "hw"
+                 ((org-agenda-overriding-header "Homework")))
+      (todo "TODO"
+            ((org-agenda-skip-function 'bh/skip-non-projects)
+             (org-agenda-overriding-header "Ongoing Projects")
+             (org-tags-match-list-sublevels nil)))
+      (tags-todo "TODO=\"TODO\"+SCHEDULED"
+                 ((org-tags-match-list-sublevels nil)
+                  (org-agenda-overriding-header "Unscheduled Tasks")))
+      (tags-todo "@parents+TODO=\"ON HOLD\""
+                 ((org-agenda-overriding-header "Waiting/On Hold Tasks")
+                  (org-tags-match-list-sublevels nil)))))))
+;; (tags-todo "+PRIORITY=\"A\""
+;;  ((org-agenda-skip-function
+;;    '(org-agenda-skip-entry-if 'scheduled))
+;;   (org-agenda-overriding-header
+;;    "Highest Priority Unscheduled Tasks")))
+;; (tags-todo "+PRIORITY=\"B\""
+;;  ((org-agenda-skip-function
+;;    '(org-agenda-skip-entry-if 'scheduled))
+;;   (org-agenda-overriding-header
+;;    "High Priority Unscheduled Tasks"))))))
+
+(defun dudelson/org-id-create-and-copy ()
+  (interactive)
+  (org-id-get-create)
+  (org-id-copy))
+;; C-RET and M-RET automatically enter insert state
+(define-key org-mode-map (kbd "C-<return>") (lambda ()
+                                              (interactive)
+                                              (org-insert-heading-respect-content)
+                                              (evil-insert 1)))
+(define-key org-mode-map (kbd "M-<return>") (lambda ()
+                                              (interactive)
+                                              (org-meta-return)
+                                              (evil-insert 1)))
+;; easily create links by ID
+(define-key org-mode-map (kbd "C-l") 'dudelson/org-id-create-and-copy)
+;; `org-refile' is bound to ,R by default, but ,r is also free, and I don't
+;; want to hit shift if I don't have to
+(spacemacs/set-leader-keys-for-major-mode 'org-mode "r" 'org-refile)
+;; (evil-set-initial-state 'org-agenda-mode 'emacs)
+;;(define-key org-agenda-mode-map (kbd "C-*") 'org-agenda-filter-remove-all)
 
 
-    ;; This is a cheap hack until I figure out a more robust way to change agenda
-    ;; views within the agenda
-    (spacemacs/set-leader-keys-for-major-mode 'org-agenda-mode "a" 'org-agenda)
-    ;; (spacemacs/set-leader-keys-for-major-mode 'org-agenda-mode "1"
-    ;;   (lambda ()
-        ;; (interactive)
-        ;; (org-agenda-run-series "TEST"
-                               ;; ((tags-todo "+PRIORITY=\"C\""
-                               ;;             ((org-agenda-overriding-header "Priority C")
-                               ;;              (org-tags-match-list-sublevels nil)))))
-                               ;; ))
-
-  )
+;; This is a cheap hack until I figure out a more robust way to change agenda
+;; views within the agenda
+(spacemacs/set-leader-keys-for-major-mode 'org-agenda-mode "a" 'org-agenda))
+;; (spacemacs/set-leader-keys-for-major-mode 'org-agenda-mode "1"
+;;   (lambda ()
+;; (interactive)
+;; (org-agenda-run-series "TEST"
+;; ((tags-todo "+PRIORITY=\"C\""
+;;             ((org-agenda-overriding-header "Priority C")
+;;              (org-tags-match-list-sublevels nil)))))
+;; )))
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
