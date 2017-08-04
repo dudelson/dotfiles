@@ -53,12 +53,32 @@ a definition, because I'm guaranteed to have 10 lines of context on either side.
 * search
 WIP
 #+BEGIN_SRC emacs-lisp
+  (define-key evil-normal-state-map (kbd "/") 'evil-snipe-s)
+  (define-key evil-normal-state-map (kbd "?") 'evil-snipe-S)
+  (define-key evil-normal-state-map (kbd "g/") 'evil-search-forward)
+  (define-key evil-normal-state-map (kbd "g?") 'evil-search-backward)
   (define-key evil-normal-state-map (kbd "s") 'evil-avy-goto-char-2)
-  ;; (define-key evil-normal-state-map (kbd "S") 'evil-change-whole-line)
-  (define-key evil-normal-state-map (kbd "/") 'helm-swoop)
-  ;; ? should be bound to helm-swoop-resume or whatever that function is actually called
-  ;; (define-key evil-normal-state-map (kbd "?") 'evil-snipe-S)
-  ;; (define-key evil-normal-state-map (kbd "C-s") 'evil-search-forward)
+  (define-key evil-normal-state-map (kbd "S") 'evil-avy-goto-line)
+  (define-key evil-normal-state-map (kbd "gs") 'helm-swoop)
+  ;; this is going to be bound to "resume last helm-swoop search"
+  ;; but I don't think that function exists yet, so I have to write it myself
+  ;; (define-key evil-normal-state-map (kbd "gS") 'helm-swoop-resume)
+  (define-key evil-normal-state-map (kbd "C-s C-s") 'avy-resume)
+  (define-key evil-normal-state-map (kbd "C-s k l") 'avy-kill-whole-line)
+  (define-key evil-normal-state-map (kbd "C-s k r") 'avy-kill-region)
+  (define-key evil-normal-state-map (kbd "C-s c l") 'avy-copy-line)
+  (define-key evil-normal-state-map (kbd "C-s c r") 'avy-copy-region)
+  (define-key evil-normal-state-map (kbd "C-s m l") 'avy-move-line)
+  (define-key evil-normal-state-map (kbd "C-s m r") 'avy-move-region)
+  (define-key evil-normal-state-map (kbd "C-s r l") 'avy-kill-ring-save-whole-line)
+  (define-key evil-normal-state-map (kbd "C-s r r") 'avy-kill-ring-save-region)
+  (define-key evil-normal-state-map (kbd "C-s C-d") 'avy-goto-word-or-subword-1)
+  (define-key evil-normal-state-map (kbd "C-s C-i") 'avy-isearch)
+  (define-key evil-normal-state-map (kbd "C-s s")   'avy-goto-symbol-1)
+
+  ;; also disable SPC w l and SPC w h for now in order to build more efficient habits
+  (spacemacs/set-leader-keys "wl" nil)
+  (spacemacs/set-leader-keys "wh" nil)
 #+END_SRC
 * whitespace                                                        :revisit:
 Spacemacs has a toggle that highlights whitespace, but what kind of whitespace
