@@ -52,3 +52,9 @@
 [submodule "awesome/vicious"]
 	path = awesome/vicious
 	url = https://github.com/Mic92/vicious
+[submodule "spacemacs/layers/japanese"]
+	path = spacemacs/layers/japanese
+	url = https://github.com/kenjimyzk/spacemacs-japanese
+[submodule "spacemacs/layers/calendar"]
+	path = spacemacs/layers/calendar
+	url = https://github.com/dudelson/spacemacs-calendar-layer
