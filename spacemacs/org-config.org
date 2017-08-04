@@ -1,0 +1,452 @@
+#+PROPERTY: header-args :tangle yes
+* general settings
+These are probably the most well-known org-mode settings. I keep my org files in
+~$HOME/s/doc/org~. I like my org files to be completely folded when I open them.
+I also have to turn on org-indent-mode because it [[https://github.com/syl20bnr/spacemacs/issues/2732][isn't a spacemacs default]]
+right now and it makes me sad :'(.
+#+BEGIN_SRC emacs-lisp
+  (setq-default
+   ;; default place to look for org files
+   org-directory "~/s/doc/org"
+   ;; prevent org files from opening to random sections when I open them
+   org-startup-folded t
+   ;; move tags over to the right
+   org-tags-column -100
+   ;; make subheadings indented by 4 spaces
+   org-indent-indentation-per-level 2
+   ;; also make plain sublists indented by 4 spaces
+   org-list-indent-offset 2
+   ;; enable org-indent-mode globally
+   org-startup-indented t
+   org-log-done nil ;; don't insert a CLOSED timestamp when I complete a task
+   org-lowest-priority 69 ;; Priorities are in the range "A" to "E"
+   org-default-priority 68 ;; Default priority is "D"
+   )
+#+END_SRC
+
+I like to link between org files using the "id" property. The list of ids and
+their locations is kept in ~org-id-locations-file~. I've moved this file from
+its default location in ~$HOME/.emacs.d~ to my ~org-directory~, which is synced
+between my devices. This way the links work on every device.
+#+BEGIN_SRC emacs-lisp
+  (setq-default org-id-locations-file (concat org-directory "/.org-id-locations"))
+#+END_SRC
+
+This setting allows me to navigate org-files a little bit more easily by
+changing the behavior of ~C-a~ and ~C-e~ in org-mode. At least that's what it's
+supposed to do, but because of spacemacs customizations to org-mode, this
+setting actually affects the evil-org keybindings ~^~ and ~$~. See the spacemacs
+org layer docs and [[https://emacs.stackexchange.com/questions/17502/how-to-navigate-most-efficiently-to-the-start-or-end-of-the-main-text-of-an-org][this stack overflow post]] for more.
+#+BEGIN_SRC emacs-lisp
+  (setq-default org-special-ctrl-a/e t)
+#+END_SRC
+* todo keywords
+I have two todo cycles. The first one is for tasks and projects, and the second
+is exclusively for habits. TODO items are those that I plan to start in the near
+future, WAITING means I started the task but am waiting for some external event
+to happen before I can complete it, HOLD means the task is on hold for now (I
+make sure to log the reason why), and DONE means done.
+#+BEGIN_SRC emacs-lisp
+  (setq-default
+    org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "|" "WAITING(w)" "ON HOLD(h)" "DONE(d)")
+                        (sequence "HABIT" "|" "COMPLETE(c!)"))
+    org-todo-keyword-faces
+    '(("WAITING" . (:foreground "#b58900" :weight bold))
+      ("ON HOLD" . (:foreground "#dc322f" :weight bold))
+      ("HABIT" . (:foreground "#6c71c4" :weight bold))
+      ("NEXT" . (:foreground "#cb4b16" :weight bold))))
+#+END_SRC
+* agenda
+The function ~sa-find-file-recursively~ was taken from [[ https://stackoverflow.com/questions/11384516/how-to-make-all-org-files-under-a-folder-added-in-agenda-list-automatically#11384907][this stack overflow post]].
+#+BEGIN_SRC emacs-lisp
+  (defun sa-find-org-file-recursively (&optional directory filext)
+    "Return .org and .org_archive files recursively from DIRECTORY.
+      If FILEXT is provided, return files with extension FILEXT instead."
+    (interactive "DDirectory: ")
+    (let* (org-file-list (case-fold-search t) ; filesystems are case sensitive
+                         (file-name-regex "^[^.#].*") ; exclude dot, autosave, and backup files
+
+                         (filext (or filext "org$\\\|org_archive"))
+                         (fileregex (format "%s\\.\\(%s$\\)" file-name-regex filext))
+                         (cur-dir-list (directory-files directory t file-name-regex)))
+      ;; loop over directory listing
+
+      (dolist (file-or-dir cur-dir-list org-file-list) ; returns org-file-list
+        (cond
+         ((file-regular-p file-or-dir) ; regular files
+          (if (string-match fileregex file-or-dir) ; org files
+              (add-to-list 'org-file-list file-or-dir)))
+         ((file-directory-p file-or-dir)
+          (dolist (org-file (sa-find-org-file-recursively file-or-dir
+                                                          filext)
+                            org-file-list) ; add files found to result
+            (add-to-list 'org-file-list org-file)))))))
+
+  (setq-default
+   ;; files that appear in the agenda
+   org-agenda-files (list
+                     (concat org-directory "/current.org")
+                     (concat org-directory "/goals.org"))
+   ;; files that are candidates for searches in addition to agenda files
+   org-agenda-text-search-extra-files
+    (append
+      (sa-find-org-file-recursively (concat org-directory "/dates"))
+      (sa-find-org-file-recursively (concat org-directory "/topics"))
+      (list (concat org-directory "/kb.org")
+            (concat org-directory "/notnow.org")
+            (concat org-directory "/rwl.org")))
+   ;; Make the tags not squished to the left in the agenda
+   ;; Here they are right-aligned to column 100
+   org-agenda-tags-column -100
+   org-deadline-warning-days 1
+   org-agenda-custom-commands
+    '(("r" "Captured/To Review"
+      ((tags "captured|review"
+             ((org-agenda-overriding-header "Captured/To Review")
+              (org-tags-match-list-sublevels nil)))))
+      ("x" "Stuck Projects")
+      ("d" "David's planner view"
+        ((tags-todo "STYLE=\"habit\"+SCHEDULED<\"<tomorrow>\""
+                  ((org-agenda-overriding-header "Habits")))
+        (tags-todo "hw"
+                  ((org-agenda-overriding-header "Homework")))
+        (todo "TODO"
+             ((org-agenda-skip-function 'bh/skip-non-projects)
+              (org-agenda-overriding-header "Ongoing Projects")
+              (org-tags-match-list-sublevels nil)))
+        (tags-todo "TODO=\"TODO\"+SCHEDULED"
+                  ((org-tags-match-list-sublevels nil)
+                   (org-agenda-overriding-header "Unscheduled Tasks")))
+        (tags-todo "@parents+TODO=\"ON HOLD\""
+                  ((org-agenda-overriding-header "Waiting/On Hold Tasks")
+                   (org-tags-match-list-sublevels nil)))))))
+  ;; (tags-todo "+PRIORITY=\"A\""
+  ;;  ((org-agenda-skip-function
+  ;;    '(org-agenda-skip-entry-if 'scheduled))
+  ;;   (org-agenda-overriding-header
+  ;;    "Highest Priority Unscheduled Tasks")))
+  ;; (tags-todo "+PRIORITY=\"B\""
+  ;;  ((org-agenda-skip-function
+  ;;    '(org-agenda-skip-entry-if 'scheduled))
+  ;;   (org-agenda-overriding-header
+  ;;    "High Priority Unscheduled Tasks"))))))
+#+END_SRC
+* refile
+I use refile extensively.
+#+BEGIN_SRC emacs-lisp
+  (setq-default
+   org-refile-targets '(("current.org" :maxlevel . 9)
+                        ("goals.org" :maxlevel . 9)
+                        ("kb.org" :maxlevel . 9)
+                        ("notnow.org" :maxlevel . 9)
+                        ("rwl.org" :maxlevel . 9))
+   org-outline-path-complete-in-steps nil ;; Refile in a single go
+   org-refile-use-outline-path 'file ;; Show full paths for refiling
+   )
+#+END_SRC
+* capture
+#+BEGIN_SRC emacs-lisp
+  (setq-default
+    org-default-notes-file "/home/david/s/doc/notes/notes.md"
+    org-capture-templates
+    ;; most-used templates
+    `(("t" "TODO" entry (file+headline ,(concat org-directory "/current.org") "todo")
+        "* TODO %?   :captured:\n" :prepend t)
+      ("h" "thought" entry (file+headline ,(concat org-directory "/current.org") "thoughts")
+        "* %?\n")
+      ("n" "note" entry (file+headline ,(concat org-directory "/current.org") "notes")
+        "* %?\n")
+      ;; templates for rwl.org
+      ("r" "Templates for stuff to read")
+      ("rb" "book" item (file+headline ,(concat org-directory "/rwl.org") "books")
+        "- [ ] %?\n" :prepend t)
+      ("rp" "paper" item (file+headline ,(concat org-directory "/rwl.org") "papers")
+        "- [ ] %?\n" :prepend t)
+      ("w" "Templates for stuff to watch")
+      ("wm" "movie" item (file+headline ,(concat org-directory "/rwl.org") "movies")
+        "- [ ] %?\n" :prepend t)
+      ("wt" "TV show" item (file+headline ,(concat org-directory "/rwl.org") "tv shows")
+        "- [ ] %?\n" :prepend t)
+      ("wa" "anime" item (file+headline ,(concat org-directory "/rwl.org") "anime")
+        "- [ ] %?\n" :prepend t)
+      ("wv" "video" item (file+headline ,(concat org-directory "/rwl.org") "videos")
+        "- [ ] %?\n" :prepend t)
+      ("l" "Templates for stuff to listen to")
+      ("lm" "music")
+      ("lmc" "check out" item (file+headline ,(concat org-directory "/rwl.org") "check out")
+        "- [ ] %?\n" :prepend t)
+      ("lmd" "download" item (file+headline ,(concat org-directory "/rwl.org") "download")
+        "- [ ] %?\n" :prepend t)
+      ("lp" "podcast" item (file+headline ,(concat org-directory "/rwl.org") "podcasts")
+        "- [ ] %?\n" :prepend t)
+      ;; misc template; goes to notes file
+      ("m" "Misc" plain (file "") "%?" :empty-lines 1))
+   )
+#+END_SRC
+* habits
+I use the ~org-habit~ module to track my habits. It's not enabled by default, so
+I have to enable it and set it up manually.
+#+BEGIN_SRC emacs-lisp
+  (setq-default 
+   ;; enable org-mode habit tracking
+   org-modules (append org-modules '(org-habit))
+   ;; log habits to the "logbook" drawer
+   org-log-into-drawer "LOGBOOK"
+   ;; on the habit-tracking graph in the agenda,
+   ;; show 1 month (30 days) of previous progress and 1 day of future progress
+   org-habit-preceding-days 30
+   org-habit-following-days 1
+   ;; move the habit-tracking graph to the right so that it doesn't cut off the
+   ;; habit name
+   org-habit-graph-column 80
+   ;; do not show the habits in the calendar!
+   org-habit-show-habits nil)
+#+END_SRC
+** display habits in special agenda block instead of schedule
+I like the habit-tracking graphs that appear in the agenda schedule by default,
+but I don't use the agenda schedule (see [[agenda]]), so this code displays the
+habit-tracking graphs in their own agenda block instead.
+#+BEGIN_SRC emacs-lisp
+  (defvar my/org-habit-show-graphs-everywhere t
+    "If non-nil, show habit graphs in all types of agenda buffers.
+
+    Normally, habits display consistency graphs only in
+    \"agenda\"-type agenda buffers, not in other types of agenda
+    buffers.  Set this variable to any non-nil variable to show
+    consistency graphs in all Org mode agendas.")
+
+  (defun my/org-agenda-mark-habits ()
+    "Mark all habits in current agenda for graph display.
+
+    This function enforces `my/org-habit-show-graphs-everywhere' by
+    marking all habits in the current agenda as such.  When run just
+    before `org-agenda-finalize' (such as by advice; unfortunately,
+    `org-agenda-finalize-hook' is run too late), this has the effect
+    of displaying consistency graphs for these habits.
+
+    When `my/org-habit-show-graphs-everywhere' is nil, this function
+    has no effect."
+    (when (and my/org-habit-show-graphs-everywhere
+               (not (get-text-property (point)
+                                       'org-series)))
+      (let ((cursor (point)) item
+            data)
+        (while (setq cursor (next-single-property-change cursor 'org-marker))
+          (setq item (get-text-property cursor 'org-marker))
+          (when (and item
+                     (org-is-habit-p item))
+            (with-current-buffer (marker-buffer item)
+              (setq data (org-habit-parse-todo item)))
+            (put-text-property cursor
+                               (next-single-property-change cursor 'org-marker)
+                               'org-habit-p
+                               data))))))
+
+  (advice-add #'org-agenda-finalize :before #'my/org-agenda-mark-habits)
+#+END_SRC
+* projects
+** helper functions
+taken from http://doc.norang.ca/org-mode.html#GTDWeeklyReview
+#+BEGIN_SRC emacs-lisp
+  (defun bh/is-project-p ()
+    "Any task with a todo keyword subtask"
+    (save-restriction (widen)
+                      (let ((has-subtask)
+                            (subtree-end (save-excursion
+                                           (org-end-of-subtree t)))
+                            (is-a-task (member (nth 2
+                                                    (org-heading-components)) org-todo-keywords-1)))
+                        (save-excursion
+                          (forward-line 1)
+                          (while (and (not has-subtask)
+                                      (< (point) subtree-end)
+                                      (re-search-forward "^\*+ " subtree-end t))
+                            (when (member (org-get-todo-state) org-todo-keywords-1)
+                              (setq has-subtask t))))
+                        (and is-a-task has-subtask))))
+  ;; note that this function is exactly the same as bh/is-project-p except for the
+  ;; last line
+  (defun bh/is-task-p ()
+    "Any task with a todo keyword and no subtask"
+    (save-restriction (widen)
+                      (let ((has-subtask)
+                            (subtree-end (save-excursion
+                                           (org-end-of-subtree t)))
+                            (is-a-task (member (nth 2
+                                                    (org-heading-components)) org-todo-keywords-1)))
+                        (save-excursion
+                          (forward-line 1)
+                          (while (and (not has-subtask)
+                                      (< (point) subtree-end)
+                                      (re-search-forward "^\*+ " subtree-end t))
+                            (when (member (org-get-todo-state) org-todo-keywords-1)
+                              (setq has-subtask t))))
+                        (and is-a-task
+                             (not has-subtask)))))
+  (defun bh/find-project-task ()
+    "Move point to the parent (project) task if any"
+    (save-restriction (widen)
+                      (let ((parent-task (save-excursion
+                                           (org-back-to-heading 'invisible-ok)
+                                           (point))))
+                        (while (org-up-heading-safe)
+                          (when (member (nth 2
+                                             (org-heading-components)) org-todo-keywords-1)
+                            (setq parent-task (point))))
+                        (goto-char parent-task)
+                        parent-task)))
+  (defun bh/is-project-subtree-p ()
+    "Any task with a todo keyword that is in a project subtree.
+  Callers of this function already widen the buffer view."
+    (let ((task (save-excursion
+                  (org-back-to-heading 'invisible-ok)
+                  (point))))
+      (save-excursion
+        (bh/find-project-task)
+        (if (equal (point) task)
+            nil
+          t))))
+  ;; any TODO keyword that is a child of another TODO keyword. So for the purposes
+  ;; of this function, leaf nodes are also subprojects
+  (defun bh/is-subproject-p ()
+    "Any task which is a subtask of another project"
+    (let ((is-subproject)
+          (is-a-task (member (nth 2
+                                  (org-heading-components)) org-todo-keywords-1)))
+      (save-excursion
+        (while (and (not is-subproject)
+                    (org-up-heading-safe))
+          (when (member (nth 2
+                             (org-heading-components)) org-todo-keywords-1)
+            (setq is-subproject t))))
+      (and is-a-task is-subproject)))
+  (defun bh/skip-non-stuck-projects ()
+    "Skip trees that are not stuck projects"
+    ;; (bh/list-sublevels-for-projects-indented)
+    (save-restriction (widen)
+                      (let ((next-headline (save-excursion
+                                             (or (outline-next-heading)
+                                                 (point-max)))))
+                        (if (bh/is-project-p)
+                            (let* ((subtree-end (save-excursion
+                                                  (org-end-of-subtree t)))
+                                   (has-next))
+                              (save-excursion
+                                (forward-line 1)
+                                (while (and (not has-next)
+                                            (< (point) subtree-end)
+                                            (re-search-forward "^\\*+ NEXT " subtree-end
+                                                               t))
+                                  (unless (member "WAITING" (org-get-tags-at))
+                                    (setq has-next t))))
+                              (if has-next next-headline nil)) ; a stuck project, has subtasks but no next task
+                          next-headline))))
+  (defun bh/skip-non-projects ()
+    "Skip trees that are not projects"
+    ;; (bh/list-sublevels-for-projects-indented)
+    (if (save-excursion
+          (bh/skip-non-stuck-projects))
+        (save-restriction (widen)
+                          (let ((subtree-end (save-excursion
+                                               (org-end-of-subtree t))))
+                            (cond
+                             ((bh/is-project-p) nil)
+                             ((and (bh/is-project-subtree-p)
+                                   (not (bh/is-task-p))) nil)
+                             (t subtree-end))))
+      (save-excursion
+        (org-end-of-subtree t))))
+#+END_SRC
+* calendar
+I use the [[https://github.com/kiwanami/emacs-calfw][calfw]] package for my calendar in place of the built-in agenda
+schedule, because it actually looks like a calendar, which I really like. I use
+[[https://github.com/kiwanami/emacs-calfw][org-gcal]] to sync this with google calendar, which is synced with an app on my phone.
+#+BEGIN_SRC emacs-lisp
+  ;; org-gcal settings are in emacs.secrets
+  (setq-default
+    org-gcal-client-id my-org-gcal-client-id
+    org-gcal-client-secret my-org-gcal-client-secret
+    org-gcal-file-alist `((my-org-gcal-email . ,(concat org-directory "/cal.org"))))
+
+  (defun dudelson/org-cal-transformer (s)
+    "test"
+    s)
+
+  ;; calfw-org settings
+  (setq-default
+   cfw:org-schedule-summary-transformer 'dudelson/org-cal-transformer)
+#+END_SRC
+* keybindings
+I have a keybinding to pull up my default org-mode view and a keybinding to open
+my personal notes file. The latter intentionally shadows the spacemacs default
+keybinding to open the scratch buffer, because I've put stuff I needed later in
+the scratch buffer and then lost it by restarting emacs too many times to trust
+the scratch buffer anymore.
+#+BEGIN_SRC emacs-lisp
+  ;; `SPC o o' opens my planner from anywhere in emacs
+  (defvar dudelson/toggle-planner-enabled nil
+    "Whether the planner view is enabled")
+  (defvar dudelson/toggle-planner-window-config nil
+    "Saves the window config so it can be restored later")
+  (defun dudelson/toggle-planner ()
+    "Toggles my custom planner view
+    When toggled on, displays my org file on the left, and my custom agenda on the right.
+    When toggled off, restores the window layout from before the last time it was toggled on"
+    (interactive)
+    (if dudelson/toggle-planner-enabled
+        ;; restore previous window configuration
+        (set-window-configuration dudelson/toggle-planner-window-config)
+      ;; otherwise store window configuration so it can be restored later
+      (setq dudelson/toggle-planner-window-config (current-window-configuration))
+      (find-file "~/s/doc/org/current.org")
+      (delete-other-windows)
+      (split-window-right-and-focus)
+      (find-file "~/s/doc/notes/notes.md"))
+    ;; toggle the thingy
+    (setq dudelson/toggle-planner-enabled (not (symbol-value dudelson/toggle-planner-enabled)))
+    (message "Toggled planner view %s" dudelson/toggle-planner-enabled))
+  (defun dudelson/open-notes ()
+    (interactive)
+    (find-file "~/s/doc/notes/notes.md"))
+  (spacemacs/set-leader-keys "bs" 'dudelson/open-notes)
+  (spacemacs/set-leader-keys "oo" 'dudelson/toggle-planner)
+  ;; org-capture keybinding that isn't as easily confused with the keybinding for
+  ;; calc-dispatch (SPC a c)
+  (spacemacs/set-leader-keys "oc" 'org-capture)
+#+END_SRC
+
+These keybindings do the same thing as the default ~C-ret~ and ~M-ret~
+keybindings, except they also automatically enter evil-insert-state.
+#+BEGIN_SRC emacs-lisp
+  (define-key org-mode-map (kbd "C-<return>") (lambda ()
+                                                (interactive)
+                                                (org-insert-heading-respect-content)
+                                                (evil-insert 1)))
+  (define-key org-mode-map (kbd "M-<return>") (lambda ()
+                                                (interactive)
+                                                (org-meta-return)
+                                                (evil-insert 1)))
+#+END_SRC
+
+~org-refile~ is already bound to ~, R~ in spacemacs, but ~, r~ isn't bound to
+anything, so why would I press the shift key when I don't have to?
+#+BEGIN_SRC emacs-lisp
+  (spacemacs/set-leader-keys-for-major-mode 'org-mode "r" 'org-refile)
+#+END_SRC
+This keybinding lets me switch to different agenda view from within the org
+agenda because I never bothered to figure out a better way to do it.
+#+BEGIN_SRC emacs-lisp
+  (spacemacs/set-leader-keys-for-major-mode 'org-agenda-mode "a" 'org-agenda)
+#+END_SRC
+* other useful tidbits
+** easy linking by id
+I use the "id" property to link between org files. This function automatically
+creates an id for a heading if one doesn't already exist and copies the id to
+the clipboard.
+#+BEGIN_SRC emacs-lisp
+  (defun dudelson/org-id-create-and-copy ()
+    (interactive)
+    (org-id-get-create)
+    (org-id-copy))
+  (define-key org-mode-map (kbd "C-l") 'dudelson/org-id-create-and-copy)
+#+END_SRC

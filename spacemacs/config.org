@@ -1,0 +1,318 @@
+#+PROPERTY: header-args :tangle yes
+* evil-mode
+~evil-escape-key-sequence~ allows me to define an alternative to emacs' ~C-g~ and
+spacemacs' default ~f d~.
+
+Because I sometimes press these escape sequence keys out of order,
+~evil-escape-unordered-key-sequence~ allows ~k j~ to be interpreted the same as
+~j k~.
+
+The default spacemacs behavior is to move the cursor back one character when I
+switch from insert-state to normal-state. This really annoys me, so I disabled it.
+#+BEGIN_SRC emacs-lisp
+  (setq-default
+   evil-escape-key-sequence "jk"
+   evil-escape-unordered-key-sequence t
+   evil-move-cursor-back nil
+   )
+#+END_SRC
+
+I also have a whole bunch of custom keybindings for evil-mode. I'm used to
+emacs-style ~C-a~ and ~C-e~ for jumping to the beginning and end of a line,
+respectively, so I add those to ~evil-insert-state~. In order to do this, I have
+to free up ~C-a~ by moving ~evil-paste-last-insertion~ to ~C-p~, which makes
+more sense anyway.
+#+BEGIN_SRC emacs-lisp
+  (define-key evil-insert-state-map (kbd "C-p") 'evil-paste-last-insertion)
+  (define-key evil-insert-state-map (kbd "C-a") (kbd "C-o ^"))
+  (define-key evil-insert-state-map (kbd "C-e") (kbd "C-o $"))
+#+END_SRC
+
+I rebound the keys for incrementing and decrementing numbers because I rebound
+~C-a~ above and ~C-x~ is a common prefix arg in emacs. I kind of like ~+~ and
+~-~ more anyway, they're easier for me to remember.
+#+BEGIN_SRC emacs-lisp
+  (define-key evil-normal-state-map (kbd "+") 'evil-numbers/inc-at-pt)
+  (define-key evil-normal-state-map (kbd "-") 'evil-numbers/dec-at-pt)
+#+END_SRC
+* scrolling
+Setting ~scroll-consevatively~ to a crazy high value makes sure that the point
+is always on the screen and fixes some issues I had early on with the scrolling
+being really sudden and jerky.
+
+I like to have an appreciable ~scroll-margin~; i.e. the point can never get less
+than 10 lines from the top or bottom of the screen. This is useful if I jump to
+a definition, because I'm guaranteed to have 10 lines of context on either side.
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default
+   scroll-margin 10
+   scroll-conservatively 1000000
+   )
+#+END_SRC
+* search
+WIP
+#+BEGIN_SRC emacs-lisp
+  (define-key evil-normal-state-map (kbd "s") 'evil-avy-goto-char-2)
+  ;; (define-key evil-normal-state-map (kbd "S") 'evil-change-whole-line)
+  (define-key evil-normal-state-map (kbd "/") 'helm-swoop)
+  ;; ? should be bound to helm-swoop-resume or whatever that function is actually called
+  ;; (define-key evil-normal-state-map (kbd "?") 'evil-snipe-S)
+  ;; (define-key evil-normal-state-map (kbd "C-s") 'evil-search-forward)
+#+END_SRC
+* whitespace                                                        :revisit:
+Spacemacs has a toggle that highlights whitespace, but what kind of whitespace
+is highlighted is controlled by this setting. See also
+~dotspacemacs-whitespace-cleanup~.
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default whitespace-style '(face
+                                   trailing
+                                   tabs
+                                   spaces
+                                   space-before-tab
+                                   indentation
+                                   space-after-tab
+                                   space-mark
+                                   tab-mark))
+#+END_SRC
+* indentation                                                       :revisit:
+I've found it's easiest to put all tab- and indentation-related settings in one
+place, because they're sort of tricky to get right, and this prevents me from
+going crazy. Coming from vim, emacs' tab settings seem like they try to do too
+much by default, and a lot of these settings attempt to make the tab key more
+predictable for me.
+
+First, prevent ~<~ and ~>~ from rounding to the nearest tabstop
+#+BEGIN_SRC emacs-lisp
+  (setq-default evil-shift-round nil)
+#+END_SRC
+
+Next, try to minimize unexpected tab behavior by telling the tab key to only
+indent.
+#+BEGIN_SRC emacs-lisp
+  (setq-default
+   tab-always-indent t
+   c-tab-always-indent t)
+#+END_SRC
+
+From [[https://www.emacswiki.org/emacs/IndentationBasics]]: True tab characters are
+displayed as being ~tab-width~ spaces wide. It's best to have these three
+settings always agree with each other to prevent interoperability problems with
+editors that can't separate tab width from indentation settings.
+#+BEGIN_SRC emacs-lisp
+  (setq-default
+   tab-width 4
+   c-basic-offset 4
+   cperl-indent-level 4)
+#+END_SRC
+
+Set the tab-stop list according to the tab width, and automatically indent when
+return is pressed
+#+BEGIN_SRC emacs-lisp
+  (setq-default tab-stop-list (number-sequence tab-width 120 tab-width))
+  (global-set-key (kbd "RET") 'newline-and-indent)
+#+END_SRC
+
+In text-mode, I want zero tab shenanigans. This was the only way I could come up
+with to get the tab key to reliably insert a tab without simultaneously screwing
+up things like ~c c~ and ~o~ in evil normal-state, which also depend on
+~insert-line-function~. It suits my needs fine.
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'text-mode-hook (lambda ()
+                              (define-key evil-insert-state-local-map (kbd "<tab>")
+                                (lambda () (interactive) (insert-tab)))))
+#+END_SRC
+* fill column
+I enable the fill column indicator by default in programming modes and set the
+color to go well with my default theme (solarized dark).
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default fci-rule-color "#073642")
+  (add-hook 'prog-mode-hook (lambda () (spacemacs/toggle-fill-column-indicator-on) nil))
+#+END_SRC
+* auto-completion and snippets                                      :revisit:
+Most of the autocompletion settings are for the spacemacs auto-completion layer
+in init.el, but here I try to clean up the suggestions window a bit, and define
+a less awkward keybinding for ~hippie-expand~.
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default company-tooltip-align-annotations t)
+  ;; note: this overrides `evil-scroll-line-up`
+  (define-key evil-insert-state-map (kbd "C-y") 'hippie-expand)
+#+END_SRC
+* japanese input
+Migemo is a package provided by the spacemacs japanese layer which allows
+searching for japanese text using romaji. In order for it to do this, you have
+to point it at the dictionary file (provided by installing migemo on your
+system). I also setup japanese input using mozc. I use mozc for this purpose
+system-wide, with the difference that emacs is the only application that does
+not require ibus.
+
+#+BEGIN_SRC emacs-lisp
+  (with-eval-after-load "migemo"
+    (setq-default migemo-dictionary "/usr/share/migemo/utf-8/migemo-dict"))
+  (setq-default default-input-method "japanese-mozc")
+#+END_SRC
+* LaTeX
+Set the pdf viewer for LaTeX compilation output.
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default TeX-view-program-selection '((output-pdf "PDF Tools")))
+#+END_SRC
+
+Lastly, javascript and react have a whole bunch of indentation-related variables
+to set.
+#+BEGIN_SRC emacs-lisp
+  (setq-default
+   js2-basic-offset tab-width css-indent-offset
+   tab-width web-mode-markup-indent-offset tab-width
+   web-mode-css-indent-offset tab-width web-mode-code-indent-offset
+   tab-width web-mode-attr-indent-offset tab-width)
+#+END_SRC
+* programming languages
+A lot of these settings are grouped with their respective spacemacs layers.
+** rust
+Enable racer, which provides code-completion for rust, and point it to the rust
+source.
+#+BEGIN_SRC emacs-lisp
+  (setq-default
+   racer-rust-src-path "/usr/src/rust/src"
+   rust-enable-racer t)
+#+END_SRC
+** android development
+I've never actually developed anything in android, but I tried once, which is
+why I have these settings. They may or may not work. Basically we tell the
+android package where the android SDK is located on the system and try to set
+some reasonable defaults for gradle.
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default
+   android-mode-sdk-dir "/home/david/.local/android/android-sdk-linux"
+   android-mode-builder 'gradle
+   android-mode-root-file-plist '(ant "AndroidManifest.xml"
+                                  maven "AndroidManifest.xml"
+                                  gradle "gradlew"))
+#+END_SRC
+* misc
+Stuff that I can't find a place for anywhere else
+** abbrevs
+Things that I'm too lazy to type correctly
+#+BEGIN_SRC emacs-lisp
+  (define-abbrev-table 'global-abbrev-table '(
+                                              ("Flase" "False")
+                                              ))
+  ;; stop asking whether to save newly added abbrev when quitting emacs
+  (setq save-abbrevs nil)
+  ;; turn on abbrev mode globally
+  (setq-default abbrev-mode t)
+#+END_SRC
+** highlight escape sequences and format strings
+#+BEGIN_SRC emacs-lisp
+  ;; highlight escape sequences
+  (hes-mode)
+  ;; highlight format strings in C-like languages
+  (defvar font-lock-format-specifier-face 'font-lock-format-specifier-face
+    "Face name to use for format specifiers.")
+
+  (defface font-lock-format-specifier-face '((t (:foreground "OrangeRed1")))
+    "Font Lock mode face used to highlight format specifiers."
+    :group 'font-lock-faces)
+
+  (add-hook 'c-mode-common-hook
+            (lambda ()
+              (font-lock-add-keywords nil
+                                      '(("[^%]\\(%\\([[:digit:]]+\\$\\)?[-+' #0*]*\\([[:digit:]]*\\|\\*\\|\\*[[:digit:]]+\\$\\)\\(\\.\\([[:digit:]]*\\|\\*\\|\\*[[:digit:]]+\\$\\)\\)?\\([hlLjzt]\\|ll\\|hh\\)?\\([aAbdiuoxXDOUfFeEgGcCsSpn]\\|\\[\\^?.[^]]*\\]\\)\\)"
+                                         1 font-lock-format-specifier-face t)
+                                        ("\\(%%\\)" 1 font-lock-format-specifier-face
+                                         t)))))
+#+END_SRC
+** hooks
+Various hooks that do useful things.
+#+BEGIN_SRC emacs-lisp
+  ;; copied from Elvind
+  (add-hook 'text-mode-hook 'auto-fill-mode)
+  (add-hook 'makefile-mode-hook 'whitespace-mode)
+  ;; turn on fill column indicator by default
+  ;; don't color delimiters in C-like code
+  (add-hook 'c-mode-hook (lambda () (rainbow-delimiters-mode -1)))
+  ;; save buffer on focus lost
+  ;; (add-hook 'focus-out-hook 'save-buffer)
+  ;; disable relative line numbers on focus lost
+  ;; (add-hook 'focus-out-hook 'nlinum-relative-off)
+  ;; (add-hook 'focus-in-hook 'nlinum-relative-on)
+  ;; auto-refersh magit status buffer when files change
+                                          ;(add-hook 'after-save-hook 'magit-after-save-refresh-status)
+  ;; disable evilification of Info pages
+  (evil-set-initial-state 'Info-mode 'emacs)
+#+END_SRC
+* experiments
+** disable mouse globally
+Right now I'm trying to figure out how to disable the mouse globally. No dice
+yet, but here is my latest attempt. I simply installed the ~disable-mouse~
+package from melpa and make a call to enable it here. It works for some things,
+but not others.
+
+#+BEGIN_SRC emacs-lisp
+  (global-disable-mouse-mode)
+#+END_SRC
+* todo
+** make evil-habits layer
+Here's the code
+#+BEGIN_SRC emacs-lisp
+  ;; Trying to build good habits
+  ;; These functions limit me to one keypress per second in evil-normal-state
+  ;; In the case of j and k, I should be using a count or avy
+  ;; In the case of h and l, I should be using f and t instead
+
+  ;; these vars store the last time that their respective key was pressed, in
+  ;; the format returned by `current-time'
+  (defvar dudelson/evil-habit-builder-last-keypress-j (current-time))
+  (defvar dudelson/evil-habit-builder-last-keypress-k (current-time))
+  (defvar dudelson/evil-habit-builder-last-keypress-h (current-time))
+  (defvar dudelson/evil-habit-builder-last-keypress-l (current-time))
+  (defun dudelson/evil-habit-builder (count)
+    "Prevents the victim (user) from pressing the h, j, k, or l keys in
+     succession more than once a second without a count"
+    (interactive "p")
+    (let* ((r (recent-keys))
+           (key (aref r (- (length r) 1)))
+           (prev-key (aref r (- (length r) 2)))
+           (cur (current-time))
+           (prev
+             (cond
+               ((= key ?j) 'dudelson/evil-habit-builder-last-keypress-j)
+               ((= key ?k) 'dudelson/evil-habit-builder-last-keypress-k)
+               ((= key ?h) 'dudelson/evil-habit-builder-last-keypress-h)
+               ((= key ?l) 'dudelson/evil-habit-builder-last-keypress-l)
+               (t "o shit waddup"))) ; this should never happen
+           (delta (time-subtract cur (symbol-value prev))))
+
+      ;; predicate checks if user pressed the same key twice consecutively,
+      ;; without using a count, in the space of less than a second
+          (if (and (= key prev-key) (= count 1) (= 0 (nth 1 delta)))
+                ;; then
+                (message
+                (cond
+                  ((or (= key ?j) (= key ?k)) "Use a count!")
+                  ((or (= key ?h) (= key ?l)) "Use f or t!")))
+                ;; else
+                (funcall
+                (cond
+                  ((= key ?j) 'evil-next-visual-line)
+                  ((= key ?k) 'evil-previous-visual-line)
+                  ((= key ?h) 'evil-backward-char)
+                  ((= key ?l) 'evil-forward-char)
+                  (t nil) ; should never happen
+                ) count))
+          (set prev cur)))
+
+  ;; ensure that evil-habit-builder is non-repeatable (because it is a motion)
+  (evil-set-command-property 'dudelson/evil-habit-builder :repeat nil)
+
+  ;; now let's build those damn habits!
+  (define-key evil-normal-state-map (kbd "h") 'dudelson/evil-habit-builder)
+  (define-key evil-normal-state-map (kbd "j") 'dudelson/evil-habit-builder)
+  (define-key evil-normal-state-map (kbd "k") 'dudelson/evil-habit-builder)
+  (define-key evil-normal-state-map (kbd "l") 'dudelson/evil-habit-builder)
+#+END_SRC

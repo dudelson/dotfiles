@@ -2,3 +2,6 @@ vim/view
 # ignore everything under weechat/ except .conf files
 weechat/*
 !weechat/*.conf
+# ignore elisp files that are auto-generated from literate config
+spacemacs/config.el
+spacemacs/org-config.el

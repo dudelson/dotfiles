@@ -32,20 +32,12 @@ values."
    dotspacemacs-configuration-layers
    '(
      csv
-     ;; ----------------------------------------------------------------
-     ;; Example of useful layers you may want to use right away.
-     ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
-     ;; <M-m f e R> (Emacs style) to install them.
-     ;; ----------------------------------------------------------------
-     ;; disabled auto-completion for now because it's taking 30-60 seconds to load
-     ;; in places where I don't even need it (like while writing this comment).
-     ;; (auto-completion
-     ;;  :variables
-     ;;  auto-completion-return-key-behavior nil
-     ;;  auto-completion-tab-key-behavior 'cycle
-     ;;  :disabled-for org
-     ;;  )
-     ;; better-defaults
+     (auto-completion
+      :variables
+      auto-completion-return-key-behavior nil
+      auto-completion-tab-key-behavior 'cycle
+      :disabled-for org emacs-lisp markdown
+      )
      c-c++
      fasd
      finance
@@ -82,15 +74,11 @@ values."
      react
      rust
      semantic
-     ;; (shell :variables
-     ;;        shell-default-height 30
-     ;;        shell-default-position 'bottom)
      shell-scripts
      (spell-checking
       :variables spell-checking-enable-by-default nil
       )
      syntax-checking
-     ;; version-control
      yaml
      )
    ;; List of additional packages that will be installed without being
@@ -117,10 +105,10 @@ values."
 
 (defun dotspacemacs/init ()
   "Initialization function.
-This function is called at the very startup of Spacemacs initialization
-before layers configuration.
-You should not put any user code in there besides modifying the variable
-values."
+   This function is called at the very startup of Spacemacs initialization
+   before layers configuration.
+   You should not put any user code in there besides modifying the variable
+   values."
   ;; This setq-default sexp is an exhaustive list of all the supported
   ;; spacemacs settings.
   (setq-default
@@ -315,7 +303,7 @@ values."
    ;; (default nil)
    dotspacemacs-smartparens-strict-mode nil
    ;; If non-nil pressing the closing parenthesis `)' key in insert mode passes
-   ;; over any automatically added closing parenthesis, bracket, quote, etc…
+   ;; over any automatically added closing parenthesis, bracket, quote, etc …
    ;; This can be temporary disabled by pressing `C-q' before `)'. (default nil)
    dotspacemacs-smart-closing-parenthesis nil
    ;; Select a scope to highlight delimiters. Possible values are `any',
@@ -338,7 +326,7 @@ values."
    ;; `trailing' to delete only the whitespace at end of lines, `changed'to
    ;; delete only whitespace for changed lines or `nil' to disable cleanup.
    ;; (default nil)
-   dotspacemacs-whitespace-cleanup nil
+   dotspacemacs-whitespace-cleanup 'changed
    ))
 
 (defun dotspacemacs/user-init ()
@@ -348,647 +336,37 @@ executes.
  This function is mostly useful for variables that need to be set
 before packages are loaded. If you are unsure, you should try in setting them in
 `dotspacemacs/user-config' first."
-
-  (setq-default
-   ;; whitespace settings copied from Elvind
-   ;; whitespace-style '(face tabs tab-mark newline-mark)
-   whitespace-display-mappings
-   '((newline-mark 10 [172 10])
-     (tab-mark 9 [9655 9]))
-
-   ;; smartparens
-   sp-highlight-pair-overlay nil
-   sp-highlight-wrap-overlay nil
-   sp-highlight-wrap-tag-overlay nil
-   )
-  )
+  ;; make exec-path-from-shell load my $PATH variable correctly from zsh
+  ;; see https://github.com/purcell/exec-path-from-shell/issues/40
+  (setq-default exec-path-from-shell-arguments '("-i")))
 
 (defun dotspacemacs/user-config ()
-  "Configuration function for user code.
-This function is called at the very end of Spacemacs initialization after
-layers configuration.
-This is the place where most of your configurations should be done. Unless it is
-explicitly specified that a variable should be set before a package is loaded,
-you should place your code here."
+  "Configuration function for user code. This function is called at the very end
+   of Spacemacs initialization after layers configuration. This is the place where
+   most of your configurations should be done. Unless it is explicitly specified
+   that a variable should be set before a package is loaded, you should place your
+   code here."
 
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; VARIABLES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  (setq-default
-   ;; escape everything with "jk" or "kj"
-   evil-escape-key-sequence "jk"
-   evil-escape-unordered-key-sequence t
-   ;; don't move the cursor back by 1 when exiting insert mode
-   evil-move-cursor-back nil
-   ;; 10 lines of context at top and bottom of screen (and no jumpiness)
-   scroll-margin 10
-   scroll-conservatively 1000000
-   ;; fill column indicator color
-   fci-rule-color "#073642"
-   ;; whitespace visualization settings
-   whitespace-style '(face trailing tabs spaces space-before-tab indentation space-after-tab space-mark tab-mark)
-   ;; make tab key behave as expected
-   ;; enable rust code completion
-   rust-enable-racer t
-   )
-  (setq
-   ;; point racer to the rust source code
-   racer-rust-src-path "/usr/src/rust/src"
-   ;; point android-mode to android sdk
-   android-mode-sdk-dir "/home/david/.local/android/android-sdk-linux"
-   ;; fix "can't find project root" error when creating android projects
-   android-mode-builder 'gradle
-   android-mode-root-file-plist '(ant "AndroidManifest.xml"
-                                  maven "AndroidManifest.xml"
-                                  gradle "gradlew")
-   ;; try to make the autocompletions not look terrible
-   company-tooltip-align-annotations t
-   ;; temporary improvement to linum formatting
-   ;; set latex pdf viewer
-   TeX-view-program-selection '((output-pdf "PDF Tools"))
-   default-input-method "japanese-mozc"
-   )
+  ;; load emacs secrets
+  (load-file (concat user-home-directory ".config/emacs.secrets"))
 
-  ;; set path to migemo dictionary file (for japanese layer)
-  (with-eval-after-load "migemo"
-    (setq migemo-dictionary "/usr/share/migemo/utf-8/migemo-dict"))
-
-  ;; disable mouse globally
-  (global-disable-mouse-mode)
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; TAB SETTINGS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;; I've found it's easiest to put all tab- and indentation-related settings in
-  ;; one place, because they're sort of tricky to get right, and this prevents
-  ;; me from going crazy.
- (setq
-  ;; prevent `<' and `>' from rounding to the nearest tabstop
-  evil-shift-round nil
-  ;; prevent unexpected tab behavior
-  tab-always-indent t
-  c-tab-always-indent t
-  )
-  ;; true tab characters are displayed as being <tab-width> spaces wide
-  ;; it's best to have these three settings always agree with each other to
-  ;; prevent interoperability problems with editors that can't separate tab width
-  ;; from indentation settings
-  ;; - from https://www.emacswiki.org/emacs/IndentationBasics
-  (setq-default tab-width 4)
-  (defvaralias 'c-basic-offset 'tab-width)
-  (defvaralias 'cperl-indent-level 'tab-width)
-
-  ;; set the tab-stop list according to the tab width
-  (setq tab-stop-list (number-sequence tab-width 120 tab-width))
-
-  ;; automatically indent when return is pressed
-  (global-set-key (kbd "RET") 'newline-and-indent)
-
-  ;; text-mode indentation settings
-  ;; In text-mode, I want zero tab shenanigans.
-  ;; This was the only way I could think of to get the tab key to reliably insert
-  ;; a tab, but not simultaneously screw up things like `cc' and `o' in evil normal
-  ;; state, which also depend on `insert-line-function'.
-  (add-hook 'text-mode-hook (lambda ()
-                              (define-key evil-insert-state-local-map (kbd "<tab>")
-                                (lambda () (interactive) (insert-tab)))))
-  ;; javascript/react indentation settings
-  (setq-default
-   js2-basic-offset tab-width
-   css-indent-offset tab-width
-   web-mode-markup-indent-offset tab-width
-   web-mode-css-indent-offset tab-width
-   web-mode-code-indent-offset tab-width
-   web-mode-attr-indent-offset tab-width)
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; KEY BINDINGS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;; less awkward keybinding for expanding snippets
-  ;; note: this overrides `evil-scroll-line-up`
-  (define-key evil-insert-state-map (kbd "C-y") 'hippie-expand)
-  ;; remap this function to a more intuitive key *and* free up C-a in insert mode
-  (define-key evil-insert-state-map (kbd "C-p") 'evil-paste-last-insertion)
-  ;; jump to beginning of (text) line in normal mode
-  (define-key evil-insert-state-map (kbd "C-a") (kbd "C-o ^"))
-  ;; jump to end of line in normal mode
-  (define-key evil-insert-state-map (kbd "C-e") (kbd "C-o $"))
-  ;; C-s is /, / is snipe-s, and s is vim normal mode s
-  (define-key evil-normal-state-map (kbd "s") 'evil-substitute)
-  (define-key evil-normal-state-map (kbd "S") 'evil-change-whole-line)
-  (define-key evil-normal-state-map (kbd "/") 'evil-snipe-s)
-  (define-key evil-normal-state-map (kbd "?") 'evil-snipe-S)
-  (define-key evil-normal-state-map (kbd "C-s") 'evil-search-forward)
-  ;; I can't use C-x in emacs for decrementing numbers, so rebind these to
-  ;; + and - instead
-  (define-key evil-normal-state-map (kbd "+") 'evil-numbers/inc-at-pt)
-  (define-key evil-normal-state-map (kbd "-") 'evil-numbers/dec-at-pt)
-
-  ;; Trying to build good habits
-  ;; These functions limit me to one keypress per second in evil-normal-state
-  ;; In the case of j and k, I should be using a count
-  ;; In the case of h and l, I should be using f and t instead
-
-  ;; these vars store the last time that their respective key was pressed, in
-  ;; the format returned by `current-time'
-  (defvar dudelson/evil-habit-builder-last-keypress-j (current-time))
-  (defvar dudelson/evil-habit-builder-last-keypress-k (current-time))
-  (defvar dudelson/evil-habit-builder-last-keypress-h (current-time))
-  (defvar dudelson/evil-habit-builder-last-keypress-l (current-time))
-  (defun dudelson/evil-habit-builder (count)
-    "Prevents the victim (user) from pressing the h, j, k, or l keys in
-succession more than once a second without a count"
-    (interactive "p")
-    (let* ((r (recent-keys))
-           (key (aref r (- (length r) 1)))
-           (prev-key (aref r (- (length r) 2)))
-           (cur (current-time))
-           (prev
-            (cond
-             ((= key ?j) 'dudelson/evil-habit-builder-last-keypress-j)
-             ((= key ?k) 'dudelson/evil-habit-builder-last-keypress-k)
-             ((= key ?h) 'dudelson/evil-habit-builder-last-keypress-h)
-             ((= key ?l) 'dudelson/evil-habit-builder-last-keypress-l)
-             (t "o shit waddup") ; this should never happen
-             ))
-           (delta (time-subtract cur (symbol-value prev))))
-
-      ;; predicate checks if user pressed the same key twice consecutively,
-      ;; without using a count, in the space of less than a second
-          (if (and (= key prev-key) (= count 1) (= 0 (nth 1 delta)))
-               ;; then
-               (message
-                (cond
-                 ((or (= key ?j) (= key ?k)) "Use a count!")
-                 ((or (= key ?h) (= key ?l)) "Use f or t!")))
-               ;; else
-               (funcall
-                (cond
-                 ((= key ?j) 'evil-next-visual-line)
-                 ((= key ?k) 'evil-previous-visual-line)
-                 ((= key ?h) 'evil-backward-char)
-                 ((= key ?l) 'evil-forward-char)
-                 (t nil) ; should never happen
-                ) count))
-          (set prev cur)))
-
-  ;; ensure that evil-habit-builder is non-repeatable (because it is a motion)
-  (evil-set-command-property 'dudelson/evil-habit-builder :repeat nil)
-
-  ;; now let's build those damn habits!
-  (define-key evil-normal-state-map (kbd "h") 'dudelson/evil-habit-builder)
-  (define-key evil-normal-state-map (kbd "j") 'dudelson/evil-habit-builder)
-  (define-key evil-normal-state-map (kbd "k") 'dudelson/evil-habit-builder)
-  (define-key evil-normal-state-map (kbd "l") 'dudelson/evil-habit-builder)
-
-  ;; `SPC o o' opens my planner from anywhere in emacs
-  (defvar dudelson/toggle-planner-enabled nil
-    "Whether the planner view is enabled")
-  (defvar dudelson/toggle-planner-window-config nil
-    "Saves the window config so it can be restored later")
-  (defun dudelson/toggle-planner ()
-    "Toggles my custom planner view
-When toggled on, displays my org file on the left, and my custom agenda on the right.
-When toggled off, restores the window layout from before the last time it was toggled on"
-    (interactive)
-    (if dudelson/toggle-planner-enabled
-        ;; restore previous window configuration
-        (set-window-configuration dudelson/toggle-planner-window-config)
-      ;; otherwise store window configuration so it can be restored later
-      (setq dudelson/toggle-planner-window-config (current-window-configuration))
-      (find-file "~/s/doc/org/current.org")
-      (delete-other-windows)
-      (split-window-right-and-focus)
-      (find-file "~/s/doc/notes/notes.md"))
-    ;; toggle the thingy
-    (setq dudelson/toggle-planner-enabled (not (symbol-value dudelson/toggle-planner-enabled)))
-    (message "Toggled planner view %s" dudelson/toggle-planner-enabled))
-  (defun dudelson/open-notes ()
-    (interactive)
-    (find-file "~/s/doc/notes/notes.md"))
-  (spacemacs/set-leader-keys "bs" 'dudelson/open-notes)
-  (spacemacs/set-leader-keys "oo" 'dudelson/toggle-planner)
-  ;; org-capture keybinding that isn't as easily confused with the keybinding for
-  ;; calc-dispatch (SPC a c)
-  (spacemacs/set-leader-keys "oc" 'org-capture)
-
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; HOOKS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;; copied from Elvind
-  (add-hook 'text-mode-hook 'auto-fill-mode)
-  (add-hook 'makefile-mode-hook 'whitespace-mode)
-  ;; turn on fill column indicator by default
-  (add-hook 'prog-mode-hook (lambda () (spacemacs/toggle-fill-column-indicator-on) nil))
-  ;; don't color delimiters in C-like code
-  (add-hook 'c-mode-hook (lambda () (rainbow-delimiters-mode -1)))
-  ;; save buffer on focus lost
-  ;; (add-hook 'focus-out-hook 'save-buffer)
-  ;; disable relative line numbers on focus lost
-  ;; (add-hook 'focus-out-hook 'nlinum-relative-off)
-  ;; (add-hook 'focus-in-hook 'nlinum-relative-on)
-  ;; auto-refersh magit status buffer when files change
-  ;(add-hook 'after-save-hook 'magit-after-save-refresh-status)
-  ;; disable evilification of Info pages
-  (evil-set-initial-state 'Info-mode 'emacs)
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ORG MODE ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; All org-mode settings need to be grouped
   ;; because spacemacs does not use the org-mode version that ships with emacs.
   ;; Thus any calls to org-mode functions or any attempt to set org-mode variables
   ;; outside of this `with-eval-after-load' statement will load the default org-mode
   ;; package instead of the spacemacs one, and will cause org-mode to behave weirdly.
   (with-eval-after-load 'org
-    (setq
-     ;; default place to look for org files
-     org-directory "~/s/doc/org"
-     ;; files that appear in the agenda
-     org-agenda-files (list
-                       (concat org-directory "/current.org")
-                       (concat org-directory "/goals.org"))
-    ;; syncing org-id-locations file across devices and keeping it in version
-    ;; control is essential for making links by ID work correctly. Therefore,
-    ;; move it into the org-directory.
-    org-id-locations-file (concat org-directory "/.org-id-locations")
-    ;; prevent org files from opening to random sections when I open them
-    org-startup-folded t
-    ;; enable org-mode habit tracking
-    org-modules (append org-modules '(org-habit))
-    ;; log habits to the "logbook" drawer
-    org-log-into-drawer "LOGBOOK"
-    ;; on the habit-tracking graph in the agenda,
-    ;; show 1 month (30 days) of previous progress and 1 day of future progress
-    org-habit-preceding-days 30
-    org-habit-following-days 1
-    ;; move the habit-tracking graph to the right so that it doesn't cut off the
-    ;; habit name
-    org-habit-graph-column 80
-    ;; do not show the habits in the calendar!
-    org-habit-show-habits nil
+    (let ((f (concat dotspacemacs-directory "org-config.el")))
+      (if (file-exists-p f)
+          (load-file f)
+        (message "Could not find custom org-mode configuration!")))
+      )
 
-    ;; make subheadings indented by 4 spaces
-    org-indent-indentation-per-level 2
-    ;; also make plain sublists indented by 4 spaces
-    org-list-indent-offset 2
-    ;; enable org-indent-mode globally
-    org-startup-indented t
+  (let ((f (concat dotspacemacs-directory "config.el")))
+    (if (file-exists-p f)
+        (load-file f)
+      (message "Could not find custom configuration!"))))
 
-    ;; see https://emacs.stackexchange.com/questions/17502/how-to-navigate-most-efficiently-to-the-start-or-end-of-the-main-text-of-an-org
-    ;; note that since spacemacs does a lot of keybinding changes to org-mode,
-    ;; this option does *not* make C-a/C-e work in the manner documented, but it
-    ;; does affect the evil-org keybindings ^/$ in the correct way. See the
-    ;; spacemacs documentation for the org layer for more.
-    org-special-ctrl-a/e t
-    ;; my custom todo keywords
-    ;; TODO items are those I plan to start in the immediate future
-    ;; WAITING items are those I have started and am waiting for events out of
-    ;;     my control to transpire before I can check off
-    ;; ON HOLD items are those which I have postponed doing for the time being
-    ;; DONE items have been completed
-    org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "|" "WAITING(w)" "ON HOLD(h)" "DONE(d)")
-      (sequence "HABIT" "|" "COMPLETE(c!)"))
-    org-todo-keyword-faces
-    '(("WAITING" . (:foreground "#b58900" :weight bold))
-      ("ON HOLD" . (:foreground "#dc322f" :weight bold))
-      ("HABIT" . (:foreground "#6c71c4" :weight bold))
-      ("NEXT" . (:foreground "#cb4b16" :weight bold)))
-    ;; Make the tags not squished to the left in the agenda
-    ;; Here they are right-aligned to column 100
-    org-agenda-tags-column -100
-    ;; org-agenda-compact-blocks t
-    org-log-done nil ;; don't insert a CLOSED timestamp when I complete a task
-    org-lowest-priority 69 ;; Priorities are in the range "A" to "E"
-    org-default-priority 68 ;; Default priority is "D"
-    ;; refile settings
-    org-refile-targets '(("current.org" :maxlevel . 9)
-      ("goals.org" :maxlevel . 9)
-      ("kb.org" :maxlevel . 9)
-      ("notnow.org" :maxlevel . 9)
-      ("rwl.org" :maxlevel . 9))
-    org-outline-path-complete-in-steps nil ;; Refile in a single go
-    org-refile-use-outline-path 'file ;; Show full paths for refiling
-    ;; capture settings
-    org-default-notes-file "/home/david/s/doc/notes/notes.md"
-    org-capture-templates
-    ;; most-used templates
-
-    `(("t" "TODO" entry (file+headline ,(concat org-directory "/current.org") "todo")
-       "* TODO %?   :captured:\n" :prepend t)
-      ("h" "thought" entry (file+headline ,(concat org-directory "/current.org") "thoughts")
-       "* %?\n")
-      ("n" "note" entry (file+headline ,(concat org-directory "/current.org") "notes")
-       "* %?\n")
-      ;; templates for rwl.org
-      ("r" "Templates for stuff to read")
-      ("rb" "book" item (file+headline ,(concat org-directory "/rwl.org") "books")
-       "- [ ] %?\n" :prepend t)
-      ("rp" "paper" item (file+headline ,(concat org-directory "/rwl.org") "papers")
-       "- [ ] %?\n" :prepend t)
-      ("w" "Templates for stuff to watch")
-      ("wm" "movie" item (file+headline ,(concat org-directory "/rwl.org") "movies")
-       "- [ ] %?\n" :prepend t)
-      ("wt" "TV show" item (file+headline ,(concat org-directory "/rwl.org") "tv shows")
-       "- [ ] %?\n" :prepend t)
-      ("wa" "anime" item (file+headline ,(concat org-directory "/rwl.org") "anime")
-       "- [ ] %?\n" :prepend t)
-      ("wv" "video" item (file+headline ,(concat org-directory "/rwl.org") "videos")
-       "- [ ] %?\n" :prepend t)
-      ("l" "Templates for stuff to listen to")
-      ("lm" "music")
-      ("lmc" "check out" item (file+headline ,(concat org-directory "/rwl.org") "check out")
-       "- [ ] %?\n" :prepend t)
-      ("lmd" "download" item (file+headline ,(concat org-directory "/rwl.org") "download")
-       "- [ ] %?\n" :prepend t)
-      ("lp" "podcast" item (file+headline ,(concat org-directory "/rwl.org") "podcasts")
-       "- [ ] %?\n" :prepend t)
-      ;; misc template; goes to notes file
-      ("m" "Misc" plain (file "") "%?" :empty-lines 1))
-
-    ;; deadline settings
-    org-deadline-warning-days 1
-  ;; taken from https://stackoverflow.com/questions/11384516/how-to-make-all-org-files-under-a-folder-added-in-agenda-list-automatically#11384907
-
-  (defun sa-find-org-file-recursively (&optional directory filext)
-    "Return .org and .org_archive files recursively from DIRECTORY.
-    If FILEXT is provided, return files with extension FILEXT instead."
-    (interactive "DDirectory: ")
-    (let* (org-file-list (case-fold-search t) ; filesystems are case sensitive
-                         (file-name-regex "^[^.#].*") ; exclude dot, autosave, and backup files
-
-                         (filext (or filext "org$\\\|org_archive"))
-                         (fileregex (format "%s\\.\\(%s$\\)" file-name-regex filext))
-                         (cur-dir-list (directory-files directory t file-name-regex)))
-      ;; loop over directory listing
-
-      (dolist (file-or-dir cur-dir-list org-file-list) ; returns org-file-list
-        (cond
-         ((file-regular-p file-or-dir) ; regular files
-          (if (string-match fileregex file-or-dir) ; org files
-              (add-to-list 'org-file-list file-or-dir)))
-         ((file-directory-p file-or-dir)
-          (dolist (org-file (sa-find-org-file-recursively file-or-dir
-                                                          filext)
-                            org-file-list) ; add files found to result
-            (add-to-list 'org-file-list org-file)))))))
-  (defvar my/org-habit-show-graphs-everywhere
-    t "If non-nil, show habit graphs in all types of agenda buffers.
-
-Normally, habits display consistency graphs only in
-\"agenda\"-type agenda buffers, not in other types of agenda
-buffers.  Set this variable to any non-nil variable to show
-consistency graphs in all Org mode agendas.")
-  (defun my/org-agenda-mark-habits ()
-    "Mark all habits in current agenda for graph display.
-
-This function enforces `my/org-habit-show-graphs-everywhere' by
-marking all habits in the current agenda as such.  When run just
-before `org-agenda-finalize' (such as by advice; unfortunately,
-`org-agenda-finalize-hook' is run too late), this has the effect
-of displaying consistency graphs for these habits.
-
-When `my/org-habit-show-graphs-everywhere' is nil, this function
-has no effect."
-    (when (and my/org-habit-show-graphs-everywhere
-               (not (get-text-property (point)
-                                       'org-series)))
-      (let ((cursor (point)) item
-            data)
-        (while (setq cursor (next-single-property-change cursor 'org-marker))
-          (setq item (get-text-property cursor 'org-marker))
-          (when (and item
-                     (org-is-habit-p item))
-            (with-current-buffer (marker-buffer item)
-              (setq data (org-habit-parse-todo item)))
-            (put-text-property cursor
-                               (next-single-property-change cursor 'org-marker)
-                               'org-habit-p
-                               data))))))
-  (advice-add #'org-agenda-finalize :before #'my/org-agenda-mark-habits)
-  ;; taken from http://doc.norang.ca/org-mode.html#GTDWeeklyReview
-  (defun bh/is-project-p ()
-    "Any task with a todo keyword subtask"
-    (save-restriction (widen)
-                      (let ((has-subtask)
-                            (subtree-end (save-excursion
-                                           (org-end-of-subtree t)))
-                            (is-a-task (member (nth 2
-                                                    (org-heading-components)) org-todo-keywords-1)))
-                        (save-excursion
-                          (forward-line 1)
-                          (while (and (not has-subtask)
-                                      (< (point) subtree-end)
-                                      (re-search-forward "^\*+ " subtree-end t))
-                            (when (member (org-get-todo-state) org-todo-keywords-1)
-                              (setq has-subtask t))))
-                        (and is-a-task has-subtask))))
-  ;; note that this function is exactly the same as bh/is-project-p except for the
-  ;; last line
-  (defun bh/is-task-p ()
-    "Any task with a todo keyword and no subtask"
-    (save-restriction (widen)
-                      (let ((has-subtask)
-                            (subtree-end (save-excursion
-                                           (org-end-of-subtree t)))
-                            (is-a-task (member (nth 2
-                                                    (org-heading-components)) org-todo-keywords-1)))
-                        (save-excursion
-                          (forward-line 1)
-                          (while (and (not has-subtask)
-                                      (< (point) subtree-end)
-                                      (re-search-forward "^\*+ " subtree-end t))
-                            (when (member (org-get-todo-state) org-todo-keywords-1)
-                              (setq has-subtask t))))
-                        (and is-a-task
-                             (not has-subtask)))))
-  (defun bh/find-project-task ()
-    "Move point to the parent (project) task if any"
-    (save-restriction (widen)
-                      (let ((parent-task (save-excursion
-                                           (org-back-to-heading 'invisible-ok)
-                                           (point))))
-                        (while (org-up-heading-safe)
-                          (when (member (nth 2
-                                             (org-heading-components)) org-todo-keywords-1)
-                            (setq parent-task (point))))
-                        (goto-char parent-task)
-                        parent-task)))
-  (defun bh/is-project-subtree-p ()
-    "Any task with a todo keyword that is in a project subtree.
-Callers of this function already widen the buffer view."
-    (let ((task (save-excursion
-                  (org-back-to-heading 'invisible-ok)
-                  (point))))
-      (save-excursion
-        (bh/find-project-task)
-        (if (equal (point) task)
-            nil
-          t))))
-  ;; any TODO keyword that is a child of another TODO keyword. So for the purposes
-  ;; of this function, leaf nodes are also subprojects
-  (defun bh/is-subproject-p ()
-    "Any task which is a subtask of another project"
-    (let ((is-subproject)
-          (is-a-task (member (nth 2
-                                  (org-heading-components)) org-todo-keywords-1)))
-      (save-excursion
-        (while (and (not is-subproject)
-                    (org-up-heading-safe))
-          (when (member (nth 2
-                             (org-heading-components)) org-todo-keywords-1)
-            (setq is-subproject t))))
-      (and is-a-task is-subproject)))
-  (defun bh/skip-non-stuck-projects ()
-    "Skip trees that are not stuck projects"
-    ;; (bh/list-sublevels-for-projects-indented)
-    (save-restriction (widen)
-                      (let ((next-headline (save-excursion
-                                             (or (outline-next-heading)
-                                                 (point-max)))))
-                        (if (bh/is-project-p)
-                            (let* ((subtree-end (save-excursion
-                                                  (org-end-of-subtree t)))
-                                   (has-next))
-                              (save-excursion
-                                (forward-line 1)
-                                (while (and (not has-next)
-                                            (< (point) subtree-end)
-                                            (re-search-forward "^\\*+ NEXT " subtree-end
-                                                               t))
-                                  (unless (member "WAITING" (org-get-tags-at))
-                                    (setq has-next t))))
-                              (if has-next next-headline nil)) ; a stuck project, has subtasks but no next task
-                          next-headline))))
-  (defun bh/skip-non-projects ()
-    "Skip trees that are not projects"
-    ;; (bh/list-sublevels-for-projects-indented)
-    (if (save-excursion
-          (bh/skip-non-stuck-projects))
-        (save-restriction (widen)
-                          (let ((subtree-end (save-excursion
-                                               (org-end-of-subtree t))))
-                            (cond
-                             ((bh/is-project-p) nil)
-                             ((and (bh/is-project-subtree-p)
-                                   (not (bh/is-task-p))) nil)
-                             (t subtree-end))))
-      (save-excursion
-        (org-end-of-subtree t))))
-  ;; variables which use custom functions defined above
-  (setq
-   ;; files that are candidates for searches in addition to agenda files
-   org-agenda-text-search-extra-files
-   (append
-    (sa-find-org-file-recursively (concat org-directory "/dates")) (sa-find-org-file-recursively (concat org-directory "/topics"))
-   (list (concat org-directory "/kb.org")
-         (concat org-directory "/notnow.org")
-         (concat org-directory "/rwl.org")))
-  org-agenda-custom-commands
-  '(("r" "Captured/To Review"
-     ((tags "captured|review"
-            ((org-agenda-overriding-header "Captured/To Review")
-             (org-tags-match-list-sublevels nil)))))
-    ("x" "Stuck Projects")
-    ("d" "David's planner view"
-     ((tags-todo "STYLE=\"habit\"+SCHEDULED<\"<tomorrow>\""
-                 ((org-agenda-overriding-header "Habits")))
-      (tags-todo "hw"
-                 ((org-agenda-overriding-header "Homework")))
-      (todo "TODO"
-            ((org-agenda-skip-function 'bh/skip-non-projects)
-             (org-agenda-overriding-header "Ongoing Projects")
-             (org-tags-match-list-sublevels nil)))
-      (tags-todo "TODO=\"TODO\"+SCHEDULED"
-                 ((org-tags-match-list-sublevels nil)
-                  (org-agenda-overriding-header "Unscheduled Tasks")))
-      (tags-todo "@parents+TODO=\"ON HOLD\""
-                 ((org-agenda-overriding-header "Waiting/On Hold Tasks")
-                  (org-tags-match-list-sublevels nil)))))))
-;; (tags-todo "+PRIORITY=\"A\""
-;;  ((org-agenda-skip-function
-;;    '(org-agenda-skip-entry-if 'scheduled))
-;;   (org-agenda-overriding-header
-;;    "Highest Priority Unscheduled Tasks")))
-;; (tags-todo "+PRIORITY=\"B\""
-;;  ((org-agenda-skip-function
-;;    '(org-agenda-skip-entry-if 'scheduled))
-;;   (org-agenda-overriding-header
-;;    "High Priority Unscheduled Tasks"))))))
-
-(defun dudelson/org-id-create-and-copy ()
-  (interactive)
-  (org-id-get-create)
-  (org-id-copy))
-;; C-RET and M-RET automatically enter insert state
-(define-key org-mode-map (kbd "C-<return>") (lambda ()
-                                              (interactive)
-                                              (org-insert-heading-respect-content)
-                                              (evil-insert 1)))
-(define-key org-mode-map (kbd "M-<return>") (lambda ()
-                                              (interactive)
-                                              (org-meta-return)
-                                              (evil-insert 1)))
-;; easily create links by ID
-(define-key org-mode-map (kbd "C-l") 'dudelson/org-id-create-and-copy)
-;; `org-refile' is bound to ,R by default, but ,r is also free, and I don't
-;; want to hit shift if I don't have to
-(spacemacs/set-leader-keys-for-major-mode 'org-mode "r" 'org-refile)
-;; (evil-set-initial-state 'org-agenda-mode 'emacs)
-;;(define-key org-agenda-mode-map (kbd "C-*") 'org-agenda-filter-remove-all)
-
-
-;; This is a cheap hack until I figure out a more robust way to change agenda
-;; views within the agenda
-(spacemacs/set-leader-keys-for-major-mode 'org-agenda-mode "a" 'org-agenda))
-;; (spacemacs/set-leader-keys-for-major-mode 'org-agenda-mode "1"
-;;   (lambda ()
-;; (interactive)
-;; (org-agenda-run-series "TEST"
-;; ((tags-todo "+PRIORITY=\"C\""
-;;             ((org-agenda-overriding-header "Priority C")
-;;              (org-tags-match-list-sublevels nil)))))
-;; )))
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  (define-abbrev-table 'global-abbrev-table '(
-                                              ("Flase" "False")
-    ))
-  ;; stop asking whether to save newly added abbrev when quitting emacs
-  (setq save-abbrevs nil)
-  ;; turn on abbrev mode globally
-  (setq-default abbrev-mode t)
-
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;; highlight escape sequences
-  (hes-mode)
-  ;; highlight format strings in C-like languages
-  (defvar font-lock-format-specifier-face
-    'font-lock-format-specifier-face
-    "Face name to use for format specifiers.")
-
-  (defface font-lock-format-specifier-face
-    '((t (:foreground "OrangeRed1")))
-    "Font Lock mode face used to highlight format specifiers."
-    :group 'font-lock-faces)
-
-  (add-hook 'c-mode-common-hook
-            (lambda ()
-              (font-lock-add-keywords nil
-                                      '(("[^%]\\(%\\([[:digit:]]+\\$\\)?[-+' #0*]*\\([[:digit:]]*\\|\\*\\|\\*[[:digit:]]+\\$\\)\\(\\.\\([[:digit:]]*\\|\\*\\|\\*[[:digit:]]+\\$\\)\\)?\\([hlLjzt]\\|ll\\|hh\\)?\\([aAbdiuoxXDOUfFeEgGcCsSpn]\\|\\[\\^?.[^]]*\\]\\)\\)"
-                                         1 font-lock-format-specifier-face t)
-                                        ("\\(%%\\)" 
-                                         1 font-lock-format-specifier-face t)) )))
- )
-
- ;; start emacs server
- (server-start)
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
@@ -997,12 +375,9 @@ Callers of this function already widen the buffer view."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(org-agenda-files
-   (quote
-    ("~/s/doc/org/stuffff.org" "~/s/doc/org/spacemacs.org" "~/s/doc/org/laptop.org")))
  '(package-selected-packages
    (quote
-    (mozc ddskk pangu-spacing japanese-holidays evil-tutor-ja cdb ccc avy-migemo migemo disable-mouse intero hlint-refactor hindent helm-hoogle haskell-snippets flycheck-haskell company-ghci company-ghc ghc haskell-mode company-cabal cmm-mode powerline ranger spinner log4e multiple-cursors hide-comnt evil-snipe bind-key packed avy auctex tern bind-map highlight haml-mode winum fuzzy flyspell-correct-helm flyspell-correct auto-dictionary ledger-mode flycheck-ledger csv-mode pdf-tools tablist fcitx async hydra iedit auto-complete rust-mode anaconda-mode yasnippet company smartparens evil undo-tree flycheck request helm helm-core markdown-mode alert projectile magit magit-popup git-commit with-editor f js2-mode s yapfify uuidgen py-isort pug-mode org-projectile org-download livid-mode skewer-mode simple-httpd live-py-mode link-hint git-link eyebrowse evil-visual-mark-mode evil-unimpaired evil-ediff dumb-jump company-shell company-emacs-eclim column-enforce-mode cargo yaml-mode ws-butler window-numbering which-key web-mode web-beautify volatile-highlights vi-tilde-fringe utop use-package tuareg toml-mode toc-org tagedit stickyfunc-enhance srefactor spacemacs-theme spaceline solarized-theme smooth-scrolling smeargle slim-mode scss-mode sass-mode restart-emacs rainbow-delimiters racer quelpa pyvenv pytest pyenv-mode py-yapf popwin pip-requirements persp-mode pcre2el paradox page-break-lines orgit org-repo-todo org-present org-pomodoro org-plus-contrib org-bullets open-junk-file ocp-indent nlinum-relative neotree move-text mmm-mode merlin markdown-toc magit-gitflow macrostep lua-mode lorem-ipsum linum-relative leuven-theme less-css-mode json-mode js2-refactor js-doc jade-mode info+ indent-guide ido-vertical-mode hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation highlight-escape-sequences help-fns+ helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-make helm-gtags helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger gh-md ggtags flycheck-rust flycheck-pos-tip flx-ido fish-mode fill-column-indicator fasd fancy-battery expand-region exec-path-from-shell evil-visualstar evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-args evil-anzu eval-sexp-fu emmet-mode elisp-slime-nav eclim disaster define-word cython-mode company-web company-tern company-statistics company-racer company-quickhelp company-c-headers company-anaconda coffee-mode cmake-mode clean-aindent-mode clang-format buffer-move bracketed-paste auto-yasnippet auto-highlight-symbol auto-compile android-mode aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
+    (caml org-category-capture org-gcal request-deferred deferred nlinum json-snatcher json-reformat insert-shebang gitignore-mode pos-tip calfw pythonic gntp web-completion-data dash-functional company-auctex mozc ddskk pangu-spacing japanese-holidays evil-tutor-ja cdb ccc avy-migemo migemo disable-mouse intero hlint-refactor hindent helm-hoogle haskell-snippets flycheck-haskell company-ghci company-ghc ghc haskell-mode company-cabal cmm-mode powerline ranger spinner log4e multiple-cursors hide-comnt evil-snipe bind-key packed avy auctex tern bind-map highlight haml-mode winum fuzzy flyspell-correct-helm flyspell-correct auto-dictionary ledger-mode flycheck-ledger csv-mode pdf-tools tablist fcitx async hydra iedit auto-complete rust-mode anaconda-mode yasnippet company smartparens evil undo-tree flycheck request helm helm-core markdown-mode alert projectile magit magit-popup git-commit with-editor f js2-mode s yapfify uuidgen py-isort pug-mode org-projectile org-download livid-mode skewer-mode simple-httpd live-py-mode link-hint git-link eyebrowse evil-visual-mark-mode evil-unimpaired evil-ediff dumb-jump company-shell company-emacs-eclim column-enforce-mode cargo yaml-mode ws-butler window-numbering which-key web-mode web-beautify volatile-highlights vi-tilde-fringe utop use-package tuareg toml-mode toc-org tagedit stickyfunc-enhance srefactor spacemacs-theme spaceline solarized-theme smooth-scrolling smeargle slim-mode scss-mode sass-mode restart-emacs rainbow-delimiters racer quelpa pyvenv pytest pyenv-mode py-yapf popwin pip-requirements persp-mode pcre2el paradox page-break-lines orgit org-repo-todo org-present org-pomodoro org-plus-contrib org-bullets open-junk-file ocp-indent nlinum-relative neotree move-text mmm-mode merlin markdown-toc magit-gitflow macrostep lua-mode lorem-ipsum linum-relative leuven-theme less-css-mode json-mode js2-refactor js-doc jade-mode info+ indent-guide ido-vertical-mode hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation highlight-escape-sequences help-fns+ helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-make helm-gtags helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger gh-md ggtags flycheck-rust flycheck-pos-tip flx-ido fish-mode fill-column-indicator fasd fancy-battery expand-region exec-path-from-shell evil-visualstar evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-args evil-anzu eval-sexp-fu emmet-mode elisp-slime-nav eclim disaster define-word cython-mode company-web company-tern company-statistics company-racer company-quickhelp company-c-headers company-anaconda coffee-mode cmake-mode clean-aindent-mode clang-format buffer-move bracketed-paste auto-yasnippet auto-highlight-symbol auto-compile android-mode aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
  '(paradox-github-token t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -1015,6 +390,7 @@ Callers of this function already widen the buffer view."
  '(font-lock-preprocessor-face ((t (:foreground "#cb4b16"))))
  '(font-lock-variable-name-face ((t (:foreground "#839496"))))
  '(helm-selection ((t (:background "#073642" :underline nil))))
+ '(evil-exchange-highlight-face ((t (:background "#073642"))))
  '(org-level-1 ((t (:inherit nil :foreground "#de322f" :height 1.0))))
  '(org-level-2 ((t (:inherit nil :foreground "#859900" :height 1.0))))
  '(org-level-3 ((t (:inherit nil :foreground "#268bd2" :height 1.0))))
