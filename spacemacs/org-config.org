@@ -405,7 +405,7 @@ schedule, because it actually looks like a calendar, which I really like. I use
   (setq-default
     org-gcal-client-id my-org-gcal-client-id
     org-gcal-client-secret my-org-gcal-client-secret
-    org-gcal-file-alist `((my-org-gcal-email . ,(concat org-directory "/cal.org"))))
+    org-gcal-file-alist `((,my-org-gcal-email . ,(concat org-directory "/cal.org"))))
 
   (defun dudelson/org-cal-transformer (s)
     "test"
