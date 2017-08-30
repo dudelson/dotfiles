@@ -377,42 +377,11 @@ schedule, because it actually looks like a calendar, which I really like. I use
    cfw:org-schedule-summary-transformer 'dudelson/org-cal-transformer)
 #+END_SRC
 * keybindings
-I have a keybinding to pull up my default org-mode view and a keybinding to open
-my personal notes file. The latter intentionally shadows the spacemacs default
-keybinding to open the scratch buffer, because I've put stuff I needed later in
-the scratch buffer and then lost it by restarting emacs too many times to trust
-the scratch buffer anymore.
+Add an easy keybinding for setting TODO keywords and bring back the old
+keybinding for setting tags that I liked and am used to
 #+BEGIN_SRC emacs-lisp
-  ;; `SPC o o' opens my planner from anywhere in emacs
-  (defvar dudelson/toggle-planner-enabled nil
-    "Whether the planner view is enabled")
-  (defvar dudelson/toggle-planner-window-config nil
-    "Saves the window config so it can be restored later")
-  (defun dudelson/toggle-planner ()
-    "Toggles my custom planner view
-    When toggled on, displays my org file on the left, and my custom agenda on the right.
-    When toggled off, restores the window layout from before the last time it was toggled on"
-    (interactive)
-    (if dudelson/toggle-planner-enabled
-        ;; restore previous window configuration
-        (set-window-configuration dudelson/toggle-planner-window-config)
-      ;; otherwise store window configuration so it can be restored later
-      (setq dudelson/toggle-planner-window-config (current-window-configuration))
-      (find-file "~/s/doc/org/current.org")
-      (delete-other-windows)
-      (split-window-right-and-focus)
-      (find-file "~/s/doc/notes/notes.md"))
-    ;; toggle the thingy
-    (setq dudelson/toggle-planner-enabled (not (symbol-value dudelson/toggle-planner-enabled)))
-    (message "Toggled planner view %s" dudelson/toggle-planner-enabled))
-  (defun dudelson/open-notes ()
-    (interactive)
-    (find-file "~/s/doc/notes/notes.md"))
-  (spacemacs/set-leader-keys "bs" 'dudelson/open-notes)
-  (spacemacs/set-leader-keys "oo" 'dudelson/toggle-planner)
-  ;; org-capture keybinding that isn't as easily confused with the keybinding for
-  ;; calc-dispatch (SPC a c)
-  (spacemacs/set-leader-keys "oc" 'org-capture)
+  (spacemacs/set-leader-keys-for-major-mode 'org-mode "w" 'org-todo)
+  (spacemacs/set-leader-keys-for-major-mode 'org-mode ":" 'org-set-tags)
 #+END_SRC
 
 These keybindings do the same thing as the default ~C-ret~ and ~M-ret~

@@ -236,6 +236,54 @@ some reasonable defaults for gradle.
 #+END_SRC
 * misc
 Stuff that I can't find a place for anywhere else
+** keybindings
+I have a keybinding to pull up my default org-mode view and a keybinding to open
+my personal notes file. The latter intentionally shadows the spacemacs default
+keybinding to open the scratch buffer, because I've put stuff I needed later in
+the scratch buffer and then lost it by restarting emacs too many times to trust
+the scratch buffer anymore.
+#+BEGIN_SRC emacs-lisp
+  ;; `SPC o o' opens my planner from anywhere in emacs
+  (defvar dudelson/toggle-planner-enabled nil
+    "Whether the planner view is enabled")
+
+  (defvar dudelson/toggle-planner-window-config nil
+    "Saves the window config so it can be restored later")
+
+  (defun dudelson/toggle-planner ()
+    "Toggles my custom planner view
+    When toggled on, displays my org file on the left, and my custom agenda on the right.
+    When toggled off, restores the window layout from before the last time it was toggled on"
+    (interactive)
+    (if dudelson/toggle-planner-enabled
+        ;; restore previous window configuration
+        (set-window-configuration dudelson/toggle-planner-window-config)
+      ;; otherwise store window configuration so it can be restored later
+      (setq dudelson/toggle-planner-window-config (current-window-configuration))
+      (find-file "~/s/doc/org/current.org")
+      (delete-other-windows)
+      (split-window-right-and-focus)
+      (find-file "~/s/doc/notes/notes.md"))
+    ;; toggle the thingy
+    (setq dudelson/toggle-planner-enabled (not (symbol-value dudelson/toggle-planner-enabled)))
+    (message "Toggled planner view %s" dudelson/toggle-planner-enabled))
+
+  (defun dudelson/open-notes ()
+    (interactive)
+    (find-file "~/s/doc/notes/notes.md"))
+
+  (defun dudelson/open-kaizen ()
+    (interactive)
+    (find-file "~/s/doc/org/topics/kaizen.org"))
+
+  (spacemacs/set-leader-keys "bs" 'dudelson/open-notes)
+  (spacemacs/set-leader-keys "oo" 'dudelson/toggle-planner)
+  ;; org-capture keybinding that isn't as easily confused with the keybinding for
+  ;; calc-dispatch (SPC a c)
+  (spacemacs/set-leader-keys "oc" 'org-capture)
+  ;; open kaizen file
+  (spacemacs/set-leader-keys "ok" 'dudelson/open-kaizen)
+#+END_SRC
 ** abbrevs
 Things that I'm too lazy to type correctly
 #+BEGIN_SRC emacs-lisp
@@ -286,6 +334,7 @@ Various hooks that do useful things.
   ;; disable evilification of Info pages
   (evil-set-initial-state 'Info-mode 'emacs)
 #+END_SRC
+
 * experiments
 ** disable mouse globally
 Right now I'm trying to figure out how to disable the mouse globally. No dice
