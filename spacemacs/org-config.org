@@ -436,16 +436,42 @@ keybindings, except they also automatically enter evil-insert-state.
                                                 (evil-insert 1)))
 #+END_SRC
 
-~org-refile~ is already bound to ~, R~ in spacemacs, but ~, r~ isn't bound to
-anything, so why would I press the shift key when I don't have to?
+Automatically git commit after weekly planning and daily adapting.
 #+BEGIN_SRC emacs-lisp
-  (spacemacs/set-leader-keys-for-major-mode 'org-mode "r" 'org-refile)
+  (defun dru/org-auto-vc (message)
+    "Automatically adds and commits all org files.
+     'message' arg is the commit message. A timestamp will be automatically
+     added after this message."
+    (shell-command
+      (concat
+        "cd ~/s/doc/org && git commit -am '"
+        message
+        " "
+        (format-time-string "%a %D")
+        "'")))
+
+  (defun dru/org-auto-vc-daily ()
+    "Automatically git commit all org files after daily adapting"
+    (interactive)
+    (dru/org-auto-vc "Daily adapting"))
+
+  (defun dru/org-auto-vc-weekly ()
+    "Automatically git commit all org files after weekly planning"
+    (interactive)
+    (dru/org-auto-vc "Weekly planning"))
+
+  (spacemacs/set-leader-keys-for-major-mode 'org-mode "vd" 'dru/org-auto-vc-daily)
+  (spacemacs/set-leader-keys-for-major-mode 'org-mode "vw" 'dru/org-auto-vc-weekly)
 #+END_SRC
-This keybinding lets me switch to different agenda view from within the org
-agenda because I never bothered to figure out a better way to do it.
-#+BEGIN_SRC emacs-lisp
-  (spacemacs/set-leader-keys-for-major-mode 'org-agenda-mode "a" 'org-agenda)
-#+END_SRC
+Might be useful for testing new project definition later
+(defun dru/is-project ()
+  "Print a message indicating whether the heading under point is a project"
+  (interactive)
+  (if (bh/is-project-p)
+      (message "project")
+    (message "nope")))
+
+(define-key org-mode-map (kbd "C-c C-m") 'dru/is-project)
 * other useful tidbits
 ** easy linking by id
 I use the "id" property to link between org files. This function automatically
