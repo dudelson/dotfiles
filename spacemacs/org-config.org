@@ -100,47 +100,51 @@ The function ~sa-find-file-recursively~ was taken from [[ https://stackoverflow.
    org-agenda-tags-column -100
    org-deadline-warning-days 1
    org-agenda-custom-commands
-    '(("r" "Captured/To Review"
-      ((tags "captured|review"
-             ((org-agenda-overriding-header "Captured/To Review")
-              (org-tags-match-list-sublevels nil)))))
-      ("x" "Stuck Projects")
+    '(("c" "Captured/To Review" tags "captured|review"
+          ((org-agenda-overriding-header "Captured/To Review")
+           (org-tags-match-list-sublevels nil)))
+      ("h" "Homework" tags-todo "hw"
+          ((org-agenda-overriding-header "Homework")
+           (org-agenda-sorting-strategy '(deadline-up effort-down))
+           (org-agenda-overriding-columns-format
+             "%50ITEM(Item) %HW_CLASS(Class) %DEADLINE(Deadline) %Effort")
+           (org-agenda-view-columns-initially t)))
+      ("w" "Waiting/Hold tasks" tags "TODO=\"ON HOLD\"|TODO=\"WAITING\""
+          ((org-agenda-overriding-header "Waiting/Hold Tasks")
+           (org-tags-match-list-sublevels nil)))
       ("d" "David's planner view"
+        ;; for some reason org-mode thinks my day starts at 04:00. Since timestamps with
+        ;; no time are at 00:00 by default, this makes the days all screwed up, so I've
+        ;; made them all off by 1 in the opposite direction to correct for this.
         ((tags-todo "STYLE=\"habit\"+SCHEDULED<\"<tomorrow>\""
-                  ((org-agenda-overriding-header "Habits")))
-        (tags-todo "hw"
-                  ((org-agenda-overriding-header "Homework")))
-        (todo "TODO"
-             ((org-agenda-skip-function 'bh/skip-non-projects)
-              (org-agenda-overriding-header "Ongoing Projects")
-              (org-tags-match-list-sublevels nil)))
-        (tags-todo "TODO=\"TODO\"+SCHEDULED"
-                  ((org-tags-match-list-sublevels nil)
-                   (org-agenda-overriding-header "Unscheduled Tasks")))
-        (tags-todo "@parents+TODO=\"ON HOLD\""
-                  ((org-agenda-overriding-header "Waiting/On Hold Tasks")
-                   (org-tags-match-list-sublevels nil)))))))
-  ;; (tags-todo "+PRIORITY=\"A\""
-  ;;  ((org-agenda-skip-function
-  ;;    '(org-agenda-skip-entry-if 'scheduled))
-  ;;   (org-agenda-overriding-header
-  ;;    "Highest Priority Unscheduled Tasks")))
-  ;; (tags-todo "+PRIORITY=\"B\""
-  ;;  ((org-agenda-skip-function
-  ;;    '(org-agenda-skip-entry-if 'scheduled))
-  ;;   (org-agenda-overriding-header
-  ;;    "High Priority Unscheduled Tasks"))))))
+                    ((org-agenda-overriding-header "Habits")))
+         (tags-todo "TODO=\"TODO\"+SCHEDULED<\"<-1d>\""
+                    ((org-agenda-overriding-header "Overdue Tasks")))
+         (tags-todo "TODO=\"TODO\"+SCHEDULED>=\"<-1d>\"+SCHEDULED<\"<today>\""
+                    ((org-agenda-overriding-header "Today's Tasks")))
+         (tags-todo "TODO=\"TODO\"+SCHEDULED>=\"<today>\"+SCHEDULED<\"<tomorrow>\""
+                    ((org-agenda-overriding-header "Tomorrow's Tasks")))
+         (todo "TODO"
+               ((org-agenda-overriding-header "Ongoing Projects")
+                (org-agenda-skip-function 'dru/keep-non-stuck-projects)
+                (org-tags-match-list-sublevels nil)))
+         (todo "TODO"
+                ((org-agenda-overriding-header "Stuck Projects")
+                 (org-agenda-skip-function 'dru/keep-stuck-projects)
+                 (org-tags-match-list-sublevels nil)))))))
 #+END_SRC
 * refile
 I use refile extensively.
 #+BEGIN_SRC emacs-lisp
+  ;; set an easy keybinding for refile
+  (spacemacs/set-leader-keys-for-major-mode 'org-mode "r" 'org-refile)
   (setq-default
    org-refile-targets '(("current.org" :maxlevel . 9)
                         ("goals.org" :maxlevel . 9)
                         ("kb.org" :maxlevel . 9)
                         ("notnow.org" :maxlevel . 9)
                         ("rwl.org" :maxlevel . 9))
-   org-outline-path-complete-in-steps nil ;; Refile in a single go
+   org-outline-path-complete-in-steps t ;; Refile in a single go
    org-refile-use-outline-path 'file ;; Show full paths for refiling
    )
 #+END_SRC
@@ -250,51 +254,54 @@ taken from http://doc.norang.ca/org-mode.html#GTDWeeklyReview
 #+BEGIN_SRC emacs-lisp
   (defun bh/is-project-p ()
     "Any task with a todo keyword subtask"
-    (save-restriction (widen)
-                      (let ((has-subtask)
-                            (subtree-end (save-excursion
-                                           (org-end-of-subtree t)))
-                            (is-a-task (member (nth 2
-                                                    (org-heading-components)) org-todo-keywords-1)))
-                        (save-excursion
-                          (forward-line 1)
-                          (while (and (not has-subtask)
-                                      (< (point) subtree-end)
-                                      (re-search-forward "^\*+ " subtree-end t))
-                            (when (member (org-get-todo-state) org-todo-keywords-1)
-                              (setq has-subtask t))))
-                        (and is-a-task has-subtask))))
+    (save-restriction
+      (widen)
+      (let ((has-subtask)
+            (subtree-end (save-excursion (org-end-of-subtree t)))
+            (is-a-task (member (nth 2 (org-heading-components)) org-todo-keywords-1)))
+      (save-excursion
+        (forward-line 1)
+        (while (and (not has-subtask)
+                    (< (point) subtree-end)
+                    (re-search-forward "^\*+ " subtree-end t))
+          (when (member (org-get-todo-state) org-todo-keywords-1)
+            (setq has-subtask t))))
+      (and is-a-task has-subtask))))
+
   ;; note that this function is exactly the same as bh/is-project-p except for the
   ;; last line
   (defun bh/is-task-p ()
     "Any task with a todo keyword and no subtask"
-    (save-restriction (widen)
-                      (let ((has-subtask)
-                            (subtree-end (save-excursion
-                                           (org-end-of-subtree t)))
-                            (is-a-task (member (nth 2
-                                                    (org-heading-components)) org-todo-keywords-1)))
-                        (save-excursion
-                          (forward-line 1)
-                          (while (and (not has-subtask)
-                                      (< (point) subtree-end)
-                                      (re-search-forward "^\*+ " subtree-end t))
-                            (when (member (org-get-todo-state) org-todo-keywords-1)
-                              (setq has-subtask t))))
-                        (and is-a-task
-                             (not has-subtask)))))
+    (save-restriction
+      (widen)
+      (let
+        ((has-subtask)
+         (subtree-end (save-excursion (org-end-of-subtree t)))
+         (is-a-task (member (nth 2 (org-heading-components)) org-todo-keywords-1)))
+        (save-excursion
+          (forward-line 1)
+          (while (and (not has-subtask)
+                      (< (point) subtree-end)
+                      (re-search-forward "^\*+ " subtree-end t))
+            (when (member (org-get-todo-state) org-todo-keywords-1)
+              (setq has-subtask t))))
+        (and is-a-task (not has-subtask)))))
+
   (defun bh/find-project-task ()
     "Move point to the parent (project) task if any"
-    (save-restriction (widen)
-                      (let ((parent-task (save-excursion
-                                           (org-back-to-heading 'invisible-ok)
-                                           (point))))
-                        (while (org-up-heading-safe)
-                          (when (member (nth 2
-                                             (org-heading-components)) org-todo-keywords-1)
-                            (setq parent-task (point))))
-                        (goto-char parent-task)
-                        parent-task)))
+    (save-restriction
+      (widen)
+      (let
+        ((parent-task
+          (save-excursion
+           (org-back-to-heading 'invisible-ok)
+           (point))))
+        (while (org-up-heading-safe)
+          (when (member (nth 2 (org-heading-components)) org-todo-keywords-1)
+            (setq parent-task (point))))
+        (goto-char parent-task)
+        parent-task)))
+
   (defun bh/is-project-subtree-p ()
     "Any task with a todo keyword that is in a project subtree.
   Callers of this function already widen the buffer view."
@@ -306,56 +313,88 @@ taken from http://doc.norang.ca/org-mode.html#GTDWeeklyReview
         (if (equal (point) task)
             nil
           t))))
+
   ;; any TODO keyword that is a child of another TODO keyword. So for the purposes
   ;; of this function, leaf nodes are also subprojects
   (defun bh/is-subproject-p ()
     "Any task which is a subtask of another project"
     (let ((is-subproject)
-          (is-a-task (member (nth 2
-                                  (org-heading-components)) org-todo-keywords-1)))
+          (is-a-task (member (nth 2 (org-heading-components)) org-todo-keywords-1)))
       (save-excursion
         (while (and (not is-subproject)
                     (org-up-heading-safe))
-          (when (member (nth 2
-                             (org-heading-components)) org-todo-keywords-1)
+          (when (member (nth 2 (org-heading-components)) org-todo-keywords-1)
             (setq is-subproject t))))
       (and is-a-task is-subproject)))
-  (defun bh/skip-non-stuck-projects ()
-    "Skip trees that are not stuck projects"
-    ;; (bh/list-sublevels-for-projects-indented)
-    (save-restriction (widen)
-                      (let ((next-headline (save-excursion
-                                             (or (outline-next-heading)
-                                                 (point-max)))))
-                        (if (bh/is-project-p)
-                            (let* ((subtree-end (save-excursion
-                                                  (org-end-of-subtree t)))
-                                   (has-next))
-                              (save-excursion
-                                (forward-line 1)
-                                (while (and (not has-next)
-                                            (< (point) subtree-end)
-                                            (re-search-forward "^\\*+ NEXT " subtree-end
-                                                               t))
-                                  (unless (member "WAITING" (org-get-tags-at))
-                                    (setq has-next t))))
-                              (if has-next next-headline nil)) ; a stuck project, has subtasks but no next task
-                          next-headline))))
+
+
   (defun bh/skip-non-projects ()
     "Skip trees that are not projects"
     ;; (bh/list-sublevels-for-projects-indented)
-    (if (save-excursion
-          (bh/skip-non-stuck-projects))
-        (save-restriction (widen)
-                          (let ((subtree-end (save-excursion
-                                               (org-end-of-subtree t))))
-                            (cond
-                             ((bh/is-project-p) nil)
-                             ((and (bh/is-project-subtree-p)
-                                   (not (bh/is-task-p))) nil)
-                             (t subtree-end))))
-      (save-excursion
-        (org-end-of-subtree t))))
+    (if (save-excursion (bh/skip-non-stuck-projects))
+        (save-restriction
+          (widen)
+          (let
+            ((subtree-end (save-excursion (org-end-of-subtree t))))
+            (cond
+             ((bh/is-project-p) nil)
+             ((and (bh/is-project-subtree-p)
+                   (not (bh/is-task-p))) nil)
+             (t subtree-end))))
+        (save-excursion
+          (org-end-of-subtree t))))
+
+  ;; NOTE these two functions are exactly the same except for one line
+  (defun dru/keep-stuck-projects ()
+    "Skip trees that are not stuck projects (i.e. only keep stuck projects)"
+    (save-restriction
+      (widen)
+      (let
+          ((next-headline
+            (save-excursion
+              (or (outline-next-heading)
+                  (point-max)))))
+        (if (bh/is-project-p)
+            (let*
+                ((subtree-end
+                  (save-excursion
+                    (org-end-of-subtree t)))
+                 (has-next))
+              (save-excursion
+                (forward-line 1)
+                (while (and (not has-next)
+                            (< (point) subtree-end)
+                            (re-search-forward "^\\*+ NEXT " subtree-end t))
+                  (unless (member "WAITING" (org-get-tags-at))
+                    (setq has-next t))))
+              (if has-next next-headline nil)) ; a stuck project, has subtasks but no next task
+          next-headline))))
+
+  (defun dru/keep-non-stuck-projects ()
+    "Skip trees that are not ongoing projects (i.e. only keep ongoing projects)"
+    (save-restriction
+      (widen)
+      (let
+          ((next-headline
+            (save-excursion
+              (or (outline-next-heading)
+                  (point-max)))))
+        (if (bh/is-project-p)
+            (let*
+                ((subtree-end
+                  (save-excursion
+                    (org-end-of-subtree t)))
+                 (has-next))
+              (save-excursion
+                (forward-line 1)
+                (while (and (not has-next)
+                            (< (point) subtree-end)
+                            (re-search-forward "^\\*+ NEXT " subtree-end t))
+                  (unless (member "WAITING" (org-get-tags-at))
+                    (setq has-next t))))
+              (if has-next nil next-headline))
+          next-headline))))
+
 #+END_SRC
 * calendar
 I use the [[https://github.com/kiwanami/emacs-calfw][calfw]] package for my calendar in place of the built-in agenda
