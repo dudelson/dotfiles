@@ -57,4 +57,4 @@
 	url = https://github.com/kenjimyzk/spacemacs-japanese
 [submodule "spacemacs/layers/calendar"]
 	path = spacemacs/layers/calendar
-	url = https://github.com/dudelson/spacemacs-calendar-layer
+	url = git@github.com:dudelson/spacemacs-calendar-layer.git
