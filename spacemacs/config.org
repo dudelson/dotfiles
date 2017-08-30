@@ -51,12 +51,32 @@ a definition, because I'm guaranteed to have 10 lines of context on either side.
    )
 #+END_SRC
 * search
-WIP
+I use the following search methods:
+    - *avy*: great for jumping around. I use this very very often, which is why
+      it's bound to ~s~.
+    - *evil-snipe*: enhanced evil-mode commands for ~f~, ~F~, ~t~, ~T~, ~/~, and
+      ~?~. For jumping around I also use these quite often.
+    - *helm-swoop*: better for actually searching than isearch or
+      evil-search-forward. I use this less than the jumping commands, which is
+      why this command is under the ~g~ prefix instead of being bound to ~/~,
+      for example.
+    - *evil-search-forward*: sometimes this functionality is better than
+      helm-swoop (for example if I need to do the same commands to a bunch of
+      occurances of a search), so I keep it around. Note that there are two
+      pairs of search functions: ~evil-search-forward~ is just a vim-like
+      interface to the built-in emacs isearch, and ~evil-ex-search-forward~ is a
+      pure evil implementation that tries to mimic vim's search as closely as
+      possible. See [[https://emacs.stackexchange.com/questions/24896/difference-between-evil-search-forward-and-evil-ex-search-forward][here]] for more details. Note that because my spacemacs
+      editing style is "vim", evil-search-module is set to evil-search, which
+      means if I don't use evil-ex-search-* a lot of things won't work as
+      expected.
 #+BEGIN_SRC emacs-lisp
   (define-key evil-normal-state-map (kbd "/") 'evil-snipe-s)
   (define-key evil-normal-state-map (kbd "?") 'evil-snipe-S)
-  (define-key evil-normal-state-map (kbd "g/") 'evil-search-forward)
-  (define-key evil-normal-state-map (kbd "g?") 'evil-search-backward)
+  (define-key evil-normal-state-map (kbd "g/") 'evil-ex-search-forward)
+  (define-key evil-normal-state-map (kbd "g?") 'evil-ex-search-backward)
+  (define-key evil-normal-state-map (kbd "n") 'evil-ex-search-next)
+  (define-key evil-normal-state-map (kbd "N") 'evil-ex-search-previous)
   (define-key evil-normal-state-map (kbd "s") 'evil-avy-goto-char-2)
   (define-key evil-normal-state-map (kbd "S") 'evil-avy-goto-line)
   (define-key evil-normal-state-map (kbd "gs") 'helm-swoop)
