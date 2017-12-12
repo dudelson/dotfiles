@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: _inline-latex
+# key: _inline
+# --
+\( $0 \)
