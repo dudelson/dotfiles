@@ -245,6 +245,10 @@ some reasonable defaults for gradle.
 #+END_SRC
 * misc
 Stuff that I can't find a place for anywhere else
+I don't know where to put this
+#+BEGIN_SRC emacs-lisp
+  (setq-default read-quoted-char-radix 16)
+#+END_SRC
 ** keybindings
 I have a keybinding to pull up my default org-mode view and a keybinding to open
 my personal notes file. The latter intentionally shadows the spacemacs default
