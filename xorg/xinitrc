@@ -24,6 +24,8 @@ done
 
 # start services
 
+xbindkeys
+
 if [ $DUDELSON_CONFIG_ENABLE_JAPANESE_IME = "1" ]; then
     # start fcitx (japanese input)
     # note that there's no need to check if the daemon is already running. The -r
