@@ -10,7 +10,7 @@ export SAVEHIST=10000                           # The maximum number of events t
 # time, formatted according to $TIMEFMT
 export REPORTTIME=5
 export TIMEFMT="%U user %S system %P cpu %*Es total"
-export EDITOR='vim'
+export EDITOR='emacsclient'
 export LANG='en_US.UTF-8'
 #export LANGUAGE='en_US.UTF-8'
 export LC_ALL='en_US.UTF-8'

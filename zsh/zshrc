@@ -114,7 +114,7 @@ alias pingtest='ping -c 3 8.8.8.8'
 
 # fasd aliases
 alias v='f -e nvim'
-alias e='f -e emacs'
+alias e='f -e emacsclient'
 alias o='a -e xdg-open'
 alias l='d -e "ls --group-directories-first --color=auto"'
 
