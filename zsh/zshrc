@@ -127,6 +127,16 @@ alias reg="ledger -X \$ --strict --explicit reg"
 alias lgr="ledger -X \$ --strict --explicit"
 alias rkn="reckon -u -f ~/EXPORT.CSV -a Assets:Checking -l ~/s/doc/finance/y2012-2016.txt -o $LEDGER_FILE --ignore-columns 1,3,6,7,8 --contains-header 1 --date-format \"%m/%d/%y\""
 
+# haskell aliases
+
+# TEMPORARY ALIAS UNTIL STACK 1.5.1 IS RELEASED ON ARCH
+# see https://stackoverflow.com/questions/45815830/cabal-2-0-required-when-using-a-nightly-snapshot-with-stack
+alias stack="~/.local/stackbin/stack" 
+
+alias ghc="stack ghc"
+alias ghci="stack ghci"
+alias runghc="stack runghc"
+
 # magic aliases (expand with <SPACE>)
 typeset -Ag abbreviations
 abbreviations=(
