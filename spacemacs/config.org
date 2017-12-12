@@ -234,6 +234,15 @@ some reasonable defaults for gradle.
                                   maven "AndroidManifest.xml"
                                   gradle "gradlew"))
 #+END_SRC
+* elfeed
+#+BEGIN_SRC emacs-lisp
+  ;; (defface elfeed-starred-feed
+  ;;   '((t :foreground "#859900"))
+  ;;   "Marks all entries from elfeed blogs tagged 'star'")
+
+  ;; (push '(star elfeed-starred-feed)
+  ;;       elfeed-search-face-alist)
+#+END_SRC
 * misc
 Stuff that I can't find a place for anywhere else
 ** keybindings
