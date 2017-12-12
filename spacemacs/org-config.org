@@ -21,6 +21,10 @@ right now and it makes me sad :'(.
    org-log-done nil ;; don't insert a CLOSED timestamp when I complete a task
    org-lowest-priority 69 ;; Priorities are in the range "A" to "E"
    org-default-priority 68 ;; Default priority is "D"
+   ;; change the attachment directory name from "data" to "media"
+   org-attach-directory "media/"
+   ;; set org-download to use org-attach
+   org-download-method 'attach
    )
 #+END_SRC
 
