@@ -159,7 +159,7 @@ abbreviations=(
 #############################################################################
 # from the zprezto utility module
 # makes a directory and changes to it.
-function mkdcd {
+function mkcd {
     [[ -n "$1" ]] && mkdir -p "$1" && builtin cd "$1"
 }
 
@@ -176,6 +176,16 @@ function pushdls {
 # Pops an entry off the directory stack and lists its contents.
 function popdls {
     builtin popd "$argv[-1]" && ls "${(@)argv[1,-2]}"
+}
+
+# like fasd's `z` alias but also perform an `ls`
+function zl {
+    fasd_cd -d $@ && ls --group-directories-first --color=auto
+}
+
+# like fasd's `zz` alias but also perform an `ls`
+function zzl {
+    fasd_cd -di $@ && ls --group-directories-first --color=auto
 }
 
 # enables magic expansion using <SPACE>
