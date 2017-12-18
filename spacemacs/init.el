@@ -492,6 +492,7 @@ This function is called at the very end of Spacemacs initialization."
  '(font-lock-keyword-face ((t (:foreground "#859900" :weight normal))))
  '(font-lock-preprocessor-face ((t (:foreground "#cb4b16"))))
  '(font-lock-variable-name-face ((t (:foreground "#839496"))))
+ '(helm-buffer-modified ((t (:inherit helm-buffer-not-saved))))
  '(helm-selection ((t (:background "#073642" :underline nil))))
  '(org-level-1 ((t (:inherit nil :foreground "#de322f" :height 1.0))))
  '(org-level-2 ((t (:inherit nil :foreground "#859900" :height 1.0))))
