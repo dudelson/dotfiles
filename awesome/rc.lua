@@ -219,6 +219,13 @@ textclock.wtype = setmetatable({}, { __call = function(_, ...) return {} end })
 textclock.widget.font = beautiful.font
 vicious.register(textclock.widget, textclock.wtype, textclock.format, TEXTCLOCK_WIDGET_UPDATE_INTERVAL)
 
+-- add calendar
+local cal = awful.widget.calendar_popup.month({
+  style_focus = { fg_color = "#ff0000" },
+  style_month = { border_width = 10, }
+})
+cal:attach(textclock.widget)
+
 
 -- CPU
 local function cpuf(widget, args)

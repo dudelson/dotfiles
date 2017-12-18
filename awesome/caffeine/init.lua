@@ -14,9 +14,9 @@ function on()
   if tonumber(retcode[3]) == 0 then
     local pid = raw_out:gsub("^%s*(.-)%s*$", "%1")
     local kill_cmd = "kill -9 " .. pid
-    awful.util.spawn_with_shell("xset s off -dpms && " .. kill_cmd .. " && notify-send 'caffeine on'")
+    awful.spawn.with_shell("xset s off -dpms && " .. kill_cmd .. " && notify-send 'caffeine on'")
   else
-    awful.util.spawn_with_shell("xset s off -dpms && notify-send 'caffeine on'")
+    awful.spawn.with_shell("xset s off -dpms && notify-send 'caffeine on'")
   end
 
   caffeine.widget:set_image("/home/david/s/dot/awesome/caffeine_on.png")
@@ -27,10 +27,10 @@ function off()
   local h = io.popen('ps -C xautolock -o pid --no-headers')
   local retcode = {h:close()}
   if tonumber(retcode[3]) == 0 then
-    awful.util.spawn_with_shell("xset s on +dpms && notify-send 'caffeine off'")
+    awful.spawn.with_shell("xset s on +dpms && notify-send 'caffeine off'")
   else
-    awful.util.spawn_with_shell("/usr/bin/xautolock -time 5 -locker /bin/lock -detectsleep &")
-    awful.util.spawn_with_shell("xset s on +dpms && notify-send 'caffeine off'")
+    awful.spawn.with_shell("/usr/bin/xautolock -time 5 -locker /bin/lock -detectsleep &")
+    awful.spawn.with_shell("xset s on +dpms && notify-send 'caffeine off'")
   end
 
   caffeine.widget:set_image("/home/david/s/dot/awesome/caffeine_off.png")
