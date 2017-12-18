@@ -71,10 +71,8 @@ local editor     = os.getenv("EDITOR") or "nano"
 local editor_cmd = terminal .. " -e " .. editor
 local browser    = "firefox"
 
-awful.util.tagnames = { "term", "web", "spc", "irc" }
 -- Table of layouts to cover with awful.layout.inc, order matters.
 awful.layout.layouts = {
-    awful.layout.suit.floating,
     awful.layout.suit.tile,
     awful.layout.suit.tile.left,
     awful.layout.suit.tile.bottom,
@@ -86,10 +84,11 @@ awful.layout.layouts = {
     awful.layout.suit.max,
     awful.layout.suit.max.fullscreen,
     awful.layout.suit.magnifier,
-    awful.layout.suit.corner.nw,
+    -- awful.layout.suit.corner.nw,
     -- awful.layout.suit.corner.ne,
     -- awful.layout.suit.corner.sw,
     -- awful.layout.suit.corner.se,
+    awful.layout.suit.floating,
 }
 
 local taglist_buttons = gears.table.join(
@@ -319,7 +318,19 @@ awful.screen.connect_for_each_screen(function (s)
     set_wallpaper(s)
 
     -- Tags
-    awful.tag(awful.util.tagnames, s, awful.layout.layouts)
+    awful.tag.add("term", {
+                    layout = awful.layout.suit.tile,
+                    screen = s,
+                    selected = true
+    })
+    awful.tag.add("web", {
+                    layout = awful.layout.suit.max,
+                    screen = s
+    })
+    awful.tag.add("spc", {
+                    layout = awful.layout.suit.tile,
+                    screen = s
+    })
 
     -- Create a promptbox for each screen
     s.mypromptbox = awful.widget.prompt()
@@ -549,11 +560,6 @@ globalkeys = gears.table.join(
                 awful.tag.find_by_name(awful.screen.focused(), "spc"):view_only()
               end,
               {description = "jump to spacemacs tag", group = "tag"}),
-    awful.key({ modkey, "Mod1"   }, ";",
-              function ()
-                awful.tag.find_by_name(awful.screen.focused(), "irc"):view_only()
-              end,
-              {description = "jump to irc tag", group = "tag"}),
 
     -- dynamic tagging
     awful.key({ modkey, "Shift" }, "a",
@@ -871,6 +877,5 @@ end
 -- autostart user-facing applications
 -- start them in the order of least process-intensive to most process-intensive
 run_once("urxvt")
-run_once("urxvt -e weechat")
 run_once("emacs")
 run_once("firefox")
