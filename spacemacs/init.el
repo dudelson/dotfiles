@@ -35,7 +35,7 @@ This function should only modify configuration layer settings."
       :variables
       auto-completion-return-key-behavior nil
       auto-completion-tab-key-behavior 'cycle
-      :disabled-for org emacs-lisp markdown)
+      :disabled-for org emacs-lisp markdown text)
      c-c++
      ;; calendar
      csv
