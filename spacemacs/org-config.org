@@ -190,6 +190,8 @@ I use refile extensively.
       ;; misc template; goes to notes file
       ("m" "Misc" plain (file "") "%?" :empty-lines 1))
    )
+  ;; start org-capture buffer in insert state
+  (add-hook 'org-capture-mode-hook 'evil-insert-state)
 #+END_SRC
 * habits
 I use the ~org-habit~ module to track my habits. It's not enabled by default, so
