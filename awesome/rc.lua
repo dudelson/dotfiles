@@ -171,6 +171,8 @@ local MEM_WIDGET_UPDATE_INTERVAL = 9
 local PKG_WIDGET_UPDATE_INTERVAL = 2 * 60 * 60 + 5 -- check about once every 2 hours
 local TEXTCLOCK_WIDGET_UPDATE_INTERVAL = 3
 
+local SYSMONITOR_PAUSED = false
+
 -- Custom textclock
 
 -- either 'st' for standard time or 'dt' for decimal time
@@ -229,8 +231,9 @@ cal:attach(textclock.widget)
 
 -- CPU
 local function cpuf(widget, args)
-  return string.format("CPU: %4.1f%% (%4.1f%% %4.1f%% %4.1f%% %4.1f%%) | ",
-                       args[1], args[2], args[3], args[4], args[5])
+  local freezestr = (SYSMONITOR_PAUSED and '[<span color="cyan">s</span>] ' or '')
+  return string.format("%sCPU: %4.1f%% (%4.1f%% %4.1f%% %4.1f%% %4.1f%%) | ",
+                       freezestr, args[1], args[2], args[3], args[4], args[5])
 end
 local cpu_widget = wibox.widget.textbox()
 cpu_widget.font = beautiful.font
@@ -490,8 +493,18 @@ globalkeys = gears.table.join(
               end,
               {description = "lua execute prompt", group = "awesome"}),
     -- pause sysmonitor stats updates
-    -- awful.key({ modkey },            "s",     beautiful.sysmonitor.toggle_freeze
-    --   {description="toggle pause sysmonitor", group="misc"}),
+    awful.key({ modkey },            "s",
+              function()
+                local register = vicious.activate
+                local unregister = function(w) vicious.unregister(w, true) end
+                local f = (SYSMONITOR_PAUSED and register or unregister)
+                SYSMONITOR_PAUSED = not SYSMONITOR_PAUSED
+                f(cpu_widget)
+                f(mem_widget)
+                f(pkg_widget)
+                vicious.force({ cpu_widget })
+              end,
+              {description="toggle pause sysmonitor", group="misc"}),
     -- Alt+tab
     awful.key({"Mod1",          }, "Tab",
               function () alttab.switch(1, "Alt_L", "Tab", "ISO_Left_Tab") end,
