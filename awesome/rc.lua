@@ -12,6 +12,9 @@ local naughty   = require("naughty")
 local hotkeys_popup = require("awful.hotkeys_popup").widget
 -- Enable VIM help for hotkeys widget when client with matching name is opened:
 require("awful.hotkeys_popup.keys.vim")
+-- custom widgets
+local vicious = require("vicious")
+local caffeine = require("caffeine")
 -- alt+tab functionality
 local alttab = require("alttab")
 -- yaml library for parsing my config
@@ -157,6 +160,134 @@ mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon,
 -- Keyboard map indicator and switcher
 mykeyboardlayout = awful.widget.keyboardlayout()
 
+-- {{{ Widgets
+
+-- widget vars
+-- try not to make things multiples of 60 or of each other, otherwise everything's
+-- running at the same time, causing CPU usage to spike periodically
+local BATTERY_WIDGET_UPDATE_INTERVAL = 61
+local CPU_WIDGET_UPDATE_INTERVAL = 2
+local MEM_WIDGET_UPDATE_INTERVAL = 9
+local PKG_WIDGET_UPDATE_INTERVAL = 2 * 60 * 60 + 5 -- check about once every 2 hours
+local TEXTCLOCK_WIDGET_UPDATE_INTERVAL = 3
+
+-- Custom textclock
+
+-- either 'st' for standard time or 'dt' for decimal time
+local TEXTCLOCK_DEFAULT_TIME_FORMAT = 'dt'
+
+local textclock = {}
+textclock.time_format = TEXTCLOCK_DEFAULT_TIME_FORMAT
+
+function textclock.format(widget, args)
+  local t = os.date('*t')
+  local timestr = ''
+  if textclock.time_format == "st" then
+    timestr = ' ' .. os.date('%R')
+  else
+    -- get the number of seconds since midnight
+    local secs = t.hour * 60 * 60 + t.min * 60 + t.sec
+    -- get the fractions of a second
+    local clockstr = tostring(os.clock())
+    local i, _ = clockstr:find('.')
+    local millis = tonumber('0' .. clockstr:sub(i))
+    -- put them together to get the number of seconds since midnight with
+    -- sub-second precision, and convert to decimal minutes (not seconds)
+    local dmins = math.floor((secs + millis) / 86.4)
+    timestr = '.' .. tostring(dmins)
+  end
+  local japn_days_of_week = { '日', '月', '火', '水', '木', '金', '土' }
+  return string.format(' %s %s%s ', japn_days_of_week[t.wday], os.date('%F'), timestr)
+end
+
+function textclock.toggle_activate()
+  if textclock.time_format == TEXTCLOCK_DEFAULT_TIME_FORMAT then
+    textclock.time_format = (TEXTCLOCK_DEFAULT_TIME_FORMAT == 'dt' and 'st' or 'dt')
+    vicious.force({ textclock.widget })
+  end
+end
+
+function textclock.toggle_deactivate()
+  if textclock.time_format ~= TEXTCLOCK_DEFAULT_TIME_FORMAT then
+    textclock.time_format = TEXTCLOCK_DEFAULT_TIME_FORMAT
+    vicious.force({ textclock.widget })
+  end
+end
+
+textclock.widget = wibox.widget.textbox()
+textclock.wtype = setmetatable({}, { __call = function(_, ...) return {} end })
+textclock.widget.font = beautiful.font
+vicious.register(textclock.widget, textclock.wtype, textclock.format, TEXTCLOCK_WIDGET_UPDATE_INTERVAL)
+
+
+-- CPU
+local function cpuf(widget, args)
+  return string.format("CPU: %4.1f%% (%4.1f%% %4.1f%% %4.1f%% %4.1f%%) | ",
+                       args[1], args[2], args[3], args[4], args[5])
+end
+local cpu_widget = wibox.widget.textbox()
+cpu_widget.font = beautiful.font
+vicious.register(cpu_widget, vicious.widgets.cpu, cpuf, CPU_WIDGET_UPDATE_INTERVAL)
+
+-- Mem
+local function memf(widget, args)
+  local in_use_pct, in_use_mb, total_mb, free_mb = args[1], args[2], args[3], args[4]
+  return string.format("Mem: %d%% (%.2fG/%.2fG, %.2fG free) | ",
+                       in_use_pct,
+                       in_use_mb/1024,
+                       total_mb/1024,
+                       free_mb/1024)
+end
+
+local mem_widget = wibox.widget.textbox()
+mem_widget.font = beautiful.font
+vicious.register(mem_widget, vicious.widgets.mem, memf, MEM_WIDGET_UPDATE_INTERVAL)
+
+-- Battery
+local function batf(widget, args)
+  local state, charge_lvl_pct = args[1], args[2]
+
+  local status_string = ''
+  -- CAUTION: below is *not* a hyphen. It is the unicode mathimatical minus
+  -- operator, U+2212.
+  if state ~= '−' then status_string = ' [<span color="#eaf51d">⚡</span>]' end
+
+  local pct_string = charge_lvl_pct .. '%'
+  if charge_lvl_pct <= 10 then
+    pct_string = string.format('<span color="#ff0000">%s%%</span>', charge_lvl_pct)
+  end
+
+  return string.format('Battery: %s%s | ', pct_string, status_string)
+end
+
+-- expose this function so that we can update the battery widget immediately
+-- when the AC is plugged/unplugged by writing a udev rule
+local function update_battery_widget()
+  vicious.force({ battery_widget })
+end
+
+local battery_widget = wibox.widget.textbox()
+battery_widget.font = beautiful.font
+vicious.register(battery_widget,
+                 vicious.widgets.bat,
+                 batf,
+                 BATTERY_WIDGET_UPDATE_INTERVAL,
+                 "BAT0")
+
+-- Pending package updates
+local function pkgf(widget, args)
+  local format = "%d"
+  if args[1] >= 50  then format = '<span color="#ff8c00">%d</span>' end
+  if args[1] >= 100 then format = '<span color="#ff0000">%d</span>' end
+
+  if args[1] == 0 then return '' else return string.format(format, args[1]) .. ' | ' end
+end
+
+local pkg_widget = wibox.widget.textbox()
+pkg_widget.font = beautiful.font
+vicious.register(pkg_widget, vicious.widgets.pkg, pkgf, PKG_WIDGET_UPDATE_INTERVAL, "Arch")
+-- }}}
+
 -- {{{ Screen 
 local function set_wallpaper(s)
   -- Wallpaper
@@ -174,7 +305,53 @@ end
 screen.connect_signal("property::geometry", set_wallpaper)
 
 -- Create a wibox for each screen and add it
-awful.screen.connect_for_each_screen(function (s) beautiful.at_screen_connect(s) end)
+awful.screen.connect_for_each_screen(function (s)
+    set_wallpaper(s)
+
+    -- Tags
+    awful.tag(awful.util.tagnames, s, awful.layout.layouts)
+
+    -- Create a promptbox for each screen
+    s.mypromptbox = awful.widget.prompt()
+    -- Create an imagebox widget which will contains an icon indicating which layout we're using.
+    -- We need one layoutbox per screen.
+    s.mylayoutbox = awful.widget.layoutbox(s)
+    s.mylayoutbox:buttons(awful.util.table.join(
+                           awful.button({ }, 1, function () awful.layout.inc( 1) end),
+                           awful.button({ }, 3, function () awful.layout.inc(-1) end),
+                           awful.button({ }, 4, function () awful.layout.inc( 1) end),
+                           awful.button({ }, 5, function () awful.layout.inc(-1) end)))
+    -- Create a taglist widget
+    s.mytaglist = awful.widget.taglist(s, awful.widget.taglist.filter.all, awful.util.taglist_buttons)
+
+    -- Create a tasklist widget
+    s.mytasklist = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, awful.util.tasklist_buttons)
+
+    -- Create the wibox
+    s.mywibox = awful.wibar({ position = "top", screen = s, bg = beautiful.bg_normal, fg = beautiful.fg_normal })
+
+    -- Add widgets to the wibox
+    s.mywibox:setup {
+        layout = wibox.layout.align.horizontal,
+        { -- Left widgets
+            layout = wibox.layout.fixed.horizontal,
+            s.mytaglist,
+            s.mypromptbox,
+        },
+        s.mytasklist, -- Middle widget
+        { -- Right widgets
+            layout = wibox.layout.fixed.horizontal,
+            cpu_widget,
+            mem_widget,
+            battery_widget,
+            pkg_widget,
+            caffeine.widget,
+            wibox.widget.systray(),
+            textclock.widget,
+            s.mylayoutbox,
+        },
+    }
+ end)
 -- }}}
 
 -- {{{ Mouse bindings
@@ -464,6 +641,26 @@ clientkeys = gears.table.join(
         end ,
         {description = "(un)maximize horizontally", group = "client"})
 )
+
+-- show non-standard timebox time as long as Mod1 + Mod4 + c is /held down/
+globalkeys = awful.util.table.join(globalkeys,
+                                   awful.key({"Mod1", "Mod4"   }, "c", function() end))
+key.connect_signal('press', function(k)
+                     if k.key == 'c'
+                       and #k.modifiers == 2
+                       and k.modifiers[1] == "Mod1"
+                       and k.modifiers[2] == "Mod4" then
+                       textclock.toggle_activate()
+                     end
+end)
+key.connect_signal('release', function(k)
+                     if k.key == 'c'
+                       and #k.modifiers == 2
+                       and k.modifiers[1] == "Mod1"
+                       and k.modifiers[2] == "Mod4" then
+                       textclock.toggle_deactivate()
+                     end
+end)
 
 -- Bind all key numbers to tags.
 -- Be careful: we use keycodes to make it work on any keyboard layout.
