@@ -249,6 +249,14 @@ I don't know where to put this
 #+BEGIN_SRC emacs-lisp
   (setq-default read-quoted-char-radix 16)
 #+END_SRC
+
+Tell emacs my name and email address
+#+BEGIN_SRC emacs-lisp
+  (defun make-email-addr (name domain ext)
+    (concat name "@" domain "." ext))
+  (setq user-full-name "David Udelson"
+        user-mail-address (make-email-addr "david" "davidudelson" "com"))
+#+END_SRC
 ** keybindings
 I have a keybinding to pull up my default org-mode view and a keybinding to open
 my personal notes file. The latter intentionally shadows the spacemacs default
