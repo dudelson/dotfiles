@@ -39,12 +39,11 @@ This function should only modify configuration layer settings."
      c-c++
      ;; calendar
      csv
-     fasd
      finance
-     (elfeed
-      :variables
-      rmh-elfeed-org-files (list "~/s/dot/spacemacs/feeds.org")
-      )
+     ;; (elfeed
+     ;;  :variables
+     ;;  rmh-elfeed-org-files (list "~/s/dot/spacemacs/feeds.org")
+     ;;  )
      emacs-lisp
      (evil-snipe
       :variables
@@ -66,7 +65,6 @@ This function should only modify configuration layer settings."
      (markdown
       ;; :variables markdown-live-preview-engine 'vmd
       )
-     nlinum
      ocaml
      (org
       :variables
