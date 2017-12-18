@@ -1,10 +1,12 @@
 local wibox = require("wibox")
 local awful = require("awful")
 
+local DIR = string.match(debug.getinfo(1, "S").source:sub(2), "(.*/)")
+
 local caffeine = {}
 
 caffeine.widget = wibox.widget.imagebox()
-caffeine.widget:set_image("/home/david/s/dot/awesome/caffeine_off.png")
+caffeine.widget.image = DIR .. "caffeine_off.png"
 caffeine.active = false
 
 function on()
@@ -19,7 +21,7 @@ function on()
     awful.spawn.with_shell("xset s off -dpms && notify-send 'caffeine on'")
   end
 
-  caffeine.widget:set_image("/home/david/s/dot/awesome/caffeine_on.png")
+  caffeine.widget.image = DIR .. "caffeine_on.png"
   caffeine.active = true
 end
 
@@ -33,7 +35,7 @@ function off()
     awful.spawn.with_shell("xset s on +dpms && notify-send 'caffeine off'")
   end
 
-  caffeine.widget:set_image("/home/david/s/dot/awesome/caffeine_off.png")
+  caffeine.widget.image = DIR .. "caffeine_off.png"
   caffeine.active = false
 end
 
