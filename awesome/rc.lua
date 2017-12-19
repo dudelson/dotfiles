@@ -182,23 +182,22 @@ textclock.time_format = TEXTCLOCK_DEFAULT_TIME_FORMAT
 
 function textclock.format(widget, args)
   local t = os.date('*t')
+  local sep = ''
   local timestr = ''
   if textclock.time_format == "st" then
-    timestr = ' ' .. os.date('%R')
+    sep = ' '
+    timestr = os.date('%R')
   else
     -- get the number of seconds since midnight
     local secs = t.hour * 60 * 60 + t.min * 60 + t.sec
-    -- get the fractions of a second
-    local clockstr = tostring(os.clock())
-    local i, _ = clockstr:find('.')
-    local millis = tonumber('0' .. clockstr:sub(i))
-    -- put them together to get the number of seconds since midnight with
-    -- sub-second precision, and convert to decimal minutes (not seconds)
-    local dmins = math.floor((secs + millis) / 86.4)
-    timestr = '.' .. tostring(dmins)
+    -- convert to decimal minutes (not seconds)
+    local dmins = math.floor(secs / 86.4)
+    sep = '.'
+    timestr = tostring(dmins)
   end
   local japn_days_of_week = { '日', '月', '火', '水', '木', '金', '土' }
-  return string.format(' %s %s%s ', japn_days_of_week[t.wday], os.date('%F'), timestr)
+  local fmt_str = ' <span color="orange">%s</span> %s%s<span color="#ffffff">%s</span> '
+  return string.format(fmt_str, japn_days_of_week[t.wday], os.date('%F'), sep, timestr)
 end
 
 function textclock.toggle_activate()
