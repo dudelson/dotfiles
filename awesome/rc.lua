@@ -193,7 +193,7 @@ function textclock.format(widget, args)
     -- convert to decimal minutes (not seconds)
     local dmins = math.floor(secs / 86.4)
     sep = '.'
-    timestr = tostring(dmins)
+    timestr = string.format('%03d', dmins)
   end
   local japn_days_of_week = { '日', '月', '火', '水', '木', '金', '土' }
   local fmt_str = ' <span color="orange">%s</span> %s%s<span color="#ffffff">%s</span> '
