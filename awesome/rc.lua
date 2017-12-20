@@ -226,7 +226,8 @@ vicious.register(textclock.widget, textclock.wtype, textclock.format, TEXTCLOCK_
 -- add calendar
 local cal = awful.widget.calendar_popup.month({
   style_focus = { fg_color = "#ff0000" },
-  style_month = { border_width = 10, }
+  style_month = { border_width = 10, },
+  start_sunday = true,
 })
 cal:attach(textclock.widget)
 
