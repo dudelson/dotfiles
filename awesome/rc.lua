@@ -195,9 +195,13 @@ function textclock.format(widget, args)
     sep = '.'
     timestr = string.format('%03d', dmins)
   end
-  local japn_days_of_week = { '日', '月', '火', '水', '木', '金', '土' }
-  local fmt_str = ' <span color="orange">%s</span> %s%s<span color="#ffffff">%s</span> '
-  return string.format(fmt_str, japn_days_of_week[t.wday], os.date('%F'), sep, timestr)
+  local japn_days_of_week = {
+    {'日', "#cccccc"}, {'月', "#f73434"}, {'火', "orange"}, {'水', "#0a92c0"},
+    {'木', "#6fde57"}, {'金', "#fcce00"}, {'土', "#853c32"}
+  }
+  local kanji, color = japn_days_of_week[t.wday][1], japn_days_of_week[t.wday][2]
+  local fmt_str = ' <span color="%s">%s</span> %s%s<span color="#ffffff">%s</span> '
+  return string.format(fmt_str, color, kanji, os.date('%m-%d'), sep, timestr)
 end
 
 function textclock.toggle_activate()
