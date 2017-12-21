@@ -797,7 +797,7 @@ awful.rules.rules = {
     },
     { rule = { class = "Firefox" },
       -- properties = { tag = tags[apps.browser.screen][apps.browser.tag] } },
-      properties = { tag = "web", name = "FOOBAR" }
+      properties = { tag = "web" }
     },
     { rule = { class = "Emacs" },
       -- properties = { tag = tags[apps.emacs.screen][apps.emacs.tag] } },
