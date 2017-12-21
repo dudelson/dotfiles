@@ -235,7 +235,7 @@ cal:attach(textclock.widget)
 -- CPU
 local function cpuf(widget, args)
   local freezestr = (SYSMONITOR_PAUSED and '[<span color="cyan">s</span>] ' or '')
-  return string.format("%sCPU: %4.1f%% (%4.1f%% %4.1f%% %4.1f%% %4.1f%%) | ",
+  return string.format(" | %sCPU: %4.1f%% (%4.1f%% %4.1f%% %4.1f%% %4.1f%%) | ",
                        freezestr, args[1], args[2], args[3], args[4], args[5])
 end
 local cpu_widget = wibox.widget.textbox()
@@ -350,7 +350,36 @@ awful.screen.connect_for_each_screen(function (s)
     s.mytaglist = awful.widget.taglist(s, awful.widget.taglist.filter.all, awful.util.taglist_buttons)
 
     -- Create a tasklist widget
-    s.mytasklist = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, awful.util.tasklist_buttons)
+    -- TODO: make color of brackets match color of text
+    -- TODO: brackets should always be visible even if text is too big to fit
+    local function uf(w, buttons, label, data, objects)
+      w:reset()
+      -- w.max_widget_size = 100
+      for i,o in ipairs(objects) do
+        local cache = data[o]
+        if cache then
+          tb = cache.tb
+        else
+          tb = wibox.widget.textbox()
+          tb.ellipsize = 'middle'
+          tb:buttons(awful.widget.common.create_buttons(buttons, o))
+
+          data[o] = { tb = tb }
+        end
+
+        local text, bg, bg_image, icon = label(o, tb)
+        tb:set_markup_silently('[' .. text .. ']')
+        w:add(tb)
+      end
+    end
+    s.mytasklist = awful.widget.tasklist(s,
+                                         awful.widget.tasklist.filter.currenttags,
+                                         awful.util.tasklist_buttons,
+                                         {},
+                                         uf)
+    -- Separator widget
+    local sep = wibox.widget.textbox()
+    sep.text = "| "
 
     -- Create the wibox
     s.mywibox = awful.wibar({ position = "top", screen = s, bg = beautiful.bg_normal, fg = beautiful.fg_normal })
@@ -361,6 +390,7 @@ awful.screen.connect_for_each_screen(function (s)
         { -- Left widgets
             layout = wibox.layout.fixed.horizontal,
             s.mytaglist,
+            sep,
             s.mypromptbox,
         },
         s.mytasklist, -- Middle widget
@@ -763,18 +793,21 @@ awful.rules.rules = {
                      keys = clientkeys,
                      buttons = clientbuttons } },
     { rule_any = { class = {"MPlayer", "pinentry", "Gimp", "feh"} },
-      properties = { floating = true } },
+      properties = { floating = true }
+    },
     { rule = { class = "Firefox" },
       -- properties = { tag = tags[apps.browser.screen][apps.browser.tag] } },
-      properties = { tag = "web"} },
+      properties = { tag = "web", name = "FOOBAR" }
+    },
     { rule = { class = "Emacs" },
       -- properties = { tag = tags[apps.emacs.screen][apps.emacs.tag] } },
-      properties = { tag = "spc" } },
+      properties = { tag = "spc" }
+    },
     -- this rule fixes a problem with urxvt and emacs where the desktop
     -- was visible along the bottom and right edges of the screen
     { rule_any = { class = { "Emacs", "URxvt" } },
-      properties = { size_hints_honor = false } },
-
+      properties = { size_hints_honor = false }
+    },
 }
 -- }}}
 
