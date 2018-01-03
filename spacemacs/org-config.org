@@ -52,13 +52,15 @@ to happen before I can complete it, HOLD means the task is on hold for now (I
 make sure to log the reason why), and DONE means done.
 #+BEGIN_SRC emacs-lisp
   (setq-default
-    org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "|" "WAITING(w)" "ON HOLD(h)" "DONE(d)")
+    org-todo-keywords '((sequence "TODO(t!)" "NEXT(n!)" "|" "WAITING(w@)" "HOLD(h@)" "STUCK(s@)" "CANCELLED(x@)" "DONE(d!)")
                         (sequence "HABIT" "|" "COMPLETE(c!)"))
     org-todo-keyword-faces
     '(("WAITING" . (:foreground "#b58900" :weight bold))
-      ("ON HOLD" . (:foreground "#dc322f" :weight bold))
+      ("HOLD" . (:foreground "#dc322f" :weight bold))
       ("HABIT" . (:foreground "#6c71c4" :weight bold))
-      ("NEXT" . (:foreground "#cb4b16" :weight bold))))
+      ("NEXT" . (:foreground "#cb4b16" :weight bold))
+      ("CANCELLED" . (:foreground "#dc322f" :weight bold))
+      ("STUCK" . (:foreground "#6c71c4" :weight bold))))
 #+END_SRC
 * agenda
 The function ~sa-find-file-recursively~ was taken from [[ https://stackoverflow.com/questions/11384516/how-to-make-all-org-files-under-a-folder-added-in-agenda-list-automatically#11384907][this stack overflow post]].
