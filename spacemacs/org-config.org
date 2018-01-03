@@ -68,7 +68,7 @@ The function ~sa-find-file-recursively~ was taken from [[ https://stackoverflow.
   (defun sa-find-org-file-recursively (&optional directory filext)
     "Return .org and .org_archive files recursively from DIRECTORY.
       If FILEXT is provided, return files with extension FILEXT instead."
-    (interactive "DDirectory: ")
+    (interactive "Directory: ")
     (let* (org-file-list (case-fold-search t) ; filesystems are case sensitive
                          (file-name-regex "^[^.#].*") ; exclude dot, autosave, and backup files
 
@@ -470,6 +470,7 @@ Automatically git commit after weekly planning and daily adapting.
 
   (spacemacs/set-leader-keys-for-major-mode 'org-mode "vd" 'dru/org-auto-vc-daily)
   (spacemacs/set-leader-keys-for-major-mode 'org-mode "vw" 'dru/org-auto-vc-weekly)
+  (spacemacs/declare-prefix-for-mode 'org-mode "mv" "commit")
 #+END_SRC
 Might be useful for testing new project definition later
 (defun dru/is-project ()
