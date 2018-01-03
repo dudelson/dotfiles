@@ -212,7 +212,7 @@ It should only modify the values of Spacemacs settings."
    ;; and TAB or `C-m' and `RET'.
    ;; In the terminal, these pairs are generally indistinguishable, so this only
    ;; works in the GUI. (default nil)
-   dotspacemacs-distinguish-gui-tab nil
+   dotspacemacs-distinguish-gui-tab t
    ;; If non-nil `Y' is remapped to `y$' in Evil states. (default nil)
    dotspacemacs-remap-Y-to-y$ nil
    ;; If non-nil, the shift mappings `<' and `>' retain visual state if used
@@ -220,7 +220,7 @@ It should only modify the values of Spacemacs settings."
    dotspacemacs-retain-visual-state-on-shift t
    ;; If non-nil, `J' and `K' move lines up and down when in visual mode.
    ;; (default nil)
-   dotspacemacs-visual-line-move-text nil
+   dotspacemacs-visual-line-move-text t
    ;; If non-nil, inverse the meaning of `g' in `:substitute' Evil ex-command.
    ;; (default nil)
    dotspacemacs-ex-substitute-global nil
@@ -231,7 +231,7 @@ It should only modify the values of Spacemacs settings."
    dotspacemacs-display-default-layout nil
    ;; If non-nil then the last auto saved layouts are resumed automatically upon
    ;; start. (default nil)
-   dotspacemacs-auto-resume-layouts nil
+   dotspacemacs-auto-resume-layouts t
    ;; If non-nil, auto-generate layout name when creating new layouts. Only has
    ;; effect when using the "jump to layout by number" commands. (default nil)
    dotspacemacs-auto-generate-layout-names nil
@@ -262,7 +262,7 @@ It should only modify the values of Spacemacs settings."
    ;; If non-nil, the paste transient-state is enabled. While enabled, pressing
    ;; `p' several times cycles through the elements in the `kill-ring'.
    ;; (default nil)
-   dotspacemacs-enable-paste-transient-state nil
+   dotspacemacs-enable-paste-transient-state t
    ;; Which-key delay in seconds. The which-key buffer is the popup listing
    ;; the commands bound to the current keystroke sequence. (default 0.4)
    dotspacemacs-which-key-delay 0.4
@@ -479,9 +479,10 @@ This function is called at the very end of Spacemacs initialization."
      ("reg" "%(binary) -f %(ledger-file) reg")
      ("payee" "%(binary) -f %(ledger-file) reg @%(payee)")
      ("account" "%(binary) -f %(ledger-file) reg %(account)"))))
+ '(org-agenda-files (quote ("~/s/doc/org/current.org")))
  '(package-selected-packages
    (quote
-    (symon string-inflection realgud test-simple loc-changes load-relative password-generator org-brain monokai-theme meghanada impatient-mode parent-mode helm-purpose window-purpose imenu-list gradle-mode seq flycheck-bashate flx evil-org ghub let-alist evil-lion anzu goto-chg ensime sbt-mode scala-mode editorconfig diminish dante pkg-info epl company-lua cmake-ide levenshtein restclient-helm ob-restclient ob-http company-restclient restclient know-your-http-well elfeed-web elfeed-org elfeed-goodies ace-jump-mode noflet elfeed ox-reveal calfw-org caml org-category-capture org-gcal request-deferred deferred nlinum json-snatcher json-reformat insert-shebang gitignore-mode pos-tip calfw pythonic gntp web-completion-data dash-functional company-auctex mozc ddskk pangu-spacing japanese-holidays evil-tutor-ja cdb ccc avy-migemo migemo disable-mouse intero hlint-refactor hindent helm-hoogle haskell-snippets flycheck-haskell company-ghci company-ghc ghc haskell-mode company-cabal cmm-mode powerline ranger spinner log4e multiple-cursors hide-comnt evil-snipe bind-key packed avy auctex tern bind-map highlight haml-mode winum fuzzy flyspell-correct-helm flyspell-correct auto-dictionary ledger-mode flycheck-ledger csv-mode pdf-tools tablist fcitx async hydra iedit auto-complete rust-mode anaconda-mode yasnippet company smartparens evil undo-tree flycheck request helm helm-core markdown-mode alert projectile magit magit-popup git-commit with-editor f js2-mode s yapfify uuidgen py-isort pug-mode org-projectile org-download livid-mode skewer-mode simple-httpd live-py-mode link-hint git-link eyebrowse evil-visual-mark-mode evil-unimpaired evil-ediff dumb-jump company-shell company-emacs-eclim column-enforce-mode cargo yaml-mode ws-butler window-numbering which-key web-mode web-beautify volatile-highlights vi-tilde-fringe utop use-package tuareg toml-mode toc-org tagedit stickyfunc-enhance srefactor spacemacs-theme spaceline solarized-theme smooth-scrolling smeargle slim-mode scss-mode sass-mode restart-emacs rainbow-delimiters racer quelpa pyvenv pytest pyenv-mode py-yapf popwin pip-requirements persp-mode pcre2el paradox page-break-lines orgit org-repo-todo org-present org-pomodoro org-plus-contrib org-bullets open-junk-file ocp-indent nlinum-relative neotree move-text mmm-mode merlin markdown-toc magit-gitflow macrostep lua-mode lorem-ipsum linum-relative leuven-theme less-css-mode json-mode js2-refactor js-doc jade-mode info+ indent-guide ido-vertical-mode hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation highlight-escape-sequences help-fns+ helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-make helm-gtags helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger gh-md ggtags flycheck-rust flycheck-pos-tip flx-ido fish-mode fill-column-indicator fasd fancy-battery expand-region exec-path-from-shell evil-visualstar evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-args evil-anzu eval-sexp-fu emmet-mode elisp-slime-nav eclim disaster define-word cython-mode company-web company-tern company-statistics company-racer company-quickhelp company-c-headers company-anaconda coffee-mode cmake-mode clean-aindent-mode clang-format buffer-move bracketed-paste auto-yasnippet auto-highlight-symbol auto-compile android-mode aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
+    (deft restclient-helm ob-restclient ob-http company-restclient restclient know-your-http-well elfeed-web elfeed-org elfeed-goodies ace-jump-mode noflet elfeed ox-reveal calfw-org caml org-category-capture org-gcal request-deferred deferred nlinum json-snatcher json-reformat insert-shebang gitignore-mode pos-tip calfw pythonic gntp web-completion-data dash-functional company-auctex mozc ddskk pangu-spacing japanese-holidays evil-tutor-ja cdb ccc avy-migemo migemo disable-mouse intero hlint-refactor hindent helm-hoogle haskell-snippets flycheck-haskell company-ghci company-ghc ghc haskell-mode company-cabal cmm-mode powerline ranger spinner log4e multiple-cursors hide-comnt evil-snipe bind-key packed avy auctex tern bind-map highlight haml-mode winum fuzzy flyspell-correct-helm flyspell-correct auto-dictionary ledger-mode flycheck-ledger csv-mode pdf-tools tablist fcitx async hydra iedit auto-complete rust-mode anaconda-mode yasnippet company smartparens evil undo-tree flycheck request helm helm-core markdown-mode alert projectile magit magit-popup git-commit with-editor f js2-mode s yapfify uuidgen py-isort pug-mode org-projectile org-download livid-mode skewer-mode simple-httpd live-py-mode link-hint git-link eyebrowse evil-visual-mark-mode evil-unimpaired evil-ediff dumb-jump company-shell company-emacs-eclim column-enforce-mode cargo yaml-mode ws-butler window-numbering which-key web-mode web-beautify volatile-highlights vi-tilde-fringe utop use-package tuareg toml-mode toc-org tagedit stickyfunc-enhance srefactor spacemacs-theme spaceline solarized-theme smooth-scrolling smeargle slim-mode scss-mode sass-mode restart-emacs rainbow-delimiters racer quelpa pyvenv pytest pyenv-mode py-yapf popwin pip-requirements persp-mode pcre2el paradox page-break-lines orgit org-repo-todo org-present org-pomodoro org-plus-contrib org-bullets open-junk-file ocp-indent nlinum-relative neotree move-text mmm-mode merlin markdown-toc magit-gitflow macrostep lua-mode lorem-ipsum linum-relative leuven-theme less-css-mode json-mode js2-refactor js-doc jade-mode info+ indent-guide ido-vertical-mode hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation highlight-escape-sequences help-fns+ helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-make helm-gtags helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger gh-md ggtags flycheck-rust flycheck-pos-tip flx-ido fish-mode fill-column-indicator fasd fancy-battery expand-region exec-path-from-shell evil-visualstar evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-args evil-anzu eval-sexp-fu emmet-mode elisp-slime-nav eclim disaster define-word cython-mode company-web company-tern company-statistics company-racer company-quickhelp company-c-headers company-anaconda coffee-mode cmake-mode clean-aindent-mode clang-format buffer-move bracketed-paste auto-yasnippet auto-highlight-symbol auto-compile android-mode aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
  '(paradox-github-token t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
