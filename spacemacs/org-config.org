@@ -90,17 +90,13 @@ The function ~sa-find-file-recursively~ was taken from [[ https://stackoverflow.
 
   (setq-default
    ;; files that appear in the agenda
-   org-agenda-files (list
-                     (concat org-directory "/current.org")
-                     (concat org-directory "/goals.org"))
+   org-agenda-files (list (concat org-directory "/current.org"))
    ;; files that are candidates for searches in addition to agenda files
    org-agenda-text-search-extra-files
     (append
       (sa-find-org-file-recursively (concat org-directory "/dates"))
-      (sa-find-org-file-recursively (concat org-directory "/topics"))
-      (list (concat org-directory "/kb.org")
-            (concat org-directory "/notnow.org")
-            (concat org-directory "/rwl.org")))
+      (sa-find-org-file-recursively (concat org-directory "/kb"))
+      (list (concat org-directory "/notnow.org")))
    ;; Make the tags not squished to the left in the agenda
    ;; Here they are right-aligned to column 100
    org-agenda-tags-column -100
@@ -146,9 +142,8 @@ I use refile extensively.
   (spacemacs/set-leader-keys-for-major-mode 'org-mode "r" 'org-refile)
   (setq-default
    org-refile-targets '(("current.org" :maxlevel . 9)
-                        ("goals.org" :maxlevel . 9)
-                        ("kb.org" :maxlevel . 9)
                         ("notnow.org" :maxlevel . 9)
+                        ("goals.org" :maxlevel . 9)
                         ("rwl.org" :maxlevel . 9))
    org-outline-path-complete-in-steps t ;; Refile in a single go
    org-refile-use-outline-path 'file ;; Show full paths for refiling
@@ -168,26 +163,26 @@ I use refile extensively.
         "* %?\n")
       ;; templates for rwl.org
       ("r" "Templates for stuff to read")
-      ("rb" "book" item (file+headline ,(concat org-directory "/rwl.org") "books")
+      ("rb" "book" item (file+headline ,(concat org-directory "/kb/rwl.org") "books")
         "- [ ] %?\n" :prepend t)
-      ("rp" "paper" item (file+headline ,(concat org-directory "/rwl.org") "papers")
+      ("rp" "paper" item (file+headline ,(concat org-directory "/kb/rwl.org") "papers")
         "- [ ] %?\n" :prepend t)
       ("w" "Templates for stuff to watch")
-      ("wm" "movie" item (file+headline ,(concat org-directory "/rwl.org") "movies")
+      ("wm" "movie" item (file+headline ,(concat org-directory "/kb/rwl.org") "movies")
         "- [ ] %?\n" :prepend t)
-      ("wt" "TV show" item (file+headline ,(concat org-directory "/rwl.org") "tv shows")
+      ("wt" "TV show" item (file+headline ,(concat org-directory "/kb/rwl.org") "tv shows")
         "- [ ] %?\n" :prepend t)
-      ("wa" "anime" item (file+headline ,(concat org-directory "/rwl.org") "anime")
+      ("wa" "anime" item (file+headline ,(concat org-directory "/kb/rwl.org") "anime")
         "- [ ] %?\n" :prepend t)
-      ("wv" "video" item (file+headline ,(concat org-directory "/rwl.org") "videos")
+      ("wv" "video" item (file+headline ,(concat org-directory "/kb/rwl.org") "videos")
         "- [ ] %?\n" :prepend t)
       ("l" "Templates for stuff to listen to")
       ("lm" "music")
-      ("lmc" "check out" item (file+headline ,(concat org-directory "/rwl.org") "check out")
+      ("lmc" "check out" item (file+headline ,(concat org-directory "/kb/rwl.org") "check out")
         "- [ ] %?\n" :prepend t)
-      ("lmd" "download" item (file+headline ,(concat org-directory "/rwl.org") "download")
+      ("lmd" "download" item (file+headline ,(concat org-directory "/kb/rwl.org") "download")
         "- [ ] %?\n" :prepend t)
-      ("lp" "podcast" item (file+headline ,(concat org-directory "/rwl.org") "podcasts")
+      ("lp" "podcast" item (file+headline ,(concat org-directory "/kb/rwl.org") "podcasts")
         "- [ ] %?\n" :prepend t)
       ;; misc template; goes to notes file
       ("m" "Misc" plain (file "") "%?" :empty-lines 1))
