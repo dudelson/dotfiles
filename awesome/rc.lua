@@ -792,7 +792,7 @@ awful.rules.rules = {
                      raise = true,
                      keys = clientkeys,
                      buttons = clientbuttons } },
-    { rule_any = { class = {"MPlayer", "pinentry", "Gimp", "feh"} },
+    { rule_any = { class = {"MPlayer", "pinentry", "Gimp", "feh", "inkscape"} },
       properties = { floating = true }
     },
     { rule = { class = "Firefox" },
