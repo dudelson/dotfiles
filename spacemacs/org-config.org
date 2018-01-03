@@ -161,6 +161,8 @@ I use refile extensively.
         "* %?\n")
       ("n" "note" entry (file+headline ,(concat org-directory "/current.org") "notes")
         "* %?\n")
+      ("d" "dump" entry (file+headline ,(concat org-directory "/current.org") "thoughts")
+        "* *[DUMP]* %?\n" :prepend t)
       ;; templates for rwl.org
       ("r" "Templates for stuff to read")
       ("rb" "book" item (file+headline ,(concat org-directory "/kb/rwl.org") "books")
