@@ -30,7 +30,6 @@ This function should only modify configuration layer settings."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
-     restclient
      (auto-completion
       :variables
       auto-completion-return-key-behavior nil
@@ -39,6 +38,7 @@ This function should only modify configuration layer settings."
      c-c++
      ;; calendar
      csv
+     deft
      finance
      ;; (elfeed
      ;;  :variables
@@ -58,7 +58,6 @@ This function should only modify configuration layer settings."
      gtags
      haskell
      japanese
-     java
      javascript
      lua
      (latex

@@ -488,3 +488,7 @@ the clipboard.
     (org-id-copy))
   (define-key org-mode-map (kbd "C-l") 'dudelson/org-id-create-and-copy)
 #+END_SRC
+** deft
+#+BEGIN_SRC emacs-lisp
+  (setq deft-directory "~/s/doc/org/kb")
+#+END_SRC
