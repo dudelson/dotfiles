@@ -45,6 +45,9 @@ This function should only modify configuration layer settings."
      ;;  rmh-elfeed-org-files (list "~/s/dot/spacemacs/feeds.org")
      ;;  )
      emacs-lisp
+     (evil-habits
+      :disabled-for org
+      )
      (evil-snipe
       :variables
       evil-snipe-enable-alternate-f-and-t-behaviors t
