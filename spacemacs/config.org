@@ -1,4 +1,65 @@
-#+PROPERTY: header-args :tangle yes
+#+TITLE: Emacs Configuration
+#+AUTHOR: David Udelson
+#+BABEL: :cache yes
+#+PROPERTY: header-args :tangle yes :comments no
+* general
+Tell emacs my name and email address
+#+BEGIN_SRC emacs-lisp
+  (defun make-email-addr (name domain ext)
+    (concat name "@" domain "." ext))
+  (setq user-full-name "David Udelson"
+        user-mail-address (make-email-addr "david" "davidudelson" "com"))
+#+END_SRC
+
+Make spacemacs use UTF-8 by default (I don't know why this isn't already a
+default...).
+#+BEGIN_SRC emacs-lisp
+  (set-language-environment "UTF-8")
+#+END_SRC
+** scrolling
+Setting ~scroll-consevatively~ to a crazy high value makes sure that the point
+is always on the screen and fixes some issues I had early on with the scrolling
+being really sudden and jerky.
+
+I like to have an appreciable ~scroll-margin~; i.e. the point can never get less
+than 10 lines from the top or bottom of the screen. This is useful if I jump to
+a definition, because I'm guaranteed to have 10 lines of context on either side.
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default
+   scroll-margin 10
+   scroll-conservatively 1000000
+   )
+#+END_SRC
+** whitespace                                                                             :revisit:
+Spacemacs has a toggle that highlights whitespace, but what kind of whitespace
+is highlighted is controlled by this setting. See also
+~dotspacemacs-whitespace-cleanup~.
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default whitespace-style '(face
+                                   trailing
+                                   tabs
+                                   spaces
+                                   space-before-tab
+                                   indentation
+                                   space-after-tab
+                                   space-mark
+                                   tab-mark))
+#+END_SRC
+** fill column
+I enable the fill column indicator by default in programming modes and set the
+color to go well with my default theme (solarized dark).
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default fci-rule-color "#073642")
+  (add-hook 'prog-mode-hook (lambda () (spacemacs/toggle-fill-column-indicator-on) nil))
+#+END_SRC
+** unicode
+This makes it convenient to input hexadecimal unicode character codes using C-q.
+#+BEGIN_SRC emacs-lisp
+  (setq-default read-quoted-char-radix 16)
+#+END_SRC
 * evil-mode
 ~evil-escape-key-sequence~ allows me to define an alternative to emacs' ~C-g~ and
 spacemacs' default ~f d~.
@@ -35,21 +96,6 @@ I rebound the keys for incrementing and decrementing numbers because I rebound
   (define-key evil-normal-state-map (kbd "+") 'evil-numbers/inc-at-pt)
   (define-key evil-normal-state-map (kbd "-") 'evil-numbers/dec-at-pt)
 #+END_SRC
-* scrolling
-Setting ~scroll-consevatively~ to a crazy high value makes sure that the point
-is always on the screen and fixes some issues I had early on with the scrolling
-being really sudden and jerky.
-
-I like to have an appreciable ~scroll-margin~; i.e. the point can never get less
-than 10 lines from the top or bottom of the screen. This is useful if I jump to
-a definition, because I'm guaranteed to have 10 lines of context on either side.
-
-#+BEGIN_SRC emacs-lisp
-  (setq-default
-   scroll-margin 10
-   scroll-conservatively 1000000
-   )
-#+END_SRC
 * search
 I use the following search methods:
     - *avy*: great for jumping around. I use this very very often, which is why
@@ -71,6 +117,11 @@ I use the following search methods:
       means if I don't use evil-ex-search-* a lot of things won't work as
       expected.
 #+BEGIN_SRC emacs-lisp
+  ;; first turn off evil-snipe-mode (but not evil-snipe-override-mode) so that
+  ;; s and S are not bound
+  (evil-snipe-mode 0)
+  (evil-snipe-override-mode 1)
+  ;; define my custom search keys
   (define-key evil-normal-state-map (kbd "/") 'evil-snipe-s)
   (define-key evil-normal-state-map (kbd "?") 'evil-snipe-S)
   (define-key evil-normal-state-map (kbd "g/") 'evil-ex-search-forward)
@@ -100,23 +151,7 @@ I use the following search methods:
   (spacemacs/set-leader-keys "wl" nil)
   (spacemacs/set-leader-keys "wh" nil)
 #+END_SRC
-* whitespace                                                        :revisit:
-Spacemacs has a toggle that highlights whitespace, but what kind of whitespace
-is highlighted is controlled by this setting. See also
-~dotspacemacs-whitespace-cleanup~.
-
-#+BEGIN_SRC emacs-lisp
-  (setq-default whitespace-style '(face
-                                   trailing
-                                   tabs
-                                   spaces
-                                   space-before-tab
-                                   indentation
-                                   space-after-tab
-                                   space-mark
-                                   tab-mark))
-#+END_SRC
-* indentation                                                       :revisit:
+* indentation                                                                              :revisit:
 I've found it's easiest to put all tab- and indentation-related settings in one
 place, because they're sort of tricky to get right, and this prevents me from
 going crazy. Coming from vim, emacs' tab settings seem like they try to do too
@@ -163,23 +198,19 @@ up things like ~c c~ and ~o~ in evil normal-state, which also depend on
                               (define-key evil-insert-state-local-map (kbd "<tab>")
                                 (lambda () (interactive) (insert-tab)))))
 #+END_SRC
-* fill column
-I enable the fill column indicator by default in programming modes and set the
-color to go well with my default theme (solarized dark).
-
+* backups
+Taken from this [[http://pragmaticemacs.com/emacs/auto-save-and-backup-every-save/][Pragmatic Emacs]] post. Note that by default Spacemacs turns
+backups off completely (but not autosave). See [[https://github.com/syl20bnr/spacemacs/issues/8947][this issue]] for more details.
 #+BEGIN_SRC emacs-lisp
-  (setq-default fci-rule-color "#073642")
-  (add-hook 'prog-mode-hook (lambda () (spacemacs/toggle-fill-column-indicator-on) nil))
-#+END_SRC
-* auto-completion and snippets                                      :revisit:
-Most of the autocompletion settings are for the spacemacs auto-completion layer
-in init.el, but here I try to clean up the suggestions window a bit, and define
-a less awkward keybinding for ~hippie-expand~.
-
-#+BEGIN_SRC emacs-lisp
-  (setq-default company-tooltip-align-annotations t)
-  ;; note: this overrides `evil-scroll-line-up`
-  (define-key evil-insert-state-map (kbd "C-y") 'hippie-expand)
+  (setq
+   make-backup-files t     ; take backups!
+   backup-by-copying t     ; don't clobber symlinks
+   kept-new-versions 10    ; keep 10 latest versions
+   kept-old-versions 0     ; don't bother with old versions
+   delete-old-versions t   ; don't ask about deleting old versions
+   version-control t       ; number backups
+   vc-make-backup-files t  ; backup version controlled files
+   backup-directory-alist `((".*" . ,(concat user-emacs-directory ".cache/backup"))))
 #+END_SRC
 * japanese input
 Migemo is a package provided by the spacemacs japanese layer which allows
@@ -194,7 +225,135 @@ not require ibus.
     (setq-default migemo-dictionary "/usr/share/migemo/utf-8/migemo-dict"))
   (setq-default default-input-method "japanese-mozc")
 #+END_SRC
-* LaTeX
+* keybindings
+** private
+#+BEGIN_SRC emacs-lisp
+  (defvar du/toggle-planner-enabled nil
+    "Whether the planner view is enabled")
+
+  (defvar du/toggle-planner-window-config nil
+    "Saves the window config so it can be restored later")
+
+  (defun du/toggle-planner ()
+    "Toggles my custom planner view
+    When toggled on, displays my org file on the left, and my custom agenda on the right.
+    When toggled off, restores the window layout from before the last time it was toggled on"
+    (interactive)
+    (if du/toggle-planner-enabled
+        ;; restore previous window configuration
+        (set-window-configuration du/toggle-planner-window-config)
+      ;; otherwise store window configuration so it can be restored later
+      (setq du/toggle-planner-window-config (current-window-configuration))
+      (find-file "~/s/doc/org/current.org")
+      (delete-other-windows)
+      (split-window-right-and-focus)
+      (find-file "~/s/doc/notes/notes.md"))
+    ;; toggle the thingy
+    (setq du/toggle-planner-enabled (not (symbol-value du/toggle-planner-enabled)))
+    (message "Toggled planner view %s" du/toggle-planner-enabled))
+
+  (defun du/open-kaizen ()
+    (interactive)
+    (find-file "~/s/doc/org/topics/kaizen.org"))
+
+  ;; NOTE: due to an idiosyncracy of how emacs handles symlinks, I cannot use
+  ;; (concat dotspacemacs-directory "relative/path") to refer to the files to
+  ;; tangle or org-babel-tangle-file will close the config.org buffer after
+  ;; tangling, which is pretty annoying. In this case, I'd rather deal with the
+  ;; annoyance of having to change the absolute paths every time they change.
+  (defun du/retangle-reload ()
+    (interactive)
+    (let ((src "/home/david/s/dot/spacemacs/config.org")
+          (dst "/home/david/s/dot/spacemacs/config.el"))
+      (if (file-exists-p src)
+          (org-babel-tangle-file src dst)
+        (message "Could not find config.org")))
+    (let ((src "/home/david/s/dot/spacemacs/org-config.org")
+          (dst "/home/david/s/dot/spacemacs/org-config.el"))
+      (if (file-exists-p src)
+          (org-babel-tangle-file src dst)
+        (message "Could not find org-config.org")))
+    (dotspacemacs/sync-configuration-layers)
+    (let ((f "/home/david/s/dot/spacemacs/config.el"))
+      (if (file-exists-p f)
+          (load-file f)
+        (message "Could not find config.el")))
+    (let ((f "/home/david/s/dot/spacemacs/org-config.el"))
+      (if (file-exists-p f)
+          (load-file f)
+        (message "Could not find org-config.el"))))
+
+  ;; open my planner from anywhere in emacs
+  (spacemacs/set-leader-keys "oo" 'du/toggle-planner)
+  ;; org-capture keybinding that isn't as easily confused with the keybinding for
+  ;; calc-dispatch (SPC a c)
+  (spacemacs/set-leader-keys "oc" 'org-capture)
+  ;; open kaizen file
+  (spacemacs/set-leader-keys "ok" 'du/open-kaizen)
+  ;; retangle and reload literate config
+  (spacemacs/set-leader-keys "or" 'du/retangle-reload)
+  (spacemacs/declare-prefix "o" "private")
+#+END_SRC
+** override spacemacs built-ins
+Make SPC b y do the same thing as SPC f y, because I can never remember which
+one it is.
+#+BEGIN_SRC emacs-lisp
+  (spacemacs/set-leader-keys "by" 'spacemacs/show-and-copy-buffer-filename)
+#+END_SRC
+
+I never use the actions which are bound by default to SPC b C-d and SPC b C-D.
+However, I quite frequently use the SPC b d and SPC b D commands with the
+universal arg, which closes the window in addition to the buffer. I think five
+keystrokes is too many for keys I use so frequently, therefore we're going to do
+some reshuffling.
+#+BEGIN_SRC emacs-lisp
+  (defun du/close-buffer-window ()
+    (interactive)
+    (spacemacs/kill-this-buffer '(4)))
+
+  (defun du/ace-close-buffer-window ()
+    (interactive)
+    (spacemacs/ace-kill-this-buffer '(4)))
+
+  (spacemacs/set-leader-keys "b C-d" 'du/close-buffer-window)
+  (spacemacs/set-leader-keys "b C-S-d" 'du/ace-close-buffer-window)
+#+END_SRC
+* layer-specific
+A lot of these settings are grouped with their respective spacemacs layers.
+** android development
+I've never actually developed anything in android, but I tried once, which is
+why I have these settings. They may or may not work. Basically we tell the
+android package where the android SDK is located on the system and try to set
+some reasonable defaults for gradle.
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default
+   android-mode-sdk-dir "/home/david/.local/android/android-sdk-linux"
+   android-mode-builder 'gradle
+   android-mode-root-file-plist '(ant "AndroidManifest.xml"
+                                  maven "AndroidManifest.xml"
+                                  gradle "gradlew"))
+#+END_SRC
+** auto-completion (includes snippets)
+Most of the autocompletion settings are for the spacemacs auto-completion layer
+in init.el, but here I try to clean up the suggestions window a bit, and define
+a less awkward keybinding for ~hippie-expand~.
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default company-tooltip-align-annotations t)
+  ;; note: this overrides `evil-scroll-line-up`
+  (define-key evil-insert-state-map (kbd "C-y") 'hippie-expand)
+#+END_SRC
+** elfeed
+#+BEGIN_SRC emacs-lisp
+  ;; (defface elfeed-starred-feed
+  ;;   '((t :foreground "#859900"))
+  ;;   "Marks all entries from elfeed blogs tagged 'star'")
+
+  ;; (push '(star elfeed-starred-feed)
+  ;;       elfeed-search-face-alist)
+#+END_SRC
+** latex
 Set the pdf viewer for LaTeX compilation output.
 
 #+BEGIN_SRC emacs-lisp
@@ -210,8 +369,6 @@ to set.
    web-mode-css-indent-offset tab-width web-mode-code-indent-offset
    tab-width web-mode-attr-indent-offset tab-width)
 #+END_SRC
-* programming languages
-A lot of these settings are grouped with their respective spacemacs layers.
 ** rust
 Enable racer, which provides code-completion for rust, and point it to the rust
 source.
@@ -220,91 +377,8 @@ source.
    racer-rust-src-path "/usr/src/rust/src"
    rust-enable-racer t)
 #+END_SRC
-** android development
-I've never actually developed anything in android, but I tried once, which is
-why I have these settings. They may or may not work. Basically we tell the
-android package where the android SDK is located on the system and try to set
-some reasonable defaults for gradle.
-
-#+BEGIN_SRC emacs-lisp
-  (setq-default
-   android-mode-sdk-dir "/home/david/.local/android/android-sdk-linux"
-   android-mode-builder 'gradle
-   android-mode-root-file-plist '(ant "AndroidManifest.xml"
-                                  maven "AndroidManifest.xml"
-                                  gradle "gradlew"))
-#+END_SRC
-* elfeed
-#+BEGIN_SRC emacs-lisp
-  ;; (defface elfeed-starred-feed
-  ;;   '((t :foreground "#859900"))
-  ;;   "Marks all entries from elfeed blogs tagged 'star'")
-
-  ;; (push '(star elfeed-starred-feed)
-  ;;       elfeed-search-face-alist)
-#+END_SRC
 * misc
 Stuff that I can't find a place for anywhere else
-I don't know where to put this
-#+BEGIN_SRC emacs-lisp
-  (setq-default read-quoted-char-radix 16)
-#+END_SRC
-
-Tell emacs my name and email address
-#+BEGIN_SRC emacs-lisp
-  (defun make-email-addr (name domain ext)
-    (concat name "@" domain "." ext))
-  (setq user-full-name "David Udelson"
-        user-mail-address (make-email-addr "david" "davidudelson" "com"))
-#+END_SRC
-** keybindings
-I have a keybinding to pull up my default org-mode view and a keybinding to open
-my personal notes file. The latter intentionally shadows the spacemacs default
-keybinding to open the scratch buffer, because I've put stuff I needed later in
-the scratch buffer and then lost it by restarting emacs too many times to trust
-the scratch buffer anymore.
-#+BEGIN_SRC emacs-lisp
-  ;; `SPC o o' opens my planner from anywhere in emacs
-  (defvar dudelson/toggle-planner-enabled nil
-    "Whether the planner view is enabled")
-
-  (defvar dudelson/toggle-planner-window-config nil
-    "Saves the window config so it can be restored later")
-
-  (defun dudelson/toggle-planner ()
-    "Toggles my custom planner view
-    When toggled on, displays my org file on the left, and my custom agenda on the right.
-    When toggled off, restores the window layout from before the last time it was toggled on"
-    (interactive)
-    (if dudelson/toggle-planner-enabled
-        ;; restore previous window configuration
-        (set-window-configuration dudelson/toggle-planner-window-config)
-      ;; otherwise store window configuration so it can be restored later
-      (setq dudelson/toggle-planner-window-config (current-window-configuration))
-      (find-file "~/s/doc/org/current.org")
-      (delete-other-windows)
-      (split-window-right-and-focus)
-      (find-file "~/s/doc/notes/notes.md"))
-    ;; toggle the thingy
-    (setq dudelson/toggle-planner-enabled (not (symbol-value dudelson/toggle-planner-enabled)))
-    (message "Toggled planner view %s" dudelson/toggle-planner-enabled))
-
-  (defun dudelson/open-notes ()
-    (interactive)
-    (find-file "~/s/doc/notes/notes.md"))
-
-  (defun dudelson/open-kaizen ()
-    (interactive)
-    (find-file "~/s/doc/org/topics/kaizen.org"))
-
-  (spacemacs/set-leader-keys "bs" 'dudelson/open-notes)
-  (spacemacs/set-leader-keys "oo" 'dudelson/toggle-planner)
-  ;; org-capture keybinding that isn't as easily confused with the keybinding for
-  ;; calc-dispatch (SPC a c)
-  (spacemacs/set-leader-keys "oc" 'org-capture)
-  ;; open kaizen file
-  (spacemacs/set-leader-keys "ok" 'dudelson/open-kaizen)
-#+END_SRC
 ** abbrevs
 Things that I'm too lazy to type correctly
 #+BEGIN_SRC emacs-lisp
@@ -366,63 +440,13 @@ but not others.
 #+BEGIN_SRC emacs-lisp
   (global-disable-mouse-mode)
 #+END_SRC
-* todo
-** make evil-habits layer
-Here's the code
+* temporary fixes
+Fixes helm buffers causing one window to disappear in a split view.
+See [[https://github.com/syl20bnr/spacemacs/issues/9984][this spacemacs issue]].
 #+BEGIN_SRC emacs-lisp
-  ;; Trying to build good habits
-  ;; These functions limit me to one keypress per second in evil-normal-state
-  ;; In the case of j and k, I should be using a count or avy
-  ;; In the case of h and l, I should be using f and t instead
-
-  ;; these vars store the last time that their respective key was pressed, in
-  ;; the format returned by `current-time'
-  (defvar dudelson/evil-habit-builder-last-keypress-j (current-time))
-  (defvar dudelson/evil-habit-builder-last-keypress-k (current-time))
-  (defvar dudelson/evil-habit-builder-last-keypress-h (current-time))
-  (defvar dudelson/evil-habit-builder-last-keypress-l (current-time))
-  (defun dudelson/evil-habit-builder (count)
-    "Prevents the victim (user) from pressing the h, j, k, or l keys in
-     succession more than once a second without a count"
-    (interactive "p")
-    (let* ((r (recent-keys))
-           (key (aref r (- (length r) 1)))
-           (prev-key (aref r (- (length r) 2)))
-           (cur (current-time))
-           (prev
-             (cond
-               ((= key ?j) 'dudelson/evil-habit-builder-last-keypress-j)
-               ((= key ?k) 'dudelson/evil-habit-builder-last-keypress-k)
-               ((= key ?h) 'dudelson/evil-habit-builder-last-keypress-h)
-               ((= key ?l) 'dudelson/evil-habit-builder-last-keypress-l)
-               (t "o shit waddup"))) ; this should never happen
-           (delta (time-subtract cur (symbol-value prev))))
-
-      ;; predicate checks if user pressed the same key twice consecutively,
-      ;; without using a count, in the space of less than a second
-          (if (and (= key prev-key) (= count 1) (= 0 (nth 1 delta)))
-                ;; then
-                (message
-                (cond
-                  ((or (= key ?j) (= key ?k)) "Use a count!")
-                  ((or (= key ?h) (= key ?l)) "Use f or t!")))
-                ;; else
-                (funcall
-                (cond
-                  ((= key ?j) 'evil-next-visual-line)
-                  ((= key ?k) 'evil-previous-visual-line)
-                  ((= key ?h) 'evil-backward-char)
-                  ((= key ?l) 'evil-forward-char)
-                  (t nil) ; should never happen
-                ) count))
-          (set prev cur)))
-
-  ;; ensure that evil-habit-builder is non-repeatable (because it is a motion)
-  (evil-set-command-property 'dudelson/evil-habit-builder :repeat nil)
-
-  ;; now let's build those damn habits!
-  (define-key evil-normal-state-map (kbd "h") 'dudelson/evil-habit-builder)
-  (define-key evil-normal-state-map (kbd "j") 'dudelson/evil-habit-builder)
-  (define-key evil-normal-state-map (kbd "k") 'dudelson/evil-habit-builder)
-  (define-key evil-normal-state-map (kbd "l") 'dudelson/evil-habit-builder)
+  (setq helm-always-two-windows nil)
 #+END_SRC
+* credits
+This configuration was inspired by the configurations of many others:
+    - [[https://github.com/ipburbank][Istvan Burbank]]
+    - [[https://ogbe.net/emacsconfig.html][Dennis Ogbe]]

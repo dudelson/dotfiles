@@ -410,7 +410,7 @@ schedule, because it actually looks like a calendar, which I really like. I use
     org-gcal-client-secret my-org-gcal-client-secret
     org-gcal-file-alist `((,my-org-gcal-email . ,(concat org-directory "/cal.org"))))
 
-  (defun dudelson/org-cal-transformer (s)
+  (defun du/org-cal-transformer (s)
     "test"
     s)
 
@@ -482,7 +482,7 @@ I use the "id" property to link between org files. This function automatically
 creates an id for a heading if one doesn't already exist and copies the id to
 the clipboard.
 #+BEGIN_SRC emacs-lisp
-  (defun dudelson/org-id-create-and-copy ()
+  (defun du/org-id-create-and-copy ()
     (interactive)
     (org-id-get-create)
     (org-id-copy))
