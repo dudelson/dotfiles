@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: warning_notice
+# key: warn
+# --
+#+HTML: <div class="notice notice-warning">
+$0
+#+HTML: </div>
