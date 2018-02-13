@@ -393,20 +393,46 @@ a less awkward keybinding for ~hippie-expand~.
   ;;       elfeed-search-face-alist)
 #+END_SRC
 ** latex
-Set the pdf viewer for LaTeX compilation output.
+Xetex is the only engine that appears to be compatible with all of the LaTeX
+packages I use.
+#+BEGIN_SRC emacs-lisp
+  (setq-default TeX-engine 'xetex)
+#+END_SRC
 
+*NOTE*: The spacemacs LaTeX layer appears to use its own variable,
+=latex-build-command=, in place of the AUCTeX variable =latex-run-command=. I do
+not know why this is the case, but it seems likely that at least some LaTeX
+layer functions depend on the latter variable, since the layer is built on top
+of AUCTeX. Therefore if you experience build errors, check to see if
+=latex-run-command= is involved. If it is, you'll have to figure out a way to
+keep these two variables in sync.
+
+Set the pdf viewer for LaTeX compilation output.
 #+BEGIN_SRC emacs-lisp
   (setq-default TeX-view-program-selection '((output-pdf "PDF Tools")))
 #+END_SRC
 
-Lastly, javascript and react have a whole bunch of indentation-related variables
-to set.
+Turn off some of the "magic" LaTeX features that format things in the buffer. I
+find these annoying.
 #+BEGIN_SRC emacs-lisp
-  (setq-default
-   js2-basic-offset tab-width css-indent-offset
-   tab-width web-mode-markup-indent-offset tab-width
-   web-mode-css-indent-offset tab-width web-mode-code-indent-offset
-   tab-width web-mode-attr-indent-offset tab-width)
+  (setq magic-latex-enable-block-highlight nil
+        magic-latex-enable-pretty-symbols nil
+        magic-latex-enable-suscript nil
+        font-latex-fontify-script nil)
+#+END_SRC
+
+Prevent latex from jumping to matching dollar signs (also annoying).
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'LaTeX-mode-hook (lambda () (setq blink-matching-paren nil)))
+#+END_SRC
+** pdf-tools
+#+BEGIN_SRC emacs-lisp
+  ;; open pdfs scaled to fit page
+  (setq-default pdf-view-display-size 'fit-page)
+  ;; automatically annotate highlights
+  (setq pdf-annot-activate-created-annotations t)
+  ;; add hook to turn off global-disable-mouse-mode when pdf-tools loads
+  (add-hook 'pdf-view-mode-hook (lambda () (global-disable-mouse-mode -1)))
 #+END_SRC
 ** rust
 Enable racer, which provides code-completion for rust, and point it to the rust

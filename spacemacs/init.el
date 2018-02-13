@@ -60,10 +60,7 @@ This function should only modify configuration layer settings."
      japanese
      javascript
      lua
-     (latex
-      :variables
-      latex-build-command "LaTeX"
-      )
+     latex
      (markdown
       ;; :variables markdown-live-preview-engine 'vmd
       )
@@ -100,7 +97,9 @@ This function should only modify configuration layer settings."
                                       mozc
                                       )
    ;; A list of packages that cannot be updated.
-   dotspacemacs-frozen-packages '()
+   dotspacemacs-frozen-packages '(
+                                  pdf-tools
+                                  )
    ;; A list of packages that will not be installed and loaded.
    dotspacemacs-excluded-packages '()
    ;; Defines the behaviour of Spacemacs when installing packages.
