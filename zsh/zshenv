@@ -29,7 +29,7 @@ export PATH=$PATH:$GOPATH/bin
 
 # ruby config
 export GEM_HOME=$(ruby -e 'print Gem.user_dir')
-export PATH=$PATH:/home/david/.gem/ruby/2.4.0/bin
+export PATH=$PATH:/home/david/.gem/ruby/2.5.0/bin
 
 # ocaml config
 . /home/david/.opam/opam-init/init.zsh > /dev/null 2> /dev/null || true
