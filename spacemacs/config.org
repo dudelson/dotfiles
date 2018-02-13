@@ -304,6 +304,20 @@ not require ibus.
   (spacemacs/set-leader-keys "or" 'du/retangle-reload)
   (spacemacs/declare-prefix "o" "private")
 #+END_SRC
+
+Here's a function to copy an auto-filled region of text, automatically joining
+all the lines together in the process ("unfilling" the region). This makes the
+copied text suitable for pasting into an online document without altering the
+auto-filled emacs buffer.
+#+BEGIN_SRC emacs-lisp
+  (defun du/unfill-and-copy (beg end)
+    (interactive (list (region-beginning) (region-end)))
+    (unfill-region beg end)
+    (ox-clip-formatted-copy (region-beginning) (region-end))
+    (fill-region (region-beginning) (region-end)))
+
+  (spacemacs/set-leader-keys "oq" 'du/unfill-and-copy)
+#+END_SRC
 ** override spacemacs built-ins
 Make SPC b y do the same thing as SPC f y, because I can never remember which
 one it is.
