@@ -254,10 +254,10 @@ not require ibus.
         (set-window-configuration du/toggle-planner-window-config)
       ;; otherwise store window configuration so it can be restored later
       (setq du/toggle-planner-window-config (current-window-configuration))
-      (find-file "~/s/doc/org/current.org")
+      (find-file "~/s/doc/gtd/current.org")
       (delete-other-windows)
       (split-window-right-and-focus)
-      (find-file "~/s/doc/notes/notes.md"))
+      (find-file "~/s/doc/gtd/notes.md"))
     ;; toggle the thingy
     (setq du/toggle-planner-enabled (not (symbol-value du/toggle-planner-enabled)))
     (message "Toggled planner view %s" du/toggle-planner-enabled))

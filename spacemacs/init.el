@@ -95,6 +95,9 @@ This function should only modify configuration layer settings."
                                       android-mode
                                       disable-mouse
                                       mozc
+                                      unfill
+                                      ox-clip
+                                      interleave
                                       )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '(
