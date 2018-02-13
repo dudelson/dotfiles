@@ -111,6 +111,7 @@ alias gdb='gdb -q'
 alias objdump='objdump -M intel'
 alias zmv='noglob zmv -W'
 alias pingtest='ping -c 3 8.8.8.8'
+alias latex-clean='latexmk -c'
 
 # place temporary aliases and variables here
 
