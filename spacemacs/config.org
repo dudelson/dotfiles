@@ -198,6 +198,16 @@ up things like ~c c~ and ~o~ in evil normal-state, which also depend on
                               (define-key evil-insert-state-local-map (kbd "<tab>")
                                 (lambda () (interactive) (insert-tab)))))
 #+END_SRC
+
+Lastly, javascript and react have a whole bunch of indentation-related variables
+to set.
+#+BEGIN_SRC emacs-lisp
+  (setq-default
+   js2-basic-offset tab-width css-indent-offset
+   tab-width web-mode-markup-indent-offset tab-width
+   web-mode-css-indent-offset tab-width web-mode-code-indent-offset
+   tab-width web-mode-attr-indent-offset tab-width)
+#+END_SRC
 * backups
 Taken from this [[http://pragmaticemacs.com/emacs/auto-save-and-backup-every-save/][Pragmatic Emacs]] post. Note that by default Spacemacs turns
 backups off completely (but not autosave). See [[https://github.com/syl20bnr/spacemacs/issues/8947][this issue]] for more details.
@@ -317,6 +327,21 @@ some reshuffling.
 
   (spacemacs/set-leader-keys "b C-d" 'du/close-buffer-window)
   (spacemacs/set-leader-keys "b C-S-d" 'du/ace-close-buffer-window)
+#+END_SRC
+
+Currently SPC ' isn't bound to anything, so it's safe to use as a shortcut for
+SPC b b (so I don't have to move my hand so much for this common key sequence).
+#+BEGIN_SRC emacs-lisp
+  (spacemacs/set-leader-keys "'" 'helm-mini)
+#+END_SRC
+
+And I think just to get in the habit of it I'm going to temporarily rebind
+SPC b b so it doesn't work.
+#+BEGIN_SRC emacs-lisp
+  (spacemacs/set-leader-keys "bb"
+    (lambda ()
+      (interactive)
+      (message "Use SPC ' !")))
 #+END_SRC
 * layer-specific
 A lot of these settings are grouped with their respective spacemacs layers.
