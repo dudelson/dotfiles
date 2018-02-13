@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: image_width_attr
+# key: imw
+# --
+#+ATTR_HTML: :width 800px

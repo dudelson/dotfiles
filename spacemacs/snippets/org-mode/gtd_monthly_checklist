@@ -1,0 +1,12 @@
+# -*- mode: snippet -*-
+# name: GTD monthly rotation checklist
+# key: gtd_monthly_checklist
+# --
+* monthly rotation
+- [ ] do weekly planning
+- [ ] clean up ~/s/misc/sync
+- [ ] copy thoughts/notes worth keeping into pkb
+- [ ] create dates/ file for new month
+- [ ] move todos from old file to new file
+- [ ] move current.org symlink to point to new file
+- [ ] git commit new file + changes to old files

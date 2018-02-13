@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: defn_notice
+# key: defn
+# --
+#+HTML: <div class="notice notice-defn">
+$0
+#+HTML: </div>

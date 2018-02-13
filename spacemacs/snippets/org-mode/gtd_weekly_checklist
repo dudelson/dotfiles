@@ -1,0 +1,40 @@
+# -*- mode: snippet -*-
+# name: GTD weekly planning checklist
+# key: weekly_checklist
+# --
+* weekly planning
+** Phase 1: Collect/Capture
+- [ ] empty your mind
+- [ ] one touch to inbox zero
+- [ ] take all loose paper out of backpack and decide whether to
+  leave/file/recycle it. Do the same for the paper on your desk.
+- [ ] process thought dumps. For each thought dump, decide whether to:
+    - do it now (if it would take less than two minutes),
+    - delete it, or
+    - turn it into a project, either ongoing or in notnow.org
+- [ ] organize browser tabs (mobile and desktop)
+- [ ] clear home directory
+- [ ] check class schedules/syllabi and input homework for the next week /
+  week and a half
+- [ ] clear notes.md
+- [ ] review captured todos. Schedule or refile each one.
+- [ ] grep for and resolve sync conflicts in gtd and pkb files
+** Phase 2: Clarify
+- [ ] check calendar (-2/+4 weeks)
+- [ ] review undone tasks from previous week. Refile all the ones that you
+  don't want to continue with in the coming week. The rest will be moved
+  in the next step.
+- [ ] check off habits
+- [ ] check off completed tasks from today
+- [ ] archive completed or inactive projects, if applicable
+- [ ] reflect on habits and areas
+- [ ] reflect on your GTD system itself. Did you experience any rough edges or
+snafus while using it this week? Could anything be improved?
+** Phase 3: Commit
+- [ ] make new heading for upcoming week (SPC o c g w)
+- [ ] transfer remaining tasks from previous week to upcoming week and
+  schedule them
+- [ ] review "waiting" todo items and see if I need to follow up on any of them
+- [ ] choose any projects from notnow.org that you would like to start this
+  week and schedule them
+- [ ] git commit
