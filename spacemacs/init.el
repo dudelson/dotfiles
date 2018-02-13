@@ -35,16 +35,16 @@ This function should only modify configuration layer settings."
       auto-completion-return-key-behavior nil
       auto-completion-tab-key-behavior 'cycle
       :disabled-for org emacs-lisp markdown text)
-     c-c++
+     ;; c-c++
      ;; calendar
      csv
      deft
-     finance
      ;; (elfeed
      ;;  :variables
      ;;  rmh-elfeed-org-files (list "~/s/dot/spacemacs/feeds.org")
      ;;  )
      emacs-lisp
+     ess
      (evil-habits
       :disabled-for org
       )
@@ -54,10 +54,12 @@ This function should only modify configuration layer settings."
       evil-snipe-scope 'visible
       evil-snipe-repeat-scope 'visible
       )
+     finance
      git
      gtags
      haskell
      japanese
+     java
      javascript
      lua
      latex
