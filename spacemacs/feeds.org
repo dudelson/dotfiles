@@ -1,0 +1,53 @@
+* Feeds                                                                                     :elfeed:
+** programming                                                                               :prog:
+*** [[http://www.codesimplicity.com/feed/atom/][Code Simplicity]]                                                                      :softeng:
+*** [[https://www.nayuki.io/rss20.xml][Project Nayuki]]                                                                          :math:
+*** [[http://www.allthingsdistributed.com/atom.xml][All Things Distributed]]                                                           :distributed:
+*** privacy and security                                                                 :privsec:
+**** [[https://0xabe.io/feed.xml][0xabe.io]]
+**** [[https://deadc0de.re/feeds/all.atom.xml][deadc0de.re]]                                                                      :unix:star:
+**** [[http://feeds.feedburner.com/TroyHunt][Troy Hunt's Blog]]
+**** [[https://www.schneier.com/blog/atom.xml][Schneier on Security]]                                                                  :star:
+**** [[https://blog.nelhage.com/atom.xml][Made of Bugs]]                                                                       :variety:
+**** [[http://www.windytan.com/feeds/posts/default][absorptions]]                                                                        :variety:
+*** FP                                                                                        :fp:
+**** [[https://existentialtype.wordpress.com/feed/][Existential Type]]
+**** [[http://www.stephendiehl.com/feed.rss][Stephen Diehl]]                                                                      :haskell:
+**** [[http://gigasquidsoftware.com/atom.xml][Squid's Blog]]                                                                       :clojure:
+**** [[https://ocaml.org/feed.xml][ocaml planet]]
+*** emacs                                                                                  :emacs:
+**** [[http://pragmaticemacs.com/feed/][pragmatic emacs]]
+*** variety                                                                              :variety:
+Blogs featuring a variety of topics
+**** [[http://programmingisterrible.com/rss][programming is terrible]]
+**** [[https://jvns.ca/atom.xml][Julia Evans]]                                                                           :star:
+**** [[https://www.joelonsoftware.com/feed/][Joel on Software]]
+**** [[https://www.kennethreitz.org/essays?format=RSS][Kenneth Reitz]]
+**** https://eklitzke.org/index.rss
+**** [[http://blog.plover.com/index.atom][The Universe of Discourse]]
+**** [[http://www.norvig.com/rss-feed.xml][Peter Norvig]]
+**** [[http://nullprogram.com/feed/][null program]]                                                                        :c:star:
+**** [[https://henrikwarne.com/feed/][Henrik Warne's blog]]
+**** [[https://glyph.twistedmatrix.com/feeds/atom.xml][Deciphering Glyph]]                                                                   :python:
+**** [[https://andythemoron.com/feed.xml][Andy the Moron]]                                                                        :unix:
+**** [[https://aphyr.com/posts.atom][aphyr]]
+**** [[https://hnrss.org/newest?points=100][Hacker News]]                                                                             :hn:
+*** newsletters                                                                               :nl:
+**** [[https://betterdev.link/rss.xml][Better Dev Link]]
+**** [[https://us1.campaign-archive.com/feed?u=faa8eb4ef3a111cef92c4f3d4&id=e505c88a2e][Hacker Newsletter]]                                                                       :hn:
+** cryptocurrency                                                                          :crypto:
+*** [[https://weekinethereum.substack.com/feed/][Week in Ethereum]]
+** buddhism                                                                              :buddhism:
+*** [[https://www.lionsroar.com/feed/][Lion's Roar]]
+*** [[https://emptysqua.re/blog/index.xml][A. Jesse Jiryu Davis]]                                                            :prog:variety:
+*** [[https://tricycle.org/feed/][tricycle]]
+*** [[https://feeds.feedburner.com/zenhabits][zen habits]]
+** news                                                                                      :news:
+*** [[https://whatthefuckjusthappenedtoday.com/rss.xml][WTFJHT]]
+** other                                                                                     :misc:
+*** [[http://www.linusakesson.net/rssfeed.php][www.linusakesson.net]]
+*** [[https://medium.com/feed/@brettelizabethberry][Brett Berry on math]]                                                                     :math:
+*** [[https://reprog.wordpress.com/feed/][The Reinvigorated Programmer]]                                                            :prog:
+I put this here because at least at the time of writing I can only find one post
+about programming on the first page, the rest are mostly about politics.
+*** [[https://www.ribbonfarm.com/feed/][Ribbonfarm]]
