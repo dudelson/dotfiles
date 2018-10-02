@@ -19,9 +19,6 @@ export XDG_CONFIG_HOME=/home/david/.config
 # see https://askubuntu.com/questions/466198/how-do-i-change-the-color-for-directories-with-ls-in-the-console
 LS_COLORS=$LS_COLORS:'di=1;37:' ; export LS_COLORS
 
-# java config
-export PATH=$PATH:/usr/lib/jvm/default/bin
-
 # for android
 export PATH=$PATH:/home/david/.local/share/android/android-sdk-linux/platform-tools
 export PATH=$PATH:/home/david/.local/share/android/android-sdk-linux/tools
