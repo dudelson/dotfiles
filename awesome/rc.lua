@@ -301,7 +301,7 @@ pkg_widget.font = beautiful.font
 vicious.register(pkg_widget, vicious.widgets.pkg, pkgf, PKG_WIDGET_UPDATE_INTERVAL, "Arch")
 -- }}}
 
--- {{{ Screen 
+-- {{{ Screen
 local function set_wallpaper(s)
   -- Wallpaper
   if beautiful.wallpaper then
@@ -632,7 +632,7 @@ globalkeys = gears.table.join(
                   t:delete()
               end),
     awful.key({ modkey, altkey }, "r",
-              function () 
+              function ()
                   awful.prompt.run {
                     prompt       = "New tag name: ",
                     textbox      = awful.screen.focused().mypromptbox.widget,
@@ -897,16 +897,19 @@ end
 
 -- networkmanager
 if dudelson_config.autostart.network_manager then run_once("nm-applet") end
--- volumeicon
-if dudelson_config.autostart.volumeicon then run_once("volumeicon") end
+-- pulseaudio volume control
+if dudelson_config.autostart.volumeicon then run_once("volctl") end
 -- automounting of usbs
 if dudelson_config.autostart.udiskie then run_once("udiskie") end
 -- so my screen doesn't kill my eyes at night
 if dudelson_config.autostart.flux then run_once("xflux -z 14850") end
--- this user instance of anacron is responsible for running daily backups
-if dudelson_config.autostart.backups then
-  run_once("anacron -t /home/david/.anacron/etc/anacrontab -S /home/david/.anacron/spool &> /home/david/.anacron/anacron.log")
-end
+-- protonmail bridge
+run_once("Desktop-Bridge")
+-- nextcloud
+run_once("nextcloud")
+-- start jack and its management GUI, cadence
+run_once("start_jack")
+run_once("cadence")
 -- lock the screen automatically after 5 minutes
 if dudelson_config.autostart.lock_screen then
   run_once("/usr/bin/xautolock -time 5 -locker i3lock-fancy -detectsleep")
