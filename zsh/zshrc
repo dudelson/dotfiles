@@ -93,6 +93,7 @@ alias history-stat="history 0 | awk '{print \$2}' | sort | uniq -c | sort -n -r 
 
 # custom aliases
 alias feh='feh --scale-down'
+alias mpv='optirun mpv'
 # use `maim` to screenshot the entire screen to a file
 # screenshot the selected area to a file
 alias maims='maim -s -p 1 -c 1,0,0,0.5 --nokeyboard'
