@@ -189,7 +189,7 @@ function cs {
 function pushdls {
     builtin pushd "$argv[-1]" && ls "${(@)argv[1,-2]}"
 }
-    
+
 # Pops an entry off the directory stack and lists its contents.
 function popdls {
     builtin popd "$argv[-1]" && ls "${(@)argv[1,-2]}"
@@ -242,7 +242,7 @@ man() {
 # colors!!!11!
 autoload -U colors && colors
 
-# smart urls 
+# smart urls
 autoload -Uz url-quote-magic
 zle -N self-insert url-quote-magic
 
@@ -280,20 +280,9 @@ bindkey -M isearch " " self-insert
 ##`````````````````````````````````MISC````````````````````````````````````##
 ##`````````````````````````````````````````````````````````````````````````##
 #############################################################################
-# prompt
+# backup prompt, in case powerline doesn't work
 export PROMPT="%M %{$fg[blue]%}%~%{$reset_color%} %# "
 
-# uncomment the next three lines to enable powerline
-
-# this version doesn't work for some reason, commenting it out for now
-# are the terminal processes spawned using awesome keybindings not children of
-# the awesome-wm process? I can't see the DUDELSON_CONFIG envvars from the shell.
-
-#if [[ ( "$DUDELSON_CONFIG_ENABLE_POWERLINE" == "1" ) &&
-#      ( -r /usr/lib/python3.5/site-packages/powerline/bindings/zsh/powerline.zsh ) ]]; then
-#    source /usr/lib/python3.5/site-packages/powerline/bindings/zsh/powerline.zsh
-#fi
-
-if [[ -r /usr/lib/python3.6/site-packages/powerline/bindings/zsh/powerline.zsh ]]; then
-    source /usr/lib/python3.6/site-packages/powerline/bindings/zsh/powerline.zsh
-fi
+# enable powerline
+powerline-daemon -q
+source /usr/lib/python3.7/site-packages/powerline/bindings/zsh/powerline.zsh
