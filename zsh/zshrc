@@ -112,8 +112,24 @@ alias objdump='objdump -M intel'
 alias zmv='noglob zmv -W'
 alias pingtest='ping -c 3 8.8.8.8'
 alias latex-clean='latexmk -c'
+alias powercheck='cat /sys/class/power_supply/AC/online'
+alias copy='rsync -rh --info="progress2"'
 
 # place temporary aliases and variables here
+
+# systemctl aliases
+alias enable!="sudo systemctl enable"
+alias disable!="sudo systemctl disable"
+alias start!="sudo systemctl start"
+alias stop!="sudo systemctl stop"
+alias status!="systemctl status"
+alias stat!="systemctl status"
+alias enable!u="systemctl --user enable"
+alias disable!u="systemctl --user disable"
+alias start!u="systemctl --user start"
+alias stop!u="systemctl --user stop"
+alias status!u="systemctl --user status"
+alias stat!u="systemctl --user status"
 
 # fasd aliases
 alias v='f -e nvim'
@@ -128,11 +144,10 @@ alias reg="ledger -X \$ --strict --explicit reg"
 alias lgr="ledger -X \$ --strict --explicit"
 alias rkn="reckon -u -f ~/EXPORT.CSV -a Assets:Checking -l ~/s/doc/finance/y2012-2016.txt -o $LEDGER_FILE --ignore-columns 1,3,6,7,8 --contains-header 1 --date-format \"%m/%d/%y\""
 
-# haskell aliases
+# alias to refresh external monitor
+alias refmon="xrandr --output DP1 --off && xrandr --output DP1 --mode 1920x1080"
 
-# TEMPORARY ALIAS UNTIL STACK 1.5.1 IS RELEASED ON ARCH
-# see https://stackoverflow.com/questions/45815830/cabal-2-0-required-when-using-a-nightly-snapshot-with-stack
-alias stack="~/.local/stackbin/stack" 
+# haskell aliases
 
 alias ghc="stack ghc"
 alias ghci="stack ghci"
