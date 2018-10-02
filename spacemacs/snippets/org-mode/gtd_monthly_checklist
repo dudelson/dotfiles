@@ -5,8 +5,22 @@
 * monthly rotation
 - [ ] do weekly planning
 - [ ] clean up ~/s/misc/sync
+- [ ] commit changes to dotfiles
 - [ ] copy thoughts/notes worth keeping into pkb
+    - to prevent unnecessary clutter via duplication, each thought or note should be
+      inserted into the PKB exactly one
+    - remove the timestamp
+    - add a unicode check mark (✓) if the note was imported into the PKB
+    - add a unicode triangle (🛆) if the note was not imported into the PKB because
+      you didn't know where to put it (i.e. notes marked with a triangle should be
+      revisited later)
+    - unmarked thoughts/notes will be assumed to be marked for /non-insertion/; i.e.
+      it was presumably decided that the note was not important enough to be
+      transferred.
 - [ ] create dates/ file for new month
 - [ ] move todos from old file to new file
 - [ ] move current.org symlink to point to new file
-- [ ] git commit new file + changes to old files
+- [ ] manually add new file to git and commit
+- [ ] manually check git for PKB and add new files
+
+/delete this buffer/
