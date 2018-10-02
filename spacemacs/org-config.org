@@ -32,6 +32,20 @@ Move the tags column more to the right.
   (setq org-tags-column -100)
 #+END_SRC
 
+Increase visibility of entries which are jumped to from the agenda view.
+#+BEGIN_SRC emacs-lisp
+  (setq org-show-context-detail
+        '((agenda . lineage)
+          (bookmark-jump . lineage)
+          (isearch . lineage)
+          (default . ancestors)))
+#+END_SRC
+
+Hide text markup delimiters
+#+BEGIN_SRC emacs-lisp
+  (setq org-hide-emphasis-markers t)
+#+END_SRC
+
 This setting allows me to navigate org-files a little bit more easily by
 changing the behavior of ~C-a~ and ~C-e~ in org-mode. At least that's what it's
 supposed to do, but because of spacemacs customizations to org-mode, this
@@ -60,12 +74,26 @@ Priorities are in the range "A" to "E", with the default being "D".
    org-default-priority 68)
 #+END_SRC
 ** links
-I like to link between org files using the "id" property. The list of ids and
-their locations is kept in ~org-id-locations-file~. I've moved this file from
-its default location in ~$HOME/.emacs.d~ to my ~org-directory~, which is synced
-between my devices. This way the links work on every device.
+Keep ~.org-id-locations~ somewhere where it can access both my gtd and pkb files.
 #+BEGIN_SRC emacs-lisp
   (setq-default org-id-locations-file "~/s/doc/.org-id-locations")
+#+END_SRC
+
+This custom function updates all org-id references in my gtd and pkb.
+#+BEGIN_SRC emacs-lisp
+  (defun du/update-org-id-locations ()
+    "runs org-id-update-id-locations on all org files in pkb-directory"
+    (interactive)
+    (org-id-update-id-locations (append
+                                 (sa-find-org-file-recursively du/pkb-directory)
+                                 (sa-find-org-file-recursively du/pkb-directory))))
+#+END_SRC
+
+We bind it to an easily-accessible key chord and run it when this file is
+loaded (i.e. when emacs starts).
+#+BEGIN_SRC emacs-lisp
+  (spacemacs/set-leader-keys "ou" 'du/update-org-id-locations)
+  ;;(du/update-org-id-locations)
 #+END_SRC
 ** attachments
 #+BEGIN_SRC emacs-lisp
@@ -139,10 +167,6 @@ The function ~sa-find-file-recursively~ was taken from [[https://stackoverflow.c
    org-agenda-custom-commands
     '(("d" "David's planner view"
        ((agenda "")
-        (tags-todo "hw-SCHEDULED={.+}"
-                   ((org-agenda-overriding-header "Unscheduled Homework")
-                    (org-agenda-skip-function 'du/skip-projects-subprojects)
-                    (org-agenda-remove-tags t)))
         (tags-todo "task-SCHEDULED={.+}|project+TODO=\"NEXT\"-SCHEDULED={.+}"
                    ((org-agenda-overriding-header "Unscheduled Tasks and Next Actions")
                     ;;(org-agenda-skip-function 'du/skip-projects-subprojects)
@@ -184,13 +208,15 @@ I use refile extensively.
 #+END_SRC
 * capture
 #+BEGIN_SRC emacs-lisp
-  (defvar du/rwl-file-path (concat du/pkb-directory "/3_resources/self_improvement/rwl.org"))
+  (defvar du/rwl-file-path (concat du/pkb-directory "/2_areas/Indiv-Self_Change/rwl.org"))
   (setq
     org-default-notes-file (concat du/gtd-directory "/notes.md")
     org-capture-templates
     ;; most-used templates
     `(("t" "TODO" entry (file+headline ,(concat du/gtd-directory "/current.org") "tasks")
-        "* TODO %?   :captured:\n\n" :empty-lines 1)
+        "* TODO %?\n" :empty-lines 1)
+      ("T" "TODO from clipboard" entry (file+headline ,(concat du/gtd-directory "/current.org") "tasks")
+        "* TODO %c\n%?" :empty-lines 1)
       ("f" "thought" entry (file+headline ,(concat du/gtd-directory "/current.org") "thoughts")
         "* %?\n%u\n" :empty-lines 1)
       ("F" "thought from clipboard" entry (file+headline ,(concat du/gtd-directory "/current.org") "thoughts")
@@ -515,6 +541,21 @@ Automatically git commit after weekly planning and daily adapting.
   (spacemacs/set-leader-keys-for-major-mode 'org-mode "vd" 'du/org-auto-vc-daily)
   (spacemacs/set-leader-keys-for-major-mode 'org-mode "vw" 'du/org-auto-vc-weekly)
   (spacemacs/declare-prefix-for-mode 'org-mode "mv" "commit")
+#+END_SRC
+
+Bind the useful ~org-reveal~ function to a better key than ~C-c C-r~.
+#+BEGIN_SRC emacs-lisp
+  (spacemacs/set-leader-keys-for-major-mode 'org-mode "R" 'org-reveal)
+#+END_SRC
+
+Search in PKB
+#+BEGIN_SRC emacs-lisp
+  (defun du/search-in-pkb ()
+    "search in PKB using ag"
+    (interactive)
+    (spacemacs/helm-files-do-ag du/pkb-directory))
+
+  (spacemacs/set-leader-keys "os" 'du/search-in-pkb)
 #+END_SRC
 ** gtd functions
 These functions open buffers (not associated with any file) with a checklist for
