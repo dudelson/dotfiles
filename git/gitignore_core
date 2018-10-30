@@ -48,6 +48,16 @@ Session.vim
 #########
 .#*
 
+# gtags #
+#########
+GPATH
+GRTAGS
+GTAGS
+
+# python #
+##########
+.mypy_cache/
+
 # Others #
 #########
 .vagrant/
