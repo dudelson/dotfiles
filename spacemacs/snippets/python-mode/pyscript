@@ -1,0 +1,14 @@
+# -*- mode: snippet -*-
+# name: pyscript
+# key: pyscript
+# --
+#!/usr/bin/env python3
+
+import plumbum as pb
+import script_utils as su
+
+def main():
+    pass
+
+if __name__ == '__main__':
+    main()
