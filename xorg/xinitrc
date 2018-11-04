@@ -43,8 +43,6 @@ if [ $DUDELSON_CONFIG_ENABLE_COMPOSITING = "1" ]; then
     compton &
 fi
 
-# merge in ~/.Xdefaults for nice terminal colors
-xrdb -merge $HOME/.Xdefaults
 
 # run machine-specific configuration
 ~/.xinitrc-user
