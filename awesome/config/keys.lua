@@ -7,7 +7,8 @@ local lain = require("lain")
 local config = {}
 
 function config.init(context)
-    local modkey = context.keys.modkey
+  local modkey = context.keys.modkey
+  local altkey = context.keys.altkey
 
   context.keys.global = gears.table.join(
     -- Movement between tags
@@ -192,8 +193,10 @@ function config.init(context)
     awful.key({ modkey, "Shift" }, "l",
       function()
         awful.util.spawn(context.vars.scrlocker)
-      end
-    )
+      end),
+
+    -- decimal time toggle dummy function
+    awful.key({ modkey, altkey }, "c", function() end)
   )
 
 -- Bind all key numbers to tags.

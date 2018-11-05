@@ -47,29 +47,6 @@ do
 end
 -- }}}
 
--- {{{ Autostart windowless processes
-
--- This function will run once every time Awesome is started
-local function run_once(cmd_arr)
-    for _, cmd in ipairs(cmd_arr) do
-        awful.spawn.with_shell(string.format("pgrep -u $USER -fx '%s' > /dev/null || (%s)", cmd, cmd))
-    end
-end
-
-run_once({ "urxvtd", "unclutter -root" }) -- entries must be separated by commas
-
--- This function implements the XDG autostart specification
---[[
-awful.spawn.with_shell(
-    'if (xrdb -query | grep --quiet "^awesome\\.started:\\s*true$"); then; exit; fi;' ..
-    'xrdb -merge <<< "awesome.started:true";' ..
-    -- list each of your autostart commands, followed by ; inside single quotes, followed by ..
-    'dex --environment Awesome --autostart --search-paths "$XDG_CONFIG_DIRS/autostart:$XDG_CONFIG_HOME/autostart"' -- https://github.com/jceb/dex
-)
---]]
-
--- }}}
-
 -- {{{ Variable definitions
 
 local context = {}
@@ -81,8 +58,8 @@ context.keys.altkey       = "Mod1"
 context.vars = {}
 context.vars.theme        = "powerarrow-dark-custom"
 context.vars.terminal     = "kitty"
-context.vars.editor       = os.getenv("EDITOR") or "vim"
 context.vars.browser      = "firefox"
+context.vars.editor       = "emacs"
 context.vars.scrlocker    = "i3lock-fancy"
 context.vars.check_pkg_update = "checkupdates | sed 's/->/→/' | column -t"
 
@@ -223,12 +200,38 @@ awful.screen.connect_for_each_screen(function(s) beautiful.at_screen_connect(s) 
 -- }}}
 
 -- {{{ Init other stuff
-config.util.init(context)
+context.textclock_toggle_activate = beautiful.textclock.toggle_activate
+context.textclock_toggle_deactivate = beautiful.textclock.toggle_deactivate
 config.widgets.init(context)
 config.keys.init(context)
 config.mouse.init(context)
 config.client.init(context) -- client must go before rules
 config.rules.init(context)
--- TODO: why can't we find signals.lua?
--- config.signls.init(context)
+config.signals.init(context)
+-- }}}
+
+
+-- this makes it so that notifications sent by notify-send respect my theme's
+-- notification preferences
+naughty.dbus.config.mapping = {
+    {{urgency = "\1"}, naughty.config.presets.normal},
+    {{urgency = "\2"}, naughty.config.presets.critical},
+}
+
+
+-- {{{ Autostart applications
+-- TODO the run_once check fails for cadence
+config.util.run_once({
+    "nm-applet",          -- network manager
+    "udiskie",            -- for automounting usbs
+    "xflux -z 03304",     -- takes the blues out of the monitor after sunset
+    "Desktop-Bridge",     -- protonmail bridge
+    "nextcloud",
+    "start_jack",         -- this one and the next one are necessary for my audio setup
+    "cadence",
+    "/usr/bin/xautolock -time 5 -locker i3lock-fancy -detectsleep",
+    context.vars.terminal,
+    context.vars.browser,
+    context.vars.editor,
+})
 -- }}}

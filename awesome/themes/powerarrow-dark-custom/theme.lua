@@ -30,15 +30,14 @@ theme.border_width                              = 1
 theme.border_normal                             = "#3F3F3F"
 theme.border_focus                              = "#7F7F7F"
 theme.border_marked                             = "#CC9393"
-theme.tasklist_bg_focus                         = "#1A1A1A"
-theme.titlebar_bg_focus                         = theme.bg_focus
-theme.titlebar_bg_normal                        = theme.bg_normal
-theme.titlebar_fg_focus                         = theme.fg_focus
+
 theme.menu_height                               = 16
 theme.menu_width                                = 140
 theme.menu_submenu_icon                         = theme.dir .. "/icons/submenu.png"
+
 theme.taglist_squares_sel                       = theme.dir .. "/icons/square_sel.png"
 theme.taglist_squares_unsel                     = theme.dir .. "/icons/square_unsel.png"
+
 theme.layout_tile                               = theme.dir .. "/icons/tile.png"
 theme.layout_tileleft                           = theme.dir .. "/icons/tileleft.png"
 theme.layout_tilebottom                         = theme.dir .. "/icons/tilebottom.png"
@@ -51,6 +50,7 @@ theme.layout_max                                = theme.dir .. "/icons/max.png"
 theme.layout_fullscreen                         = theme.dir .. "/icons/fullscreen.png"
 theme.layout_magnifier                          = theme.dir .. "/icons/magnifier.png"
 theme.layout_floating                           = theme.dir .. "/icons/floating.png"
+
 theme.widget_ac                                 = theme.dir .. "/icons/ac.png"
 theme.widget_battery                            = theme.dir .. "/icons/battery.png"
 theme.widget_battery_low                        = theme.dir .. "/icons/battery_low.png"
@@ -68,9 +68,16 @@ theme.widget_vol_no                             = theme.dir .. "/icons/vol_no.pn
 theme.widget_vol_mute                           = theme.dir .. "/icons/vol_mute.png"
 theme.widget_mail                               = theme.dir .. "/icons/mail.png"
 theme.widget_mail_on                            = theme.dir .. "/icons/mail_on.png"
+
+theme.tasklist_bg_focus                         = theme.bg_alt
 theme.tasklist_plain_task_name                  = true
 theme.tasklist_disable_icon                     = true
+
 theme.useless_gap                               = 0
+
+theme.titlebar_bg_focus                         = theme.bg_focus
+theme.titlebar_bg_normal                        = theme.bg_normal
+theme.titlebar_fg_focus                         = theme.fg_focus
 theme.titlebar_close_button_focus               = theme.dir .. "/icons/titlebar/close_focus.png"
 theme.titlebar_close_button_normal              = theme.dir .. "/icons/titlebar/close_normal.png"
 theme.titlebar_ontop_button_focus_active        = theme.dir .. "/icons/titlebar/ontop_focus_active.png"
@@ -90,27 +97,100 @@ theme.titlebar_maximized_button_normal_active   = theme.dir .. "/icons/titlebar/
 theme.titlebar_maximized_button_focus_inactive  = theme.dir .. "/icons/titlebar/maximized_focus_inactive.png"
 theme.titlebar_maximized_button_normal_inactive = theme.dir .. "/icons/titlebar/maximized_normal_inactive.png"
 
+theme.systray_icon_spacing                      = 2
+
+theme.notification_fg                           = theme.fg_normal
+theme.notification_bg                           = theme.bg_normal
+theme.notification_border_color                 = theme.border_normal
+theme.notification_border_width                 = theme.border_width
+theme.notification_icon_size                    = 80
+theme.notification_max_width                    = 600
+theme.notification_max_height                   = 400
+theme.notification_margin                       = 5
+
+naughty.config.padding                          = 10
+naughty.config.spacing                          = 10
+naughty.config.defaults.timeout                 = 5
+naughty.config.defaults.margin                  = theme.notification_margin
+naughty.config.defaults.border_width            = theme.notification_border_width
+
+naughty.config.presets.normal                   = {
+                                                      fg           = theme.notification_fg,
+                                                      bg           = theme.notification_bg,
+                                                  }
+naughty.config.presets.low                      = naughty.config.presets.normal
+naughty.config.presets.critical                 = {
+                                                      fg           = "#dc322f",
+                                                      bg           = theme.notification_bg,
+                                                      timeout      = 0,
+                                                  }
+
+
 local markup = lain.util.markup
 local separators = lain.util.separators
 
--- Textclock
-local clockicon = wibox.widget.imagebox(theme.widget_clock)
-local clock = awful.widget.watch(
-    "date +'%a %d %b %R'", 60,
-    function(widget, stdout)
-        widget:set_markup(" " .. markup.font(theme.font, stdout))
-    end
-)
+-- Textclock and calendar
+local TEXTCLOCK_DEFAULT_TIME_FORMAT = 'dt'
 
--- Calendar
-theme.cal = lain.widget.cal({
-    attach_to = { clock },
-    notification_preset = {
-        font = "xos4 Terminus 10",
-        fg   = theme.fg_normal,
-        bg   = theme.bg_normal
-    }
+local textclock = {}
+textclock.time_format = TEXTCLOCK_DEFAULT_TIME_FORMAT
+
+function textclock.format(widget, stdout)
+  local t = os.date('*t')
+  local sep = ''
+  local timestr = ''
+  if textclock.time_format == "st" then
+    sep = ' '
+    timestr = stdout
+  else
+    -- get the number of seconds since midnight
+    local secs = t.hour * 60 * 60 + t.min * 60 + t.sec
+    -- convert to decimal minutes (not seconds)
+    local dmins = math.floor(secs / 86.4)
+    sep = '.'
+    timestr = string.format('%03d', dmins)
+  end
+  local japn_days_of_week = {
+    {'日', "#cccccc"}, {'月', "#f73434"}, {'火', "orange"}, {'水', "#0a92c0"},
+    {'木', "#6fde57"}, {'金', "#fcce00"}, {'土', "#853c32"}
+  }
+  local kanji, color = japn_days_of_week[t.wday][1], japn_days_of_week[t.wday][2]
+  local fmt_str = ' <span color="%s">%s</span> %s%s<span color="#ffffff">%s</span> '
+  widget:set_markup(string.format(fmt_str, color, kanji, os.date('%m-%d'), sep, timestr))
+end
+
+function textclock.toggle_activate()
+  if textclock.time_format == TEXTCLOCK_DEFAULT_TIME_FORMAT then
+    textclock.time_format = (TEXTCLOCK_DEFAULT_TIME_FORMAT == 'dt' and 'st' or 'dt')
+    -- vicious.force({ textclock.widget })
+    textclock.widget:emit_signal("widget::redraw_needed")
+  end
+end
+
+function textclock.toggle_deactivate()
+  if textclock.time_format ~= TEXTCLOCK_DEFAULT_TIME_FORMAT then
+    textclock.time_format = TEXTCLOCK_DEFAULT_TIME_FORMAT
+    -- vicious.force({ textclock.widget })
+    textclock.widget:emit_signal("widget::redraw_needed")
+  end
+end
+
+textclock.widget = awful.widget.watch("date +'%R'", 60, textclock.format)
+-- textclock.wtype = setmetatable({}, { __call = function(_, ...) return {} end })
+textclock.widget.font = theme.font
+-- vicious.register(textclock.widget, textclock.wtype, textclock.format, TEXTCLOCK_WIDGET_UPDATE_INTERVAL)
+
+-- add calendar
+local cal = awful.widget.calendar_popup.month({
+    style_focus = { fg_color = "#ff0000" },
+    style_month = { border_width = 10, },
+    start_sunday = true,
 })
+cal:attach(textclock.widget)
+
+-- expose to rest of config
+theme.textclock = textclock
+
 
 -- MEM
 local memicon = wibox.widget.imagebox(theme.widget_mem)
@@ -312,7 +392,7 @@ function theme.at_screen_connect(s)
         { -- Right widgets
             layout = wibox.layout.fixed.horizontal,
             s.systray,
-            spr,
+            spr, spr,
             arrl_ld,
             wibox.container.background(cpuicon, theme.bg_alt),
             wibox.container.background(cpu.widget, theme.bg_alt),
@@ -329,7 +409,7 @@ function theme.at_screen_connect(s)
             wibox.container.background(weathericon, theme.bg_alt),
             wibox.container.background(weather.widget, theme.bg_alt),
             arrl_dl,
-            clock,
+            textclock.widget,
             spr,
         },
     }

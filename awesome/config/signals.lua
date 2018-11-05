@@ -1,5 +1,5 @@
-local gears = require("gears")
 local awful = require("awful")
+local gears = require("gears")
 local beautiful = require("beautiful")
 local naughty = require("naughty")
 local lain = require("lain")
@@ -69,6 +69,26 @@ function config.init(context)
           and awful.client.focus.filter(c) then
           client.focus = c
       end
+  end)
+
+  -- for decimal time toggle
+  key.connect_signal('press', function(k)
+                       if k.key == 'c'
+                       and #k.modifiers == 2
+                       and k.modifiers[1] == "Mod1"
+                       and k.modifiers[2] == "Mod4" then
+                         print('key press')
+                         context.textclock_toggle_activate()
+                       end
+  end)
+  key.connect_signal('release', function(k)
+                       if k.key == 'c'
+                       and #k.modifiers == 2
+                       and k.modifiers[1] == "Mod1"
+                       and k.modifiers[2] == "Mod4" then
+                         print('key release')
+                         context.textclock_toggle_deactivate()
+                       end
   end)
 
   -- client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
