@@ -192,7 +192,7 @@ function config.init(context)
     end),
     awful.key({ modkey, "Shift" }, "l",
       function()
-        awful.util.spawn(context.vars.scrlocker)
+        awful.spawn('loginctl lock-session')
       end),
 
     -- decimal time toggle dummy function

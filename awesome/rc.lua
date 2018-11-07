@@ -60,7 +60,7 @@ context.vars.theme        = "powerarrow-dark-custom"
 context.vars.terminal     = "kitty"
 context.vars.browser      = "firefox"
 context.vars.editor       = "emacs"
-context.vars.scrlocker    = "i3lock-fancy"
+context.vars.scrlocker    = "i3lock -n -i ~/.config/awesome/themes/powerarrow-dark-custom/wall.png"
 context.vars.check_pkg_update = "checkupdates | sed 's/->/→/' | column -t"
 
 awful.util.terminal = context.vars.terminal
