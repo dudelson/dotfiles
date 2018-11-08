@@ -96,6 +96,11 @@ function config.init(context)
                 awful.screen.focused().systray.visible = not awful.screen.focused().systray.visible
               end,
               {description="toggle systray visibility", group="misc"}),
+    awful.key({ modkey },            "d",
+      function()
+        context.state.detailed_widgets = not context.state.detailed_widgets
+      end,
+      {description="toggle detailed widgets", group="misc"}),
     -- Alt+tab
     awful.key({"Mod1",          }, "Tab",
               function () alttab.switch(1, "Alt_L", "Tab", "ISO_Left_Tab") end,
@@ -172,6 +177,7 @@ function config.init(context)
                   end
                 }
               end),
+    awful.key({modkey, altkey}, "m", function() lain.util.add_tag() end),
     awful.key({modkey, altkey }, "d",
               function ()
                   local t = awful.screen.focused().selected_tag

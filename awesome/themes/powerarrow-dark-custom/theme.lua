@@ -11,6 +11,7 @@ local lain  = require("lain")
 local awful = require("awful")
 local wibox = require("wibox")
 local widgets = require("widgets")
+local caffeine = require("caffeine")
 
 local os = os
 local my_table = awful.util.table or gears.table -- 4.{0,1} compatibility
@@ -125,183 +126,12 @@ naughty.config.presets.critical                 = {
                                                       timeout      = 0,
                                                   }
 
-
-local markup = lain.util.markup
 local separators = lain.util.separators
 
--- Textclock and calendar
-local TEXTCLOCK_DEFAULT_TIME_FORMAT = 'dt'
-
-local textclock = {}
-textclock.time_format = TEXTCLOCK_DEFAULT_TIME_FORMAT
-
-function textclock.format(widget, stdout)
-  local t = os.date('*t')
-  local sep = ''
-  local timestr = ''
-  if textclock.time_format == "st" then
-    sep = ' '
-    timestr = stdout
-  else
-    -- get the number of seconds since midnight
-    local secs = t.hour * 60 * 60 + t.min * 60 + t.sec
-    -- convert to decimal minutes (not seconds)
-    local dmins = math.floor(secs / 86.4)
-    sep = '.'
-    timestr = string.format('%03d', dmins)
-  end
-  local japn_days_of_week = {
-    {'日', "#cccccc"}, {'月', "#f73434"}, {'火', "orange"}, {'水', "#0a92c0"},
-    {'木', "#6fde57"}, {'金', "#fcce00"}, {'土', "#853c32"}
-  }
-  local kanji, color = japn_days_of_week[t.wday][1], japn_days_of_week[t.wday][2]
-  local fmt_str = ' <span color="%s">%s</span> %s%s<span color="#ffffff">%s</span> '
-  widget:set_markup(string.format(fmt_str, color, kanji, os.date('%m-%d'), sep, timestr))
-end
-
-function textclock.toggle_activate()
-  if textclock.time_format == TEXTCLOCK_DEFAULT_TIME_FORMAT then
-    textclock.time_format = (TEXTCLOCK_DEFAULT_TIME_FORMAT == 'dt' and 'st' or 'dt')
-    -- vicious.force({ textclock.widget })
-    textclock.widget:emit_signal("widget::redraw_needed")
-  end
-end
-
-function textclock.toggle_deactivate()
-  if textclock.time_format ~= TEXTCLOCK_DEFAULT_TIME_FORMAT then
-    textclock.time_format = TEXTCLOCK_DEFAULT_TIME_FORMAT
-    -- vicious.force({ textclock.widget })
-    textclock.widget:emit_signal("widget::redraw_needed")
-  end
-end
-
-textclock.widget = awful.widget.watch("date +'%R'", 60, textclock.format)
--- textclock.wtype = setmetatable({}, { __call = function(_, ...) return {} end })
-textclock.widget.font = theme.font
--- vicious.register(textclock.widget, textclock.wtype, textclock.format, TEXTCLOCK_WIDGET_UPDATE_INTERVAL)
-
--- add calendar
-local cal = awful.widget.calendar_popup.month({
-    style_focus = { fg_color = "#ff0000" },
-    style_month = { border_width = 10, },
-    start_sunday = true,
-})
-cal:attach(textclock.widget)
-
--- expose to rest of config
-theme.textclock = textclock
-
-
--- MEM
+-- Widget icons
 local memicon = wibox.widget.imagebox(theme.widget_mem)
-local mem = lain.widget.mem({
-    settings = function()
-        local str = string.format(" %4.1f%% ", mem_now.perc)
-        widget:set_markup(markup.font(theme.font, str))
-    end
-})
-
--- CPU
 local cpuicon = wibox.widget.imagebox(theme.widget_cpu)
-local cpu = lain.widget.cpu({
-    settings = function()
-        local str = string.format(" %4.1f%% ", cpu_now.usage)
-        widget:set_markup(markup.font(theme.font, str))
-    end
-})
-
-function cpu.show()
-  cpu.hide()
-
-  local str = string.format("%4.1f%% %4.1f%% %4.1f%% %4.1f%%",
-                            cpu.core[1].usage,
-                            cpu.core[2].usage,
-                            cpu.core[3].usage,
-                            cpu.core[4].usage)
-  cpu.notification = naughty.notify({
-      text = str,
-  })
-end
-
-function cpu.hide()
-  if cpu.notification then
-    naughty.destroy(cpu.notification)
-    cpu.notification = nil
-  end
-end
-
-cpu.widget:connect_signal("mouse::enter", function() cpu.show() end)
-cpu.widget:connect_signal("mouse::leave", function() cpu.hide() end)
-
--- Battery
-local baticon = wibox.widget.imagebox(theme.widget_battery)
-local bat = lain.widget.bat({
-    settings = function()
-        if bat_now.status and bat_now.status ~= "N/A" then
-            if bat_now.ac_status == 1 then
-                baticon:set_image(theme.widget_ac)
-            elseif not bat_now.perc and tonumber(bat_now.perc) <= 5 then
-                baticon:set_image(theme.widget_battery_empty)
-            elseif not bat_now.perc and tonumber(bat_now.perc) <= 15 then
-                baticon:set_image(theme.widget_battery_low)
-            else
-                baticon:set_image(theme.widget_battery)
-            end
-            widget:set_markup(markup.font(theme.font, " " .. bat_now.perc .. "% "))
-        else
-            widget:set_markup(markup.font(theme.font, " AC "))
-            baticon:set_image(theme.widget_ac)
-        end
-    end
-})
-
--- Weather
 local weathericon = wibox.widget.imagebox(theme.widget_weather)
-local weather = lain.widget.weather({
-    city_id = 5084868, -- Concord, NH
-    notification_preset = { font = "source code pro 9", fg = theme.fg_normal },
-    weather_na_markup = markup.fontfg(theme.font, "#eca4c4", "N/A "),
-    units = 'imperial',
-    settings = function()
-      descr = weather_now["weather"][1]["description"]:lower()
-      units = math.floor(weather_now["main"]["temp"])
-      widget:set_markup(markup.fontfg(theme.font, "#eca4c4", " " .. descr .. " @ " .. units .. "°F "))
-    end
-})
-
--- Package updates
--- local pkg = widgets.pkg {
---     command = context.vars.checkupdate,
---     notify = "on",
---     notification_preset = naughty.config.presets.normal,
---     settings = function()
---       local _color = theme.fg_normal
---       local _font = theme.font
---       widget:set_markup(markup.fontfg(_font, _color, available))
---     end,
--- }
-
--- ALSA volume
-local volicon = wibox.widget.imagebox(theme.widget_vol)
-local volume = lain.widget.alsa({
-    settings = function()
-        if volume_now.status == "off" then
-            volicon:set_image(theme.widget_vol_mute)
-        elseif tonumber(volume_now.level) == 0 then
-            volicon:set_image(theme.widget_vol_no)
-        elseif tonumber(volume_now.level) <= 50 then
-            volicon:set_image(theme.widget_vol_low)
-        else
-            volicon:set_image(theme.widget_vol)
-        end
-
-        local str = string.format(" %3d%% ", volume_now.level)
-        widget:set_markup(markup.font(theme.font, str))
-    end
-})
-
--- Systray
-wibox.widget.textbox('')
 
 -- Separators
 local spr     = wibox.widget.textbox(' ')
@@ -310,10 +140,7 @@ local arrl_ld = separators.arrow_left("alpha", theme.bg_alt)
 local arrr_ld = separators.arrow_right(theme.bg_alt, "alpha")
 local arrr_dl = separators.arrow_right("alpha", theme.bg_alt)
 
-function theme.at_screen_connect(s)
-    -- Quake application
-    s.quake = lain.util.quake({ app = awful.util.terminal })
-
+function theme.at_screen_connect(s, context)
     -- If wallpaper is a function, call it with the screen
     local wallpaper = theme.wallpaper
     if type(wallpaper) == "function" then
@@ -385,31 +212,32 @@ function theme.at_screen_connect(s)
             s.mypromptbox,
             spr,
         },
-        {
+        { -- Middle widget
           layout = wibox.layout.fixed.horizontal,
-          s.mytasklist, -- Middle widget
+          s.mytasklist,
         },
         { -- Right widgets
             layout = wibox.layout.fixed.horizontal,
             s.systray,
+            caffeine.widget,
             spr, spr,
             arrl_ld,
             wibox.container.background(cpuicon, theme.bg_alt),
-            wibox.container.background(cpu.widget, theme.bg_alt),
+            wibox.container.background(context.widgets.cpu, theme.bg_alt),
             arrl_dl,
             memicon,
-            mem.widget,
+            context.widgets.mem,
             arrl_ld,
-            wibox.container.background(volicon, theme.bg_alt),
-            wibox.container.background(volume.widget, theme.bg_alt),
+            wibox.container.background(context.volicon, theme.bg_alt),
+            wibox.container.background(context.widgets.volume, theme.bg_alt),
             arrl_dl,
-            baticon,
-            bat.widget,
+            context.baticon,
+            context.widgets.bat,
             arrl_ld,
             wibox.container.background(weathericon, theme.bg_alt),
-            wibox.container.background(weather.widget, theme.bg_alt),
+            wibox.container.background(context.widgets.weather, theme.bg_alt),
             arrl_dl,
-            textclock.widget,
+            context.widgets.textclock,
             spr,
         },
     }

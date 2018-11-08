@@ -62,6 +62,12 @@ context.vars.browser      = "firefox"
 context.vars.editor       = "emacs"
 context.vars.scrlocker    = "i3lock -n -i ~/.config/awesome/themes/powerarrow-dark-custom/wall.png"
 context.vars.check_pkg_update = "checkupdates | sed 's/->/→/' | column -t"
+-- either "st" for normal 24-hour time or "dt" for decimal time
+context.vars.default_time_format = "st"
+
+context.state = {}
+context.state.detailed_widgets = false
+
 
 awful.util.terminal = context.vars.terminal
 awful.layout.layouts = {
@@ -182,32 +188,30 @@ awful.util.mymainmenu = freedesktop.menu.build({
 beautiful.init(string.format("%s/.config/awesome/themes/%s/theme.lua", os.getenv("HOME"), context.vars.theme))
 --- }}}
 
--- {{{ Screen
--- Re-set wallpaper when a screen's geometry changes (e.g. different resolution)
-screen.connect_signal("property::geometry", function(s)
-    -- Wallpaper
-    if beautiful.wallpaper then
-        local wallpaper = beautiful.wallpaper
-        -- If wallpaper is a function, call it with the screen
-        if type(wallpaper) == "function" then
-            wallpaper = wallpaper(s)
-        end
-        gears.wallpaper.maximized(wallpaper, s, true)
-    end
-end)
--- Create a wibox for each screen and add it
-awful.screen.connect_for_each_screen(function(s) beautiful.at_screen_connect(s) end)
--- }}}
-
 -- {{{ Init other stuff
-context.textclock_toggle_activate = beautiful.textclock.toggle_activate
-context.textclock_toggle_deactivate = beautiful.textclock.toggle_deactivate
 config.widgets.init(context)
 config.keys.init(context)
 config.mouse.init(context)
 config.client.init(context) -- client must go before rules
 config.rules.init(context)
 config.signals.init(context)
+-- }}}
+
+-- {{{ Screen
+-- Re-set wallpaper when a screen's geometry changes (e.g. different resolution)
+screen.connect_signal("property::geometry", function(s)
+                        -- Wallpaper
+                        if beautiful.wallpaper then
+                          local wallpaper = beautiful.wallpaper
+                          -- If wallpaper is a function, call it with the screen
+                          if type(wallpaper) == "function" then
+                            wallpaper = wallpaper(s)
+                          end
+                          gears.wallpaper.maximized(wallpaper, s, true)
+                        end
+end)
+-- Create a wibox for each screen and add it
+awful.screen.connect_for_each_screen(function(s) beautiful.at_screen_connect(s, context) end)
 -- }}}
 
 
