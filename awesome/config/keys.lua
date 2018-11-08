@@ -78,7 +78,7 @@ function config.init(context)
               {description = "restore minimized", group = "client"}),
 
     -- Prompt
-    awful.key({ modkey }, "x", function () awful.spawn('dmenu_run -b') end,
+    awful.key({ modkey }, "x", function () awful.spawn('rofi -show run') end,
       {description = "run prompt", group = "launcher"}),
 
     awful.key({ modkey }, "r",
