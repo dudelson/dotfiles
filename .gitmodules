@@ -1,12 +1,3 @@
-[submodule "vim/bundle/unite"]
-	path = vim/bundle/unite
-	url = https://github.com/Shougo/unite.vim.git
-[submodule "vim/bundle/neomru"]
-	path = vim/bundle/neomru
-	url = https://github.com/Shougo/neomru.vim.git
-[submodule "vim/bundle/vimproc"]
-	path = vim/bundle/vimproc
-	url = https://github.com/Shougo/vimproc.vim.git
 [submodule "vim/bundle/airline"]
 	path = vim/bundle/airline
 	url = https://github.com/vim-airline/vim-airline.git
@@ -16,15 +7,6 @@
 [submodule "vim/bundle/eunuch"]
 	path = vim/bundle/eunuch
 	url = https://github.com/tpope/vim-eunuch.git
-[submodule "vim/bundle/fugitive"]
-	path = vim/bundle/fugitive
-	url = https://github.com/tpope/vim-fugitive.git
-[submodule "vim/bundle/rust"]
-	path = vim/bundle/rust
-	url = https://github.com/rust-lang/rust.vim.git
-[submodule "vim/bundle/simpylfold"]
-	path = vim/bundle/simpylfold
-	url = https://github.com/tmhedberg/SimpylFold.git
 [submodule "vim/bundle/surround"]
 	path = vim/bundle/surround
 	url = https://github.com/tpope/vim-surround.git
@@ -37,24 +19,24 @@
 [submodule "vim/bundle/syntastic"]
 	path = vim/bundle/syntastic
 	url = https://github.com/scrooloose/syntastic.git
-[submodule "vim/bundle/vimtex"]
-	path = vim/bundle/vimtex
-	url = https://github.com/lervag/vimtex.git
-[submodule "vim/bundle/ultisnips"]
-	path = vim/bundle/ultisnips
-	url = https://github.com/SirVer/ultisnips.git
 [submodule "vim/bundle/airline-themes"]
 	path = vim/bundle/airline-themes
 	url = https://github.com/vim-airline/vim-airline-themes.git
 [submodule "spacemacs/snippets"]
 	path = spacemacs/snippets
 	url = https://github.com/AndreaCrotti/yasnippet-snippets.git
-[submodule "awesome/vicious"]
-	path = awesome/vicious
-	url = https://github.com/Mic92/vicious
 [submodule "spacemacs/layers/japanese"]
 	path = spacemacs/layers/japanese
 	url = https://github.com/kenjimyzk/spacemacs-japanese
 [submodule "spacemacs/layers/calendar"]
 	path = spacemacs/layers/calendar
 	url = git@github.com:dudelson/spacemacs-calendar-layer.git
+[submodule "awesome/lain"]
+	path = awesome/lain
+	url = https://github.com/lcpz/lain
+[submodule "awesome/freedesktop"]
+	path = awesome/freedesktop
+	url = https://github.com/lcpz/awesome-freedesktop
+[submodule "awesome/awesome-switcher"]
+	path = awesome/awesome-switcher
+	url = https://github.com/berlam/awesome-switcher
