@@ -64,6 +64,8 @@ context.vars.scrlocker    = "i3lock -n -i ~/.config/awesome/themes/powerarrow-da
 context.vars.check_pkg_update = "checkupdates | sed 's/->/→/' | column -t"
 -- either "st" for normal 24-hour time or "dt" for decimal time
 context.vars.default_time_format = "st"
+-- the OpenWeatherMap ID of your city
+context.vars.city_id      = 4955219 -- Westford, MA
 
 context.state = {}
 context.state.detailed_widgets = false
@@ -236,13 +238,16 @@ config.util.run_once({
 
 config.util.spawn_once {
   command = context.vars.terminal,
+  class = "kitty",
   tag = awful.screen.focused().tags[1],
   callback = function(c)
     c.maximized = true
   end,
 }
 config.util.spawn_once {
-  command = context.vars.terminal .. ' weechat',
+  command = 'WEECHAT_PASSPHRASE=$(pass by-name/weechat) kitty --class="weechat" weechat',
+  class = "weechat",
+  proc = "weechat",
   tag = awful.screen.focused().tags[4],
   callback = function(c)
     c.maximized = true
@@ -250,6 +255,7 @@ config.util.spawn_once {
 }
 config.util.spawn_once {
   command = context.vars.editor,
+  class = "Emacs",
   tag = awful.screen.focused().tags[3],
   callback = function(c)
     c.maximized = true
@@ -257,6 +263,7 @@ config.util.spawn_once {
 }
 config.util.spawn_once {
   command = context.vars.browser,
+  class = "Firefox",
   tag = awful.screen.focused().tags[2],
   callback = function(c)
     c.maximized = true

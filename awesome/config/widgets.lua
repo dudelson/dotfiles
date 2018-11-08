@@ -129,7 +129,7 @@ function config.init(context)
 
   -- Weather
   local weather = lain.widget.weather({
-      city_id = 5084868, -- Concord, NH
+      city_id = context.vars.city_id,
       notification_preset = { font = "source code pro 9", fg = beautiful.fg_normal },
       weather_na_markup = markup.fontfg(beautiful.font, "#eca4c4", "N/A "),
       units = 'imperial',
