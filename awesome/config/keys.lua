@@ -3,6 +3,7 @@ local awful = require("awful")
 local beautiful = require("beautiful")
 local naughty = require("naughty")
 local lain = require("lain")
+local switcher = require("awesome-switcher")
 
 local config = {}
 
@@ -102,14 +103,15 @@ function config.init(context)
       end,
       {description="toggle detailed widgets", group="misc"}),
     -- Alt+tab
-    awful.key({"Mod1",          }, "Tab",
-              function () alttab.switch(1, "Alt_L", "Tab", "ISO_Left_Tab") end,
-              {description = "alt-tab", group = "client"}
-    ),
-    awful.key({"Mod1", "Shift"  }, "Tab",
-              function() alttab.switch(-1, "Alt_L", "Tab", "ISO_Left_Tab") end,
-              {description = "reverse alt-tab", group = "client"}
-    ),
+    awful.key({ "Mod1",           }, "Tab",
+      function ()
+        switcher.switch( 1, "Mod1", "Alt_L", "Shift", "Tab")
+    end),
+
+    awful.key({ "Mod1", "Shift"   }, "Tab",
+      function ()
+        switcher.switch(-1, "Mod1", "Alt_L", "Shift", "Tab")
+    end),
     -- Printscreen
     awful.key({                 }, "Print",
               function()
