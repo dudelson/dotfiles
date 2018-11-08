@@ -224,18 +224,42 @@ naughty.dbus.config.mapping = {
 
 
 -- {{{ Autostart applications
--- TODO the run_once check fails for cadence
 config.util.run_once({
-    "nm-applet",          -- network manager
-    "udiskie",            -- for automounting usbs
-    "xflux -z 03304",     -- takes the blues out of the monitor after sunset
-    "Desktop-Bridge",     -- protonmail bridge
-    "nextcloud",
-    "start_jack",         -- this one and the next one are necessary for my audio setup
-    "cadence",
-    "/usr/bin/xautolock -time 5 -locker i3lock-fancy -detectsleep",
-    context.vars.terminal,
-    context.vars.browser,
-    context.vars.editor,
+   "nm-applet",          -- network manager
+   "udiskie",            -- for automounting usbs
+--    "xflux -z 03304",     -- takes the blues out of the monitor after sunset
+   "xss-lock -- " .. context.vars.scrlocker,
+   context.vars.terminal,
+   context.vars.browser,
+   context.vars.editor,
 })
+
+config.util.spawn_once {
+  command = context.vars.terminal,
+  tag = awful.screen.focused().tags[1],
+  callback = function(c)
+    c.maximized = true
+  end,
+}
+config.util.spawn_once {
+  command = context.vars.terminal .. ' weechat',
+  tag = awful.screen.focused().tags[4],
+  callback = function(c)
+    c.maximized = true
+  end,
+}
+config.util.spawn_once {
+  command = context.vars.editor,
+  tag = awful.screen.focused().tags[3],
+  callback = function(c)
+    c.maximized = true
+  end,
+}
+config.util.spawn_once {
+  command = context.vars.browser,
+  tag = awful.screen.focused().tags[2],
+  callback = function(c)
+    c.maximized = true
+  end,
+}
 -- }}}

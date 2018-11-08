@@ -19,14 +19,6 @@ function config.init(context)
       { rule_any = { class = {"MPlayer", "pinentry", "Gimp", "feh", "inkscape"} },
         properties = { floating = true }
       },
-      { rule = { class = "Firefox" },
-        -- properties = { tag = tags[apps.browser.screen][apps.browser.tag] } },
-        properties = { tag = "web" }
-      },
-      { rule = { class = "Emacs" },
-        -- properties = { tag = tags[apps.emacs.screen][apps.emacs.tag] } },
-        properties = { tag = "spc" }
-      },
       -- this rule fixes a problem with urxvt and emacs where the desktop
       -- was visible along the bottom and right edges of the screen
       { rule_any = { class = { "Emacs", "URxvt" } },
