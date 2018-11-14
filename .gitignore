@@ -1,7 +1,9 @@
-vim/view
+configs/vim/view
 # ignore everything under weechat/ except .conf files
-weechat/*
-!weechat/*.conf
+configs/weechat/*
+!configs/weechat/*.conf
 # ignore elisp files that are auto-generated from literate config
-spacemacs/config.el
-spacemacs/org-config.el
+configs/spacemacs/config.el
+configs/spacemacs/org-config.el
+
+*.un~
