@@ -1,6 +1,6 @@
 execute pathogen#infect()
 " automatically generate helptags for all plugins
-execute pathogen#helptags()  
+execute pathogen#helptags()
 
 " vim-specific settings
 if !has('nvim')
@@ -53,8 +53,8 @@ set hidden
 "set textwidth=79 " automatically break lines after this many chars
 "set formatoptions=??
 
-" search options 
-set ignorecase    
+" search options
+set ignorecase
 set smartcase     " overrides ignorecase if there are capital letters in the search string
 set gdefault      " apply substitutions globally on lines by default
 
@@ -66,8 +66,8 @@ set visualbell
 set so=10
 
 " make sure tab width is 4 when displaying, editing, and indenting text
-" but keep actual tab width at default (8) to preserve formatting in 
-" other text editors 
+" but keep actual tab width at default (8) to preserve formatting in
+" other text editors
 set softtabstop=4 shiftwidth=4 expandtab shiftround
 
 " Use the same symbols as TextMate for tabstops and EOLs
@@ -113,12 +113,6 @@ let python_highlight_exceptions=1
 let python_highlight_string_formatting=1
 let python_print_as_function=1
 
-" options for simpylfold
-autocmd BufWinEnter *.py setlocal foldexpr=SimpylFold(v:lnum) foldmethod=expr
-autocmd BufWinLeave *.py setlocal foldexpr< foldmethod<
-" xml linter
-au FileType xml exe ":silent %!xmllint --format --recover - 2>/dev/null"
-
 " syntastic settings
 " these three were not playing well with airline, see :h airline-syntastic
 "set statusline+=%#warningmsg#
@@ -141,34 +135,6 @@ let g:airline#extensions#whitespace#enabled = 0
 let g:airline#extensions#syntastic#enabled = 1
 " disable powerline.vim (because I'm using airline instead)
 let g:powerline_loaded = 1
-
-" vimtex settings
-let g:tex_flavor = "latex"
-let g:vimtex_latexmk_options = "-pdf -dvi-"
-let g:vimtex_view_method = "mupdf"
-augroup vimtex_config
-    au!
-    au User VimtexEventQuit      VimtexClean
-    au User VimtexEventInitPost  VimtexCompile
-augroup END
-
-" unite.vim settings
-function! s:unite_settings()
-    imap <buffer> <C-j> <plug>(unite_select_next_line)
-    imap <buffer> <C-k> <plug>(unite_select_previous_line)
-    nmap <buffer> <C-j> <plug>(unite_loop_cursor_down)
-    nmap <buffer> <C-k> <plug>(unite_loop_cursor_up)
-endfunction
-autocmd FileType unite call s:unite_settings()
-
-let g:unite_prompt = '»'
-call unite#filters#matcher_default#use(['matcher_fuzzy'])
-call unite#filters#sorter_default#use(['sorter_rank'])
-"let g:unite_source_history_yank_enable=1
-"let g:unite_source_rec_max_cache_files=5000
-let g:unite_source_grep_command = 'ack'
-let g:unite_source_grep_default_opts = '-i --no-heading --no-color -k -H' 
-let g:unite_source_grep_recursive_opt = ''
 
 " rainbow parentheses settings
 let g:rainbow_active = 0 " only active when explicitly activated via :RainbowToggle
@@ -200,12 +166,6 @@ let g:rainbow_conf = {
     \   }
     \}
 
-" ultisnips settings
-let g:UltiSnipsExpandTrigger="<tab>"
-let g:UltiSnipsJumpForwardTrigger="<c-j>"
-let g:UltiSnipsJumpBackwardTrigger="<c-k>"
-let g:UltiSnipsEditSplit="vertical"
-
 """""""""""""""""""
 "" Abbreviations ""
 """""""""""""""""""
@@ -216,13 +176,13 @@ abbr Flase False
 """""""""""""""""""""
 
 " Implements the window movement keybindings
-function! WinMove(key) 
+function! WinMove(key)
   let t:curwin = winnr()
   exec "wincmd ".a:key
   if (t:curwin == winnr()) "we havent moved
     if (match(a:key,'[jk]')) "were we going up/down
       wincmd v
-    else 
+    else
       wincmd s
     endif
     exec "wincmd ".a:key
@@ -292,7 +252,7 @@ noremap <silent> <expr> k (v:count == 0 ? 'gk' : 'k')
 " mode
 vnoremap gy "+y
 " Paste from system clipboard. This overwrites a builtin vim movement!
-nnoremap gp "+p 
+nnoremap gp "+p
 nnoremap gP "+P
 " Easy paste that is never overridden by delete
 nnoremap <leader>p "0p
@@ -301,12 +261,5 @@ nnoremap <leader>P "0P
 vnoremap . :norm.<CR>
 " toggle rainbow parens
 nnoremap cop :RainbowToggle<CR>
-" unite.vim bindings
-" note: both ctrl-l and ctrl-g (g for grep) overwrite builtin vim commands
-nnoremap <C-l> :Unite -buffer-name=mixed -start-insert -auto-resize buffer file_mru file_rec/async:!<CR> 
-nnoremap <C-g> :Unite -buffer-name=search -no-empty -no-quit -auto-resize grep:.<CR>
-" use line source ??
-" close unite.vim search window
-nnoremap <silent> <leader>cs :exec "bd " . bufnr("[unite] - search")<CR>
 " open ctags definitions in new horizontal split
 nnoremap <C-\> <C-w><C-]>
