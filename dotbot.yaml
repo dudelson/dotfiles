@@ -1,0 +1,26 @@
+- defaults:
+    link:
+      relink: true
+      create: true
+- link:
+    ~/.config/awesome: configs/awesome
+    ~/.config/kitty: configs/kitty
+    ~/.config/powerline: configs/powerline
+    ~/.config/nvim: configs/vim
+    ~/.vim: configs/vim
+    ~/.vimrc: configs/vim/init.vim
+    ~/.git_template: configs/git/git_template
+    ~/.gitignore_core: configs/git/gitignore_core
+    ~/.spacemacs.d: configs/spacemacs
+    ~/.weechat: configs/weechat
+    ~/.xinitrc: configs/xorg/xinitrc
+    ~/.zshrc: configs/zsh/zshrc
+    ~/.zshenv: configs/zsh/zshenv
+    ~/.zlogin: configs/zsh/zlogin
+- shell:
+    - git config --global core.excludesfile '~/.gitignore_core'
+    - git config --global init.templatedir '~/.git_template'
+    - git clone https://github.com/syl20bnr/spacemacs.git ~/.emacs.d
+    - mkdir -p ~/.cache/awesome
+    - touch ~/.cache/awesome/awesome.log
+    - echo "Done!"
