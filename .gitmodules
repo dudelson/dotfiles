@@ -1,6 +1,36 @@
-[submodule "spacemacs/snippets"]
-	path = spacemacs/snippets
-	url = https://github.com/AndreaCrotti/yasnippet-snippets.git
 [submodule "dotbot"]
 	path = dotbot
 	url = https://github.com/anishathalye/dotbot
+[submodule "configs/vim/bundle/airline"]
+	path = configs/vim/bundle/airline
+	url = https://github.com/vim-airline/vim-airline.git
+[submodule "configs/vim/bundle/bbye"]
+	path = configs/vim/bundle/bbye
+	url = https://github.com/moll/vim-bbye.git
+[submodule "configs/vim/bundle/surround"]
+	path = configs/vim/bundle/surround
+	url = https://github.com/tpope/vim-surround.git
+[submodule "configs/vim/bundle/unimpaired"]
+	path = configs/vim/bundle/unimpaired
+	url = https://github.com/tpope/vim-unimpaired.git
+[submodule "configs/vim/bundle/solarized"]
+	path = configs/vim/bundle/solarized
+	url = https://github.com/altercation/vim-colors-solarized.git
+[submodule "configs/vim/bundle/syntastic"]
+	path = configs/vim/bundle/syntastic
+	url = https://github.com/scrooloose/syntastic.git
+[submodule "configs/vim/bundle/airline-themes"]
+	path = configs/vim/bundle/airline-themes
+	url = https://github.com/vim-airline/vim-airline-themes.git
+[submodule "configs/spacemacs/layers/calendar"]
+	path = configs/spacemacs/layers/calendar
+	url = git@github.com:dudelson/spacemacs-calendar-layer.git
+[submodule "configs/awesome/lain"]
+	path = configs/awesome/lain
+	url = https://github.com/lcpz/lain
+[submodule "configs/awesome/freedesktop"]
+	path = configs/awesome/freedesktop
+	url = https://github.com/lcpz/awesome-freedesktop
+[submodule "configs/awesome/awesome-switcher"]
+	path = configs/awesome/awesome-switcher
+	url = https://github.com/berlam/awesome-switcher
