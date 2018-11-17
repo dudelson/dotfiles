@@ -12,6 +12,7 @@ local ipairs, string, os, table, tostring, tonumber, type = ipairs, string, os, 
 local gears         = require("gears")
 local awful         = require("awful")
                       require("awful.autofocus")
+                      require("awful.remote")
 local wibox         = require("wibox")
 local beautiful     = require("beautiful")
 local naughty       = require("naughty")
@@ -22,6 +23,8 @@ local hotkeys_popup = require("awful.hotkeys_popup").widget
 local my_table      = awful.util.table or gears.table -- 4.{0,1} compatibility
 local config        = require("config")
 -- }}}
+
+config.util.log("-=-=- RESTART " .. os.date("%a %b %d %X") .. " -=-=-")
 
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
@@ -55,6 +58,36 @@ context.keys = {}
 context.keys.modkey       = "Mod4"
 context.keys.altkey       = "Mod1"
 
+context.designated_apps = {
+  -- required fields for each app:
+  --     - class: the app's x11 class (find this using xprop)
+  --
+  -- if you want to autospawn the app at startup, the "exec" field is required
+  -- and the "spawn_callback" field is optional
+  --
+  -- NOTE the "tag" field is set automatically
+  ['terminal'] = {
+    exec = 'kitty',
+    class = 'kitty',
+  },
+  ['browser'] = {
+    exec = 'firefox',
+    class = 'Firefox',
+    spawn_callback = function(c) c.maximized = true end,
+  },
+  ['editor'] = {
+    exec = 'emacs',
+    class = 'Emacs',
+    spawn_callback = function(c) c.maximized = true end,
+  },
+  ['irc_client'] = {
+    -- exec = 'WEECHAT_PASSPHRASE=$(pass by-name/weechat) kitty --class="weechat" weechat',
+    exec = 'kitty --class="weechat" mosh dudelson@prestoe',
+    class = 'weechat',
+    spawn_callback = function(c) c.maximized = true end,
+  },
+}
+
 context.vars = {}
 context.vars.theme        = "powerarrow-dark-custom"
 context.vars.terminal     = "kitty"
@@ -69,7 +102,122 @@ context.vars.city_id      = 4955219 -- Westford, MA
 
 context.state = {}
 context.state.detailed_widgets = false
+context.state.screen_finished = false
 
+-- declare screen configuration
+context.screen_config = {
+  ['undocked'] = { -- this is the config name; it has to match the autorandr profile name
+    screens = {
+      ['eDP-1'] = {
+        tags = {
+          {
+            name = 'term',
+            layout = awful.layout.suit.tile,
+            selected = true,
+            designated_for = context.designated_apps['terminal'],
+          },
+          {
+            name = 'web',
+            layout = awful.layout.suit.max,
+            designated_for = context.designated_apps['browser'],
+          },
+          {
+            name = 'spc',
+            layout = awful.layout.suit.tile,
+            designated_for = context.designated_apps['editor'],
+          },
+          {
+            name = 'irc',
+            layout = awful.layout.suit.tile,
+            designated_for = context.designated_apps['irc_client'],
+          },
+        }
+      },
+    },
+  },
+
+  ['docked'] = { -- this is the config name; it has to match the autorandr profile name
+    screens = {
+      ['eDP-1'] = {
+        tags = {
+          {
+            name = 'term',
+            layout = awful.layout.suit.tile,
+            selected = true,
+            designated_for = context.designated_apps['terminal'],
+          },
+          {
+            name = 'irc',
+            layout = awful.layout.suit.tile,
+            designated_for = context.designated_apps['irc_client'],
+          },
+        }
+      },
+      ['DP-2-1'] = {
+        tags = {
+          {
+            name = 'web',
+            layout = awful.layout.suit.max,
+            selected = true,
+            designated_for = context.designated_apps['browser'],
+          },
+          {
+            name = 'spc',
+            layout = awful.layout.suit.tile,
+            designated_for = context.designated_apps['editor'],
+          },
+          {
+            name = 'misc',
+            layout = awful.layout.suit.tile,
+          },
+        }
+      },
+    },
+  },
+
+  ['home_tv'] = { -- this is the config name; it has to match the autorandr profile name
+    screens = {
+      ['eDP-1'] = {
+        tags = {
+          {
+            name = 'term',
+            layout = awful.layout.suit.tile,
+            selected = true,
+            designated_for = context.designated_apps['terminal'],
+          },
+          {
+            name = 'irc',
+            layout = awful.layout.suit.tile,
+            designated_for = context.designated_apps['irc_client'],
+          },
+        }
+      },
+      ['HDMI-2'] = {
+        tags = {
+          {
+            name = 'web',
+            layout = awful.layout.suit.max,
+            selected = true,
+            designated_for = context.designated_apps['browser'],
+          },
+          {
+            name = 'spc',
+            layout = awful.layout.suit.tile,
+            designated_for = context.designated_apps['editor'],
+          },
+          {
+            name = 'misc',
+            layout = awful.layout.suit.tile,
+          },
+        }
+      },
+    },
+  },
+}
+context.screen_config['undocked'].default_tag = context.screen_config['undocked'].screens['eDP-1'].tags[1]
+context.screen_config['docked'].default_tag = context.screen_config['docked'].screens['DP-2-1'].tags[3]
+context.screen_config['home_tv'].default_tag = context.screen_config['home_tv'].screens['HDMI-2'].tags[3]
+context.screen_config.default = context.screen_config['undocked']
 
 awful.util.terminal = context.vars.terminal
 awful.layout.layouts = {
@@ -194,6 +342,7 @@ beautiful.init(string.format("%s/.config/awesome/themes/%s/theme.lua", os.getenv
 config.widgets.init(context)
 config.keys.init(context)
 config.mouse.init(context)
+config.screen.init(context)
 config.client.init(context) -- client must go before rules
 config.rules.init(context)
 config.signals.init(context)
@@ -201,19 +350,17 @@ config.signals.init(context)
 
 -- {{{ Screen
 -- Re-set wallpaper when a screen's geometry changes (e.g. different resolution)
-screen.connect_signal("property::geometry", function(s)
-                        -- Wallpaper
-                        if beautiful.wallpaper then
-                          local wallpaper = beautiful.wallpaper
-                          -- If wallpaper is a function, call it with the screen
-                          if type(wallpaper) == "function" then
-                            wallpaper = wallpaper(s)
-                          end
-                          gears.wallpaper.maximized(wallpaper, s, true)
-                        end
-end)
+screen.connect_signal("property::geometry", config.screen.wallpaper)
+
 -- Create a wibox for each screen and add it
-awful.screen.connect_for_each_screen(function(s) beautiful.at_screen_connect(s, context) end)
+awful.screen.connect_for_each_screen(function(s)
+    local wallpaper = config.screen.wallpaper(s)
+    gears.wallpaper.maximized(wallpaper, actual_screen, true)
+    beautiful.create_wibar(s, context)
+end)
+
+screen.connect_signal("added", function() config.screen.switch(context) end)
+screen.connect_signal("removed", function() config.screen.switch(context) end)
 -- }}}
 
 
@@ -227,46 +374,16 @@ naughty.dbus.config.mapping = {
 
 -- {{{ Autostart applications
 config.util.run_once({
-   "nm-applet",          -- network manager
-   "udiskie",            -- for automounting usbs
---    "xflux -z 03304",     -- takes the blues out of the monitor after sunset
-   "xss-lock -- " .. context.vars.scrlocker,
-   context.vars.terminal,
-   context.vars.browser,
-   context.vars.editor,
+    "nm-applet",          -- network manager
+    "udiskie",            -- for automounting usbs
+    --    "xflux -z 03304",     -- takes the blues out of the monitor after sunset
+    "xss-lock -- " .. context.vars.scrlocker,
 })
 
-config.util.spawn_once {
-  command = context.vars.terminal,
-  class = "kitty",
-  tag = awful.screen.focused().tags[1],
-  callback = function(c)
-    c.maximized = true
-  end,
-}
-config.util.spawn_once {
-  command = 'WEECHAT_PASSPHRASE=$(pass by-name/weechat) kitty --class="weechat" weechat',
-  class = "weechat",
-  proc = "weechat",
-  tag = awful.screen.focused().tags[4],
-  callback = function(c)
-    c.maximized = true
-  end,
-}
-config.util.spawn_once {
-  command = context.vars.editor,
-  class = "Emacs",
-  tag = awful.screen.focused().tags[3],
-  callback = function(c)
-    c.maximized = true
-  end,
-}
-config.util.spawn_once {
-  command = context.vars.browser,
-  class = "Firefox",
-  tag = awful.screen.focused().tags[2],
-  callback = function(c)
-    c.maximized = true
-  end,
-}
+-- to spawn something other than a designated app, just pass in a table with
+-- the "exec", "class", and "tag" fields set. The "spawn_callback" field is optional
+config.util.spawn_once(context.designated_apps['terminal'])
+config.util.spawn_once(context.designated_apps['irc_client'])
+config.util.spawn_once(context.designated_apps['editor'])
+config.util.spawn_once(context.designated_apps['browser'])
 -- }}}
