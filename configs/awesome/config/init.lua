@@ -6,6 +6,7 @@ local config = {
   rules = require('config.rules'),
   signals = require('config.signals'),
   client = require('config.client'),
+  screen = require('config.screen'),
 }
 
 return config

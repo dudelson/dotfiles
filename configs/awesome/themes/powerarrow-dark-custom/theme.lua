@@ -18,7 +18,7 @@ local my_table = awful.util.table or gears.table -- 4.{0,1} compatibility
 
 local theme                                     = {}
 theme.dir                                       = os.getenv("HOME") .. "/.config/awesome/themes/powerarrow-dark-custom"
-theme.wallpaper                                 = theme.dir .. "/wall.png"
+theme.wallpaper                                 = theme.dir .. "/wall.png" -- this is just a default
 theme.font                                      = "source code pro 9"
 theme.fg_normal                                 = "#DDDDFF"
 theme.fg_focus                                  = "#EA6F81"
@@ -114,7 +114,7 @@ naughty.config.spacing                          = 10
 naughty.config.defaults.timeout                 = 5
 naughty.config.defaults.margin                  = theme.notification_margin
 naughty.config.defaults.border_width            = theme.notification_border_width
-naughty.config.defaults.position                = "top_left"
+naughty.config.defaults.position                = "top_middle"
 naughty.config.defaults.title                   = "Awesome Notification"
 naughty.config.defaults.icon                    = "/usr/share/awesome/icons/awesome64.png"
 
@@ -144,29 +144,7 @@ local arrl_ld = separators.arrow_left("alpha", theme.bg_alt)
 local arrr_ld = separators.arrow_right(theme.bg_alt, "alpha")
 local arrr_dl = separators.arrow_right("alpha", theme.bg_alt)
 
-function theme.at_screen_connect(s, context)
-    -- If wallpaper is a function, call it with the screen
-    local wallpaper = theme.wallpaper
-    if type(wallpaper) == "function" then
-        wallpaper = wallpaper(s)
-    end
-    gears.wallpaper.maximized(wallpaper, s, true)
-
-    -- Tags
-    awful.tag.add("term", {
-                    layout = awful.layout.suit.tile,
-                    screen = s,
-                    selected = true
-    })
-    awful.tag.add("web", {
-                    layout = awful.layout.suit.max,
-                    screen = s
-    })
-    awful.tag.add("spc", {
-                    layout = awful.layout.suit.tile,
-                    screen = s
-    })
-
+function theme.create_wibar(s, context)
     -- Create a promptbox for each screen
     s.mypromptbox = awful.widget.prompt()
     -- Create an imagebox widget which will contains an icon indicating which layout we're using.
