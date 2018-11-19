@@ -21,6 +21,4 @@
     - git config --global core.excludesfile '~/.gitignore_core'
     - git config --global init.templatedir '~/.git_template'
     - git clone https://github.com/syl20bnr/spacemacs.git ~/.emacs.d
-    - mkdir -p ~/.cache/awesome
-    - touch ~/.cache/awesome/awesome.log
     - echo "Done!"

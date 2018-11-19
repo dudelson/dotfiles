@@ -12,7 +12,7 @@ local ipairs, string, os, table, tostring, tonumber, type = ipairs, string, os, 
 local gears         = require("gears")
 local awful         = require("awful")
                       require("awful.autofocus")
-                      require("awful.remote")
+                      require("awful.remote") -- enables us to use "awesome-client"
 local wibox         = require("wibox")
 local beautiful     = require("beautiful")
 local naughty       = require("naughty")
@@ -51,7 +51,6 @@ end
 -- }}}
 
 -- {{{ Variable definitions
-
 local context = {}
 
 context.keys = {}
@@ -81,8 +80,7 @@ context.designated_apps = {
     spawn_callback = function(c) c.maximized = true end,
   },
   ['irc_client'] = {
-    -- exec = 'WEECHAT_PASSPHRASE=$(pass by-name/weechat) kitty --class="weechat" weechat',
-    exec = 'kitty --class="weechat" mosh dudelson@prestoe',
+    exec = 'WEECHAT_PASSPHRASE=$(pass by-name/weechat) kitty --class="weechat" weechat',
     class = 'weechat',
     spawn_callback = function(c) c.maximized = true end,
   },
@@ -90,15 +88,15 @@ context.designated_apps = {
 
 context.vars = {}
 context.vars.theme        = "powerarrow-dark-custom"
-context.vars.terminal     = "kitty"
-context.vars.browser      = "firefox"
-context.vars.editor       = "emacs"
+context.vars.terminal     = context.designated_apps['terminal'].exec
+context.vars.browser      = context.designated_apps['browser'].exec
+context.vars.editor       = context.designated_apps['editor'].exec
 context.vars.scrlocker    = "i3lock -n -i ~/.config/awesome/themes/powerarrow-dark-custom/wall.png"
 context.vars.check_pkg_update = "checkupdates | sed 's/->/→/' | column -t"
 -- either "st" for normal 24-hour time or "dt" for decimal time
 context.vars.default_time_format = "st"
 -- the OpenWeatherMap ID of your city
-context.vars.city_id      = 4955219 -- Westford, MA
+context.vars.city_id      = 1234567  -- replace me!
 
 context.state = {}
 context.state.detailed_widgets = false
@@ -136,7 +134,7 @@ context.screen_config = {
     },
   },
 
-  ['docked'] = { -- this is the config name; it has to match the autorandr profile name
+  ['docked'] = {
     screens = {
       ['eDP-1'] = {
         tags = {
@@ -166,57 +164,13 @@ context.screen_config = {
             layout = awful.layout.suit.tile,
             designated_for = context.designated_apps['editor'],
           },
-          {
-            name = 'misc',
-            layout = awful.layout.suit.tile,
-          },
-        }
-      },
-    },
-  },
-
-  ['home_tv'] = { -- this is the config name; it has to match the autorandr profile name
-    screens = {
-      ['eDP-1'] = {
-        tags = {
-          {
-            name = 'term',
-            layout = awful.layout.suit.tile,
-            selected = true,
-            designated_for = context.designated_apps['terminal'],
-          },
-          {
-            name = 'irc',
-            layout = awful.layout.suit.tile,
-            designated_for = context.designated_apps['irc_client'],
-          },
-        }
-      },
-      ['HDMI-2'] = {
-        tags = {
-          {
-            name = 'web',
-            layout = awful.layout.suit.max,
-            selected = true,
-            designated_for = context.designated_apps['browser'],
-          },
-          {
-            name = 'spc',
-            layout = awful.layout.suit.tile,
-            designated_for = context.designated_apps['editor'],
-          },
-          {
-            name = 'misc',
-            layout = awful.layout.suit.tile,
-          },
         }
       },
     },
   },
 }
 context.screen_config['undocked'].default_tag = context.screen_config['undocked'].screens['eDP-1'].tags[1]
-context.screen_config['docked'].default_tag = context.screen_config['docked'].screens['DP-2-1'].tags[3]
-context.screen_config['home_tv'].default_tag = context.screen_config['home_tv'].screens['HDMI-2'].tags[3]
+context.screen_config['docked'].default_tag = context.screen_config['docked'].screens['DP-2-1'].tags[1]
 context.screen_config.default = context.screen_config['undocked']
 
 awful.util.terminal = context.vars.terminal
@@ -376,7 +330,6 @@ naughty.dbus.config.mapping = {
 config.util.run_once({
     "nm-applet",          -- network manager
     "udiskie",            -- for automounting usbs
-    --    "xflux -z 03304",     -- takes the blues out of the monitor after sunset
     "xss-lock -- " .. context.vars.scrlocker,
 })
 
