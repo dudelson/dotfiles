@@ -31,6 +31,7 @@ Blogs featuring a variety of topics
 **** [[https://glyph.twistedmatrix.com/feeds/atom.xml][Deciphering Glyph]]                                                                   :python:
 **** [[https://andythemoron.com/feed.xml][Andy the Moron]]                                                                        :unix:
 **** [[https://aphyr.com/posts.atom][aphyr]]
+**** [[https://drewdevault.com/feed.xml][Drew DeVault]]                                                                          :unix:
 **** [[https://hnrss.org/newest?points=100][Hacker News]]                                                                             :hn:
 *** newsletters                                                                               :nl:
 **** [[https://betterdev.link/rss.xml][Better Dev Link]]
@@ -51,3 +52,4 @@ Blogs featuring a variety of topics
 I put this here because at least at the time of writing I can only find one post
 about programming on the first page, the rest are mostly about politics.
 *** [[https://www.ribbonfarm.com/feed/][Ribbonfarm]]
+*** [[http://slatestarcodex.com/feed/][Slate Star Codex]]
