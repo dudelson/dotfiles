@@ -597,6 +597,14 @@ daily, weekly, or monthly GTD habits. They are bound to the SPC o g prefix.
 
   (spacemacs/declare-prefix "og" "GTD")
 #+END_SRC
+* encryption
+Note: ~epa-file~ is already required by spacemacs
+#+BEGIN_SRC emacs-lisp
+  (require 'org-crypt)
+  (org-crypt-use-before-save-magic)
+  (setq org-tags-exclude-from-inheritance (quote ("crypt")))
+  (setq org-crypt-key "david@davidudelson.com")
+#+END_SRC
 * other useful tidbits
 ** easy linking by id
 I use the "id" property to link between org files. This function automatically
