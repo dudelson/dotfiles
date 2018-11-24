@@ -292,4 +292,4 @@ export PROMPT="%M %{$fg[blue]%}%~%{$reset_color%} %# "
 
 # enable powerline
 powerline-daemon -q
-source /usr/share/powerline/zsh/powerline.zsh
+source /usr/share/powerline/bindings/zsh/powerline.zsh
