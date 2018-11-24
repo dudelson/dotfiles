@@ -17,18 +17,36 @@ This repo houses my dotfiles for the various unix systems I use (or have used).
 Dotfiles are installed using dotbot. scripts/install (provided by dotbot) is idempotent, meaning I can use it to do either a first-time install or an update on an existing system.
 Dotbot reads dotbot.yaml, which tells it how to symlink the various configs to the proper user directories.
 
-Profiles are managed using git patches. I decided not to use git branches for this purpose, since they'd be like 90% the same and it just feels like unnecessary clutter.
-So instead, the profiles/ directory contains a subdirectory for each profile I use (at the time of writing, profiles have a one-to-one correspondence with machines, but
-in principle two separate machines that require identical configuration could share a profile). The subdirectory contains one or more patch files, which describe how that
-profile's configuration differs from the master branch. Therefore, the install process is:
+I have a separate branch for each profile. And the branches really are separate --
+there's no notion of keeping one or more branches "in sync" with each other, since
+in many cases the configurations for different machines differ so much that this
+wouldn't make sense. To this end, you may notice that there is no master branch.
+Of course, many branches share a considerable amount of configuration, so these
+changes are typically propagated between branches using `git cherry-pick`. Magit
+helps a great deal with this.
+
+## Installation
+The install process is:
 
 1. Clone this repository
-2. Make a local git branch called "local" based on master, which will be for the local configuration
-3. Apply the git patches for the profile you want to use using `git am` (if you want to make a new profile, skip this step)
+2. If you're setting up a new configuration profile, make a new branch named
+   after the profile. You can base this off the branch for an existing profile,
+   if appropriate. Otherwise, just checkout the branch for the profile you
+   wish to use.
+3. If appropriate, make whatever initial changes you want before installing
 4. Run scripts/install
 
-The update process is similar. Changes to the local configuration should be committed to the local branch. In general, such changes can be separated into those which are
-generally applicable (and should therefore be added to master) and those which are profile-specific. Changes are split into multiple commits as appropriate, and those commits
-which contain changes in the latter category are marked with "[local]" in the commit message. Once the commits have been committed to the local branch, the generally-applicable
-ones (i.e. those commits not prefixed with "[local]" in the commit message) are cherry-picked to master. At this point, you may have to regenerate the patch files.
+If you setup a new branch, make sure to push it to github.
 
+## Updates and Maintenance
+The update process is:
+
+1. Git commit
+2. Git push
+
+You can take configuration from other profiles by cherry-picking. Note that the
+cherry-picked commit(s) probably won't apply without merge conflicts, so be
+prepared to deal with these often.
+
+**NOTE**: The READMEs should be kept in sync across branches so that they can
+serve as a reference, regardless of the currently checked-out branch.
