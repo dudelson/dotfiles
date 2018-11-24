@@ -13,10 +13,8 @@
     ~/.gitignore_core: configs/git/gitignore_core
     ~/.spacemacs.d: configs/spacemacs
     ~/.weechat: configs/weechat
-    ~/.xinitrc: configs/xorg/xinitrc
     ~/.zshrc: configs/zsh/zshrc
     ~/.zshenv: configs/zsh/zshenv
-    ~/.zlogin: configs/zsh/zlogin
 - shell:
     - git config --global core.excludesfile '~/.gitignore_core'
     - git config --global init.templatedir '~/.git_template'
