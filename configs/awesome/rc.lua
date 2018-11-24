@@ -373,13 +373,18 @@ naughty.dbus.config.mapping = {
 
 -- {{{ Autostart applications
 config.util.run_once({
+   "xbindkeys",
+   'setxkbmap -option "ctrl:swapcaps"',
+   -- "compton",
+   "ibus-daemon -drx",   -- japanese input
+   -- TODO: start gnome keyring
    "nm-applet",          -- network manager
    "udiskie",            -- for automounting usbs
---    "xflux -z 03304",     -- takes the blues out of the monitor after sunset
+   "xflux -z 03304",     -- takes the blues out of the monitor after sunset
    "xss-lock -- " .. context.vars.scrlocker,
-   context.vars.terminal,
-   context.vars.browser,
-   context.vars.editor,
+   "Desktop-Bridge",     -- protonmail bridge
+   "nextcloud",
+   "start_jack", "cadence",  -- for JACK audio
 })
 
 -- to spawn something other than a designated app, just pass in a table with
