@@ -15,7 +15,7 @@
 - [ ] clear home directory
 - [ ] clear notes.md
 - [ ] grep for and resolve sync conflicts in gtd and pkb files
-        => it's a hyphen, not an underscore
+        => run shell alias ~find-sync-conflicts~
 - [ ] move signal backup to laptop (via adb)
 ** Phase 2: Clarify
 - [ ] check calendar *and org agenda* (-2/+4 weeks).
