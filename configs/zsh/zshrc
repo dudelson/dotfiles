@@ -116,22 +116,10 @@ alias powercheck='cat /sys/class/power_supply/AC/online'
 alias copy='rsync -rh --info="progress2"'
 
 # fasd aliases
-alias v='f -e nvim'
-alias e='f -e emacsclient'
-alias o='a -e xdg-open'
-alias l='d -e "ls --group-directories-first --color=auto"'
-
-# ledger aliases
-export LEDGER_FILE="~/s/doc/finance/y$(date +%Y).txt"
-alias bal="ledger -X \$ --strict --explicit --invert bal"
-alias reg="ledger -X \$ --strict --explicit reg"
-alias lgr="ledger -X \$ --strict --explicit"
-alias rkn="reckon -u -f ~/EXPORT.CSV -a Assets:Checking -l ~/s/doc/finance/y2012-2016.txt -o $LEDGER_FILE --ignore-columns 1,3,6,7,8 --contains-header 1 --date-format \"%m/%d/%y\""
-
-# haskell aliases
-alias ghc="stack ghc"
-alias ghci="stack ghci"
-alias runghc="stack runghc"
+# alias v='f -e nvim'
+# alias e='f -e emacsclient'
+# alias o='a -e xdg-open'
+# alias l='d -e "ls --group-directories-first --color=auto"'
 
 # place temporary aliases and variables here
 
@@ -178,14 +166,14 @@ function popdls {
 }
 
 # like fasd's `z` alias but also perform an `ls`
-function zl {
-    fasd_cd -d $@ && ls --group-directories-first --color=auto
-}
+# function zl {
+#     fasd_cd -d $@ && ls --group-directories-first --color=auto
+# }
 
 # like fasd's `zz` alias but also perform an `ls`
-function zzl {
-    fasd_cd -di $@ && ls --group-directories-first --color=auto
-}
+# function zzl {
+#     fasd_cd -di $@ && ls --group-directories-first --color=auto
+# }
 
 # enables magic expansion using <SPACE>
 magic-abbrev-expand() {
@@ -235,7 +223,7 @@ autoload -U zmv
 autoload -Uz compinit && compinit -i
 
 # fasd
-eval "$(fasd --init auto)"
+# eval "$(fasd --init auto)"
 
 # syntax highlighting
 source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
