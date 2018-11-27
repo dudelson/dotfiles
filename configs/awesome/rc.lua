@@ -96,7 +96,7 @@ context.vars.check_pkg_update = "checkupdates | sed 's/->/→/' | column -t"
 -- either "st" for normal 24-hour time or "dt" for decimal time
 context.vars.default_time_format = "st"
 -- the OpenWeatherMap ID of your city
-context.vars.city_id      = 1234567  -- replace me!
+context.vars.city_id      = 4955219  -- Westford, MA
 
 context.state = {}
 context.state.detailed_widgets = false

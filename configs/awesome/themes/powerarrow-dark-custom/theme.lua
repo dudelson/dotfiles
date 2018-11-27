@@ -114,7 +114,7 @@ naughty.config.spacing                          = 10
 naughty.config.defaults.timeout                 = 5
 naughty.config.defaults.margin                  = theme.notification_margin
 naughty.config.defaults.border_width            = theme.notification_border_width
-naughty.config.defaults.position                = "top_right"
+naughty.config.defaults.position                = "top_middle"
 naughty.config.defaults.title                   = "Awesome Notification"
 naughty.config.defaults.icon                    = "/usr/share/awesome/icons/awesome64.png"
 
@@ -201,7 +201,7 @@ function theme.create_wibar(s, context)
         { -- Right widgets
             layout = wibox.layout.fixed.horizontal,
             s.systray,
-            caffeine.widget,
+            -- caffeine.widget,
             spr, spr,
             arrl_ld,
             wibox.container.background(cpuicon, theme.bg_alt),
