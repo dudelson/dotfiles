@@ -167,9 +167,12 @@ The function ~sa-find-file-recursively~ was taken from [[https://stackoverflow.c
    org-agenda-custom-commands
     '(("d" "David's planner view"
        ((agenda "")
-        (tags-todo "task-SCHEDULED={.+}|project+TODO=\"NEXT\"-SCHEDULED={.+}"
+        (tags-todo "task-@work-SCHEDULED={.+}|project-@work+TODO=\"NEXT\"-SCHEDULED={.+}"
                    ((org-agenda-overriding-header "Unscheduled Tasks and Next Actions")
                     ;;(org-agenda-skip-function 'du/skip-projects-subprojects)
+                    (org-agenda-remove-tags t)))
+        (tags-todo "task+@work-SCHEDULED={.+}|project+@work+TODO=\"NEXT\"-SCHEDULED={.+}"
+                   ((org-agenda-overriding-header "Unscheduled Work Tasks and Next Actions")
                     (org-agenda-remove-tags t)))
         (tags-todo "project"
               ((org-agenda-overriding-header "Stuck Projects")
@@ -415,6 +418,19 @@ taken from http://doc.norang.ca/org-mode.html#GTDWeeklyReview
         (if (or (bh/is-project-p) (bh/is-subproject-p)) next-headline nil))))
 
 #+END_SRC
+** project definitions
+Current disabled because I'm not using it, but might be useful for testing new
+project definition later.
+#+BEGIN_SRC emacs-lisp :tangle no
+  (defun dru/is-project ()
+    "Print a message indicating whether the heading under point is a project"
+    (interactive)
+    (if (bh/is-project-p)
+        (message "project")
+      (message "nope")))
+
+  (define-key org-mode-map (kbd "C-c C-m") 'dru/is-project)
+#+END_SRC
 * keybindings
 Add an easy keybinding for setting TODO keywords.
 #+BEGIN_SRC emacs-lisp
@@ -616,19 +632,6 @@ the clipboard.
     (org-id-get-create)
     (org-id-copy))
   (define-key org-mode-map (kbd "C-l") 'du/org-id-create-and-copy)
-#+END_SRC
-** project definitions
-Current disabled because I'm not using it, but might be useful for testing new
-project definition later.
-#+BEGIN_SRC emacs-lisp :tangle no
-  (defun dru/is-project ()
-    "Print a message indicating whether the heading under point is a project"
-    (interactive)
-    (if (bh/is-project-p)
-        (message "project")
-      (message "nope")))
-
-  (define-key org-mode-map (kbd "C-c C-m") 'dru/is-project)
 #+END_SRC
 ** function that creates weekly plans heading
 I use this in my weekly plans heading template.
