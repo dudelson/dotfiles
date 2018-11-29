@@ -121,6 +121,10 @@ alias copy='rsync -rh --info="progress2"'
 # alias o='a -e xdg-open'
 # alias l='d -e "ls --group-directories-first --color=auto"'
 
+# systemd aliases
+alias sctl='sudo systemctl'
+alias uctl='systemctl --user'
+
 # place temporary aliases and variables here
 
 
