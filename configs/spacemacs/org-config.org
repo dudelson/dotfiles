@@ -198,16 +198,17 @@ The function ~sa-find-file-recursively~ was taken from [[https://stackoverflow.c
 * refile
 I use refile extensively.
 #+BEGIN_SRC emacs-lisp
-      ;; set an easy keybinding for refile
-      (spacemacs/set-leader-keys-for-major-mode 'org-mode "r" 'org-refile)
-      (setq-default
-       org-refile-targets '(("current.org" :maxlevel . 9)
-                            ("notnow.org" :maxlevel . 9)
-                            ("repeat.org" :maxlevel . 9)
-                            ("tickler.org" :maxlevel . 9))
-       org-outline-path-complete-in-steps t ;; Refile in a single go
-       org-refile-use-outline-path 'file ;; Show full paths for refiling
-       )
+  ;; set an easy keybinding for refile
+  (spacemacs/set-leader-keys-for-major-mode 'org-mode "r" 'org-refile)
+  (setq-default
+   org-refile-targets '(("current.org" :maxlevel . 9)
+                        ("notnow.org" :maxlevel . 9)
+                        ("someday+maybe.org" :maxlevel . 9)
+                        ("repeat.org" :maxlevel . 9)
+                        ("tickler.org" :maxlevel . 9))
+   org-outline-path-complete-in-steps t ;; Refile in a single go
+   org-refile-use-outline-path 'file ;; Show full paths for refiling
+   )
 #+END_SRC
 * capture
 #+BEGIN_SRC emacs-lisp
