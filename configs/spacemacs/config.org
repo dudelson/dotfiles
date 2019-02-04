@@ -259,7 +259,7 @@ not require ibus.
       (find-file "~/s/doc/gtd/current.org")
       (delete-other-windows)
       (split-window-right-and-focus)
-      (find-file "~/s/doc/gtd/notes.md"))
+      (find-file "~/s/doc/kb/0 Inbox/INBOX.org"))
     ;; toggle the thingy
     (setq du/toggle-planner-enabled (not (symbol-value du/toggle-planner-enabled)))
     (message "Toggled planner view %s" du/toggle-planner-enabled))

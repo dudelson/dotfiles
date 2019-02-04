@@ -158,7 +158,7 @@ The function ~sa-find-file-recursively~ was taken from [[https://stackoverflow.c
    ;; files that are candidates for searches in addition to agenda files
    org-agenda-text-search-extra-files
     (append
-      (sa-find-org-file-recursively (concat du/gtd-directory "/dates"))
+      (sa-find-org-file-recursively (concat du/gtd-directory "/archives"))
       (list (concat du/gtd-directory "/notnow.org")))
    ;; Make the tags not squished to the left in the agenda
    ;; Here they are right-aligned to column 100
@@ -212,57 +212,56 @@ I use refile extensively.
 #+END_SRC
 * capture
 #+BEGIN_SRC emacs-lisp
-  (defvar du/rwl-file-path (concat du/pkb-directory "/2_areas/Indiv-Self_Change/rwl.org"))
-  (setq
-    org-default-notes-file (concat du/gtd-directory "/notes.md")
-    org-capture-templates
-    ;; most-used templates
-    `(("t" "TODO" entry (file+headline ,(concat du/gtd-directory "/current.org") "tasks")
-        "* TODO %?\n" :empty-lines 1)
-      ("T" "TODO from clipboard" entry (file+headline ,(concat du/gtd-directory "/current.org") "tasks")
-        "* TODO %c\n%?" :empty-lines 1)
-      ("f" "thought" entry (file+headline ,(concat du/gtd-directory "/current.org") "thoughts")
-        "* %?\n%u\n" :empty-lines 1)
-      ("F" "thought from clipboard" entry (file+headline ,(concat du/gtd-directory "/current.org") "thoughts")
-        "* %?\n%u\n%c" :empty-lines 1)
-      ("n" "note" entry (file+headline ,(concat du/gtd-directory "/current.org") "notes")
-        "* %?\n%u\n" :empty-lines 1)
-      ("N" "note from clipboard" entry (file+headline ,(concat du/gtd-directory "/current.org") "notes")
-        "* %?\n%u\n%c" :empty-lines 1)
-      ("d" "dump" entry (file+headline ,(concat du/gtd-directory "/current.org") "thoughts")
-        "* *[DUMP]* %?\n" :prepend t :empty-lines 1)
-      ("p" "project" entry (file+headline ,(concat du/gtd-directory "/current.org") "projects")
-        "* TODO %? [/]" :empty-lines 1)
-      ("h" "homework" entry (file+headline ,(concat du/gtd-directory "/current.org") "homework")
-        "* TODO [%^{class|CAT|CMPLR|ML}] %?\nDEADLINE: %^T")
-      ;; templates for rwl.org
-      ("r" "stuff to read")
-      ("rb" "book" entry (file+headline du/rwl-file-path "books")
-        "* *%?* by \n" :prepend t :kill-buffer t)
-      ("rp" "paper" item (file+headline 'du/rwl-file-path "papers")
-        "- [ ] %?\n" :prepend t :kill-buffer t)
-      ("w" "stuff to watch")
-      ("wm" "movie" item (file+headline 'du/rwl-file-path "movies")
-        "- [ ] %?\n" :prepend t :kill-buffer t)
-      ("wt" "TV show" item (file+headline 'du/rwl-file-path "tv shows")
-        "- [ ] %?\n" :prepend t :kill-buffer t)
-      ("wa" "anime" item (file+headline 'du/rwl-file-path "anime")
-        "- [ ] %?\n" :prepend t :kill-buffer t)
-      ("wv" "video" item (file+headline 'du/rwl-file-path "videos")
-        "- [ ] %?\n" :prepend t :kill-buffer t)
-      ("l" "stuff to listen to")
-      ("lm" "music")
-      ("lmc" "check out" item (file+headline 'du/rwl-file-path "check out")
-        "- [ ] %?\n" :prepend t :kill-buffer t)
-      ("lmd" "download" item (file+headline 'du/rwl-file-path "download")
-        "- [ ] %?\n" :prepend t :kill-buffer t)
-      ("lp" "podcast" item (file+headline 'du/rwl-file-path "podcasts")
-        "- [ ] %?\n" :prepend t :kill-buffer t)
-      ;; misc template; goes to notes file
-      ("m" "Misc" plain (file "") "%?" :empty-lines 1))
-   )
-  ;; start org-capture buffer in insert state
-  (add-hook 'org-capture-mode-hook 'evil-insert-state)
+    (defvar du/rwl-file-path (concat du/pkb-directory "/2_areas/Indiv-Self_Change/rwl.org"))
+    (setq
+      org-default-notes-file (concat du/pkb-directory "/0 Inbox/INBOX.org")
+      org-capture-templates
+      ;; most-used templates
+      `(("t" "TODO" entry (file+headline ,(concat du/gtd-directory "/current.org") "tasks")
+          "* TODO %?\n" :empty-lines 1)
+        ("T" "TODO from clipboard" entry (file+headline ,(concat du/gtd-directory "/current.org") "tasks")
+          "* TODO %c\n%?" :empty-lines 1)
+        ; ("f" "thought" entry (file+headline ,(concat du/gtd-directory "/current.org") "thoughts")
+        ;   "* %?\n%u\n" :empty-lines 1)
+        ; ("F" "thought from clipboard" entry (file+headline ,(concat du/gtd-directory "/current.org") "thoughts")
+        ;   "* %?\n%u\n%c" :empty-lines 1)
+        ("n" "note" entry (file ,(concat du/pkb-directory "/0 Inbox/INBOX.org"))
+          "* %?\n%u\n" :empty-lines 1)
+        ("N" "note from clipboard" entry (file ,(concat du/pkb-directory "/0 Inbox/INBOX.org"))
+          "* %?\n%u\n%c" :empty-lines 1)
+        ("d" "dump" entry (file ,(concat du/pkb-directory "/0 Inbox/INBOX.org"))
+          "* *[DUMP]* %?\n" :prepend t :empty-lines 1)
+        ("p" "project" entry (file+headline ,(concat du/gtd-directory "/current.org") "projects")
+          "* TODO %? [/]" :empty-lines 1)
+        ;; templates for rwl.org
+        ("r" "stuff to read")
+        ("rb" "book" entry (file+headline du/rwl-file-path "books")
+          "* *%?* by \n" :prepend t :kill-buffer t)
+        ("rp" "paper" item (file+headline 'du/rwl-file-path "papers")
+          "- [ ] %?\n" :prepend t :kill-buffer t)
+        ("w" "stuff to watch")
+        ("wm" "movie" item (file+headline 'du/rwl-file-path "movies")
+          "- [ ] %?\n" :prepend t :kill-buffer t)
+        ("wt" "TV show" item (file+headline 'du/rwl-file-path "tv shows")
+          "- [ ] %?\n" :prepend t :kill-buffer t)
+        ("wa" "anime" item (file+headline 'du/rwl-file-path "anime")
+          "- [ ] %?\n" :prepend t :kill-buffer t)
+        ("wv" "video" item (file+headline 'du/rwl-file-path "videos")
+          "- [ ] %?\n" :prepend t :kill-buffer t)
+        ("l" "stuff to listen to")
+        ("lm" "music")
+        ("lmc" "check out" item (file+headline 'du/rwl-file-path "check out")
+          "- [ ] %?\n" :prepend t :kill-buffer t)
+        ("lmd" "download" item (file+headline 'du/rwl-file-path "download")
+          "- [ ] %?\n" :prepend t :kill-buffer t)
+        ("lp" "podcast" item (file+headline 'du/rwl-file-path "podcasts")
+          "- [ ] %?\n" :prepend t :kill-buffer t)
+        ;; misc template; goes to notes file
+        ;; ("m" "Misc" plain (file "") "%?" :empty-lines 1)
+        )
+     )
+    ;; start org-capture buffer in insert state
+    (add-hook 'org-capture-mode-hook 'evil-insert-state)
 #+END_SRC
 * projects
 ** helper functions
