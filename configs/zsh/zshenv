@@ -25,6 +25,9 @@ export PATH=$PATH:$HOME/.local/share/android/android-sdk-linux/tools
 export ANDROID_EMULATOR_USE_SYSTEM_LIBS=1
 export ANDROID_HOME=$HOME/.local/share/android/android-sdk-linux
 
+# python config
+export PYTHONPATH="$PYTHONPATH":"$HOME"/.local/lib
+
 # golang config
 export GOPATH=$HOME/.go
 export PATH=$PATH:$GOPATH/bin
