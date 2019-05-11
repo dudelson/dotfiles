@@ -41,6 +41,7 @@ This function should only modify configuration layer settings."
       :disabled-for org emacs-lisp markdown text)
      ;; c-c++
      ;; calendar
+     confluence
      csv
      (elfeed
       :variables
@@ -57,31 +58,17 @@ This function should only modify configuration layer settings."
       evil-snipe-scope 'visible
       evil-snipe-repeat-scope 'visible
       )
-     finance
      git
      gtags
-     haskell
-     html
-     japanese
-     (java
-      :variables
-      meghanada-debug t
-      meghanada-javac-xlint "-Xlint:none"
-      )
-     (javascript
-      :variables
-      j2-basic-offset 2)
+     ibuffer
      (json
       :variables
       js-indent-level 2)
      lua
-     latex
      lsp
      (markdown
       ;; :variables markdown-live-preview-engine 'vmd
       )
-     mu4e
-     ocaml
      (org
       :variables
       org-projectile-file "TODOs.org"
@@ -96,15 +83,15 @@ This function should only modify configuration layer settings."
       :variables
       ranger-cleanup-eagerly t
       )
-     react
-     rust
+     search-engine
      semantic
+     shell
      shell-scripts
      (spell-checking
       :variables spell-checking-enable-by-default nil
       )
      syntax-checking
-     web-beautify
+     templates
      yaml
      )
 
