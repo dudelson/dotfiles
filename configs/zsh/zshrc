@@ -144,7 +144,7 @@ alias bal="ledger -X \$ --strict --explicit --invert bal"
 alias reg="ledger -X \$ --strict --explicit reg"
 alias lgr="ledger -X \$ --strict --explicit"
 alias rkn="reckon -u -f ~/EXPORT.CSV -a Assets:Checking -l ~/s/doc/finance/y2012-2016.txt -o $LEDGER_FILE --ignore-columns 1,3,6,7,8 --contains-header 1 --date-format \"%m/%d/%y\""
-alias find-sync-conflicts='find s/doc/gtd -type f -name "*sync-conflict*" -print && find s/doc/kb -type f -name "*sync-conflict*" -print'
+alias find-sync-conflicts='fd -t f "\.*sync-conflict\.*" ~/s/doc/gtd && fd -t f "\.*sync-conflict\.*" ~/s/doc/kb && fd -t f "\.*sync-conflict\.*" ~/.local/pkb-inbox'
 
 # systemd aliases
 alias sctl='sudo systemctl'
