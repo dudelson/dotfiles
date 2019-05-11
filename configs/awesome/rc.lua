@@ -92,7 +92,7 @@ context.vars.theme        = "powerarrow-dark-custom"
 context.vars.terminal     = "kitty"
 context.vars.browser      = "firefox"
 context.vars.editor       = "emacs"
-context.vars.scrlocker    = "i3lock -n -i ~/.config/awesome/themes/powerarrow-dark-custom/wall.png"
+context.vars.scrlocker    = "i3lock -n -i ~/s/nxt/pic/misc/wallpapers/spacescape_planets.png"
 context.vars.check_pkg_update = "checkupdates | sed 's/->/→/' | column -t"
 -- either "st" for normal 24-hour time or "dt" for decimal time
 context.vars.default_time_format = "st"
@@ -107,7 +107,7 @@ context.state.screen_finished = false
 context.screen_config = {
   ['undocked'] = { -- this is the config name; it has to match the autorandr profile name
     screens = {
-      ['eDP-1'] = {
+      ['eDP1'] = {
         tags = {
           {
             name = 'term',
@@ -125,50 +125,11 @@ context.screen_config = {
             layout = awful.layout.suit.tile,
             designated_for = context.designated_apps['editor'],
           },
-          {
-            name = 'irc',
-            layout = awful.layout.suit.tile,
-            designated_for = context.designated_apps['irc_client'],
-          },
-        }
-      },
-    },
-  },
-
-  ['docked'] = { -- this is the config name; it has to match the autorandr profile name
-    screens = {
-      ['eDP-1'] = {
-        tags = {
-          {
-            name = 'term',
-            layout = awful.layout.suit.tile,
-            selected = true,
-            designated_for = context.designated_apps['terminal'],
-          },
-          {
-            name = 'irc',
-            layout = awful.layout.suit.tile,
-            designated_for = context.designated_apps['irc_client'],
-          },
-        }
-      },
-      ['DP-2-1'] = {
-        tags = {
-          {
-            name = 'web',
-            layout = awful.layout.suit.max,
-            selected = true,
-            designated_for = context.designated_apps['browser'],
-          },
-          {
-            name = 'spc',
-            layout = awful.layout.suit.tile,
-            designated_for = context.designated_apps['editor'],
-          },
-          {
-            name = 'misc',
-            layout = awful.layout.suit.tile,
-          },
+          -- {
+          --   name = 'irc',
+          --   layout = awful.layout.suit.tile,
+          --   designated_for = context.designated_apps['irc_client'],
+          -- },
         }
       },
     },
@@ -176,7 +137,7 @@ context.screen_config = {
 
   ['home_tv'] = { -- this is the config name; it has to match the autorandr profile name
     screens = {
-      ['eDP-1'] = {
+      ['eDP1'] = {
         tags = {
           {
             name = 'term',
@@ -184,11 +145,11 @@ context.screen_config = {
             selected = true,
             designated_for = context.designated_apps['terminal'],
           },
-          {
-            name = 'irc',
-            layout = awful.layout.suit.tile,
-            designated_for = context.designated_apps['irc_client'],
-          },
+          -- {
+          --   name = 'irc',
+          --   layout = awful.layout.suit.tile,
+          --   designated_for = context.designated_apps['irc_client'],
+          -- },
         }
       },
       ['HDMI-2'] = {
@@ -213,8 +174,7 @@ context.screen_config = {
     },
   },
 }
-context.screen_config['undocked'].default_tag = context.screen_config['undocked'].screens['eDP-1'].tags[1]
-context.screen_config['docked'].default_tag = context.screen_config['docked'].screens['DP-2-1'].tags[3]
+context.screen_config['undocked'].default_tag = context.screen_config['undocked'].screens['eDP1'].tags[1]
 context.screen_config['home_tv'].default_tag = context.screen_config['home_tv'].screens['HDMI-2'].tags[3]
 context.screen_config.default = context.screen_config['undocked']
 
