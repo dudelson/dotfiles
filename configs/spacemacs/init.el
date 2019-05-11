@@ -40,7 +40,7 @@ This function should only modify configuration layer settings."
       auto-completion-tab-key-behavior 'cycle
       :disabled-for org emacs-lisp markdown text)
      ;; c-c++
-     ;; calendar
+     calendar
      csv
      (elfeed
       :variables
@@ -80,11 +80,11 @@ This function should only modify configuration layer settings."
      (markdown
       ;; :variables markdown-live-preview-engine 'vmd
       )
-     mu4e
+     notmuch
      ocaml
      (org
       :variables
-      org-projectile-file "TODOs.org"
+      ;; org-projectile-file "TODOs.org"
       org-enable-reveal-js-support t
       )
      (python
@@ -99,6 +99,7 @@ This function should only modify configuration layer settings."
      react
      rust
      semantic
+     shell
      shell-scripts
      (spell-checking
       :variables spell-checking-enable-by-default nil
