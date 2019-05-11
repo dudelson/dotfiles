@@ -25,6 +25,9 @@ LS_COLORS=$LS_COLORS:'di=1;37:' ; export LS_COLORS
 #export ANDROID_EMULATOR_USE_SYSTEM_LIBS=1
 #export ANDROID_HOME=$HOME/.local/share/android/android-sdk-linux
 
+# python config
+export PYTHONPATH="$PYTHONPATH":"$HOME"/.local/lib
+
 # golang config
 #export GOPATH=$HOME/.go
 #export PATH=$PATH:$GOPATH/bin
