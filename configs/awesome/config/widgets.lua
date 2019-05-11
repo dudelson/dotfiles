@@ -173,6 +173,28 @@ function config.init(context)
   })
   widgets.volume = volume.widget
   context.volicon = volicon
+
+  volume.widget:buttons(awful.util.table.join(
+                       awful.button({}, 1, function() -- left click
+                           awful.spawn(string.format("%s -e alsamixer", terminal))
+                       end),
+                       awful.button({}, 2, function() -- middle click
+                           os.execute(string.format("%s set %s 100%%", volume.cmd, volume.channel))
+                           volume.update()
+                       end),
+                       awful.button({}, 3, function() -- right click
+                           os.execute(string.format("%s set %s toggle", volume.cmd, volume.togglechannel or volume.channel))
+                           volume.update()
+                       end),
+                       awful.button({}, 4, function() -- scroll up
+                           os.execute(string.format("%s set %s 1%%+", volume.cmd, volume.channel))
+                           volume.update()
+                       end),
+                       awful.button({}, 5, function() -- scroll down
+                           os.execute(string.format("%s set %s 1%%-", volume.cmd, volume.channel))
+                           volume.update()
+                       end)
+  ))
 end
 
 return config
