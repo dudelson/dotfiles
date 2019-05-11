@@ -1,27 +1,48 @@
 # -*- mode: snippet -*-
-# name: GTD monthly rotation checklist
+# name: GTD monthly review checklist
 # key: gtd_monthly_checklist
 # --
-* monthly rotation
-- [ ] do weekly planning
-- [ ] clean up ~/s/misc/sync
-- [ ] commit changes to dotfiles
-- [ ] copy thoughts/notes worth keeping into pkb
-    - to prevent unnecessary clutter via duplication, each thought or note should be
-      inserted into the PKB exactly one
-    - remove the timestamp
-    - add a unicode check mark (✓) if the note was imported into the PKB
-    - add a unicode triangle (🛆) if the note was not imported into the PKB because
-      you didn't know where to put it (i.e. notes marked with a triangle should be
-      revisited later)
-    - unmarked thoughts/notes will be assumed to be marked for /non-insertion/; i.e.
-      it was presumably decided that the note was not important enough to be
-      transferred.
-- [ ] create dates/ file for new month
+* monthly review
+** pre-review housekeeping
+- [ ] move current.org to archives/ and re-create fresh copy from template
 - [ ] move todos from old file to new file
-- [ ] move current.org symlink to point to new file
+- [ ] *complete phase 1 of the weekly review*
+** review and update horizons of focus
+Remember: goals and areas are never "done", so I don't have to worry about what
+"done" looks like! The expectation is that I update my areas and goals such that
+they continue to be "good enough", since good enough is really frickin' good!
+*** backprop
+- [ ] backpropagate projects and habits to areas, then goals
+    => this is so that my higher horizons of focus stay in sync with my true
+       intentions and priorities, which are reflected by what I'm actually working
+       on right now
+*** update goals list
+- [ ] review goals list and ask: Are the goals I'm currently working towards in
+      line with my true intentions and priorities?
+- [ ] adjust goal deadlines as needed
+*** update areas
+- [ ] review areas list and ask:
+        - Do I need any new areas?
+        - Are there any areas I can combine?
+        - Any I can deprecate?
+        - Am I starting any new habits this month?
+- [ ] replicate updated areas list across "2 Areas" folder and someday+maybe.org
+    => Need all areas to be represented in areas folder even if those folders are empty
+       BC sometimes I can't find a place for a note BC I forget that an appropriate
+       area exists
+*** update project list
 - [ ] skim someday+maybe.org for tasks to move to either notnow.org or current.org
+- [ ] review projects list and ask:
+        - Do I feel connected to my project list and sensitive to its contents?
+        - Do I have a clear sense of priorities?
+*** repeat if necessary
+- [ ] if necessary, repeat the above steps until I feel that all of my horizons
+      of focus are aligned with each other and with my true intentions and
+      priorities
+** post-review housekeeping
+- [ ] complete phases 2 and 3 of the weekly review
 - [ ] manually add new file to git and commit
 - [ ] manually check git for PKB and add new files
+- [ ] clean up ~/s/misc/sync
 
 /delete this buffer/
