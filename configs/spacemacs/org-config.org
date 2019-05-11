@@ -585,7 +585,7 @@ daily, weekly, or monthly GTD habits. They are bound to the SPC o g prefix.
 
   (defun du/gtd-monthly-rotation ()
     (interactive)
-    (du/open-gtd-buffer "gtd-monthly" "GTD monthly rotation checklist"))
+    (du/open-gtd-buffer "gtd-monthly" "GTD monthly review checklist"))
 
   (defun du/gtd-weekly-planning ()
     (interactive)
