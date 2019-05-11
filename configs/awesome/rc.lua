@@ -344,6 +344,7 @@ config.util.run_once({
    "xss-lock -- " .. context.vars.scrlocker,
    "Desktop-Bridge",     -- protonmail bridge
    "nextcloud",
+   "run_keybase",
    "start_jack", "cadence",  -- for JACK audio
 })
 
