@@ -60,6 +60,11 @@ This makes it convenient to input hexadecimal unicode character codes using C-q.
 #+BEGIN_SRC emacs-lisp
   (setq-default read-quoted-char-radix 16)
 #+END_SRC
+** tramp
+Tell TRAMP to use ssh by default (instead of the slower default, scp):
+#+BEGIN_SRC emacs-lisp
+  (setq tramp-default-method "ssh")
+#+END_SRC
 * evil-mode
 ~evil-escape-key-sequence~ allows me to define an alternative to emacs' ~C-g~ and
 spacemacs' default ~f d~.
