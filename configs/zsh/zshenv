@@ -45,6 +45,10 @@ export PATH=$PATH:$HOME/.cargo/bin
 # pass config
 export PASSWORD_STORE_CHARACTER_SET='[:alnum:]!@#$%^*()-_+=/";:'
 
+# settings for japanese input
 export GTK_IM_MODULE=ibus
 export QT_IM_MODULE=ibus
 export XMODIFIERS=@im=ibus
+
+# settings for emacspeak
+export DTK_PROGRAM=$(which espeak)
