@@ -1,7 +1,9 @@
 # -*- mode: snippet -*-
-# name: Redhat friday afternoon checklist
-# key: friday
+# name: redhat end of week checklist
+# key: rh-eow
 # --
-- $0 [ ] enter hours into fieldglass and myapex
-- [ ] rotate GTD
+- $0[ ] update confluence doc for next monday's ops meeting
+    => use your jira profile's activity feed to help you remember what you did
 - [ ] put tenugui in backpack so I can take it home and wash it
+
+time permitting: check hackernews

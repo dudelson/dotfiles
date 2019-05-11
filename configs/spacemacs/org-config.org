@@ -595,20 +595,15 @@ daily, weekly, or monthly GTD habits. They are bound to the SPC o g prefix.
     (interactive)
     (du/open-gtd-buffer "gtd-daily" "GTD daily adapting checklist"))
 
-  (defun du/rh-morning-checklist ()
-    (interactive)
-    (du/open-gtd-buffer "morning-checklist" "Redhat morning checklist"))
-
   (defun du/rh-friday-checklist ()
     (interactive)
-    (du/open-gtd-buffer "friday-checklist" "Redhat friday afternoon checklist"))
+    (du/open-gtd-buffer "end-of-week-checklist" "redhat end of week checklist"))
 
   (spacemacs/set-leader-keys "ogm" 'du/gtd-monthly-rotation)
   (spacemacs/set-leader-keys "ogw" 'du/gtd-weekly-planning)
   (spacemacs/set-leader-keys "ogd" 'du/gtd-daily-adapting)
 
   ;; redhat specific
-  (spacemacs/set-leader-keys "ogm" 'du/rh-morning-checklist)
   (spacemacs/set-leader-keys "ogf" 'du/rh-friday-checklist)
 
   (spacemacs/declare-prefix "og" "GTD")

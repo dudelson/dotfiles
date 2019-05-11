@@ -1,9 +1,0 @@
-# -*- mode: snippet -*-
-# name: Redhat morning checklist
-# key: morning
-# --
-- $0 [ ] move tasks from phone_notes into GTD
-- [ ] check email
-- [ ] check calendar
-- [ ] check jira
-- [ ] check current.org tasks for the current week
