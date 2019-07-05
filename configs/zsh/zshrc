@@ -92,7 +92,6 @@ alias history-stat="history 0 | awk '{print \$2}' | sort | uniq -c | sort -n -r 
 
 # custom aliases
 alias feh='feh --scale-down'
-alias mpv='optirun mpv'
 # use `maim` to screenshot the entire screen to a file
 # screenshot the selected area to a file
 alias maims='maim -s -p 1 -c 1,0,0,0.5 --nokeyboard'
@@ -104,22 +103,22 @@ alias maimsc='maim -s -p 1 -c 1,0,0,0.5 --nokeyboard --format=png /dev/stdout | 
 # screenshot specifically for org-download
 alias maimdl='maim -s -p 1 -c 1,0,0,0.5 --nokeyboard /tmp/screenshot.png'
 alias top='htop'
-alias pacman='yaourt'
+# alias pacman='yaourt'
 alias vim='nvim'
 alias sudovimdiff='SUDO_EDITOR="nvim -d" sudoedit'
 alias gdb='gdb -q'
 alias objdump='objdump -M intel'
 alias zmv='noglob zmv -W'
 alias pingtest='ping -c 3 8.8.8.8'
-alias latex-clean='latexmk -c'
-alias powercheck='cat /sys/class/power_supply/AC/online'
+# alias latex-clean='latexmk -c'
+# alias powercheck='cat /sys/class/power_supply/AC/online'
 alias copy='rsync -rh --info="progress2"'
 
 # fasd aliases
-# alias v='f -e nvim'
-# alias e='f -e emacsclient'
-# alias o='a -e xdg-open'
-# alias l='d -e "ls --group-directories-first --color=auto"'
+alias v='f -e nvim'
+alias e='f -e emacsclient'
+alias o='a -e xdg-open'
+alias l='d -e "ls --group-directories-first --color=auto"'
 
 # ledger aliases
 export LEDGER_FILE="~/s/doc/finance/y$(date +%Y).txt"
@@ -135,6 +134,9 @@ alias sctl='sudo systemctl'
 alias uctl='systemctl --user'
 
 # place temporary aliases and variables here
+alias swapcaps='setxkbmap -option "ctrl:swapcaps"'
+alias mon='xrandr --output DP-2-3 --auto'
+alias rcm-dev='ssh -KA rcm-dev.app.eng.bos.redhat.com'
 
 
 # magic aliases (expand with <SPACE>)
@@ -236,7 +238,7 @@ autoload -U zmv
 autoload -Uz compinit && compinit -i
 
 # fasd
-# eval "$(fasd --init auto)"
+eval "$(fasd --init auto)"
 
 # syntax highlighting
 source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
