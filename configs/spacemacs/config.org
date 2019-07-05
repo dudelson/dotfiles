@@ -413,305 +413,6 @@ a less awkward keybinding for ~hippie-expand~.
       (add-hook 'elfeed-mode-hook #'du/add-elfeed-buffer-to-persp)
       (call-interactively 'elfeed)))
 #+END_SRC
-** mu4e
-sources: [[https://vxlabs.com/tag/mu4e/][1]] 2 3
-*** basic config
-#+BEGIN_SRC emacs-lisp
-    (setq mu4e-maildir "~/.local/mail"
-          mu4e-get-mail-command "offlineimap -o")
-
-  ;; prevent issues with duplicate UIDs in mbsync
-  ;; see http://pragmaticemacs.com/emacs/fixing-duplicate-uid-errors-when-using-mbsync-and-mu4e/
-  ;; (setq mu4e-change-filenames-when-moving t)
-#+END_SRC
-*** UI
-mu4e has a home buffer (called the "main view"), which allows you to jump to
-various other buffers. Most of these show a list of emails, the same as when you
-log onto an online mail client (called the "headers view").
-
-Create a custom header that shows which account the email was sent to.
-#+BEGIN_SRC emacs-lisp
-  (defun du/mu4e-get-account-foreground-face (acct)
-    "Given an account name as input (a string), returns the
-     proper foreground color (also a string)."
-    (cdr
-     (assoc acct
-            '(("protonmail" . "#6c71c4") ;; solarized violet
-              ;; make emails to my website address stand out,
-              ;; as these are usually important
-              ("website" . "white")
-              ("cornell" . "#B31B1B") ;; stole the hex code off cornell's website
-              ;; solarized orange for accounts I'm trying to stop using
-              ("aol" . "#cb4b16")
-              ("gmail" . "#cb4b16")))))
-
-  (add-to-list 'mu4e-header-info-custom
-               '(:account . (
-                   :name "Account Name" ;; long name, as seen in the message-view
-                   :shortname "Account" ;; short name, as seen in the headers view
-                   :help "Account to which this email was sent" ;; tooltip
-                   :function (lambda (msg)
-                               (let ((acct
-                                      (mu4e-context-name
-                                       (mu4e-context-determine msg 'ask))))
-                                 (propertize
-                                  acct
-                                  'face
-                                  `(:foreground
-                                    ,(du/mu4e-get-account-foreground-face
-                                      acct))))))))
-#+END_SRC
-
-Here I set the order and width of the columns in the headers view.
-#+BEGIN_SRC emacs-lisp
-  (setq mu4e-headers-fields
-        '((:human-date . 12) ;; can also use ":date"
-          (:from . 30)
-          (:account . 10)
-          (:flags . 6)
-          (:subject . 162))) ;; can also use ":thread-subject"
-#+END_SRC
-
-Disable unicode characters for flags and such, as this can easily screw up the
-column alignment.
-#+BEGIN_SRC emacs-lisp
-    (setq mu4e-use-fancy-chars nil)
-#+END_SRC
-
-This setting controls what details of a single email are displayed at the top
-when I open it.
-#+BEGIN_SRC emacs-lisp
-    (setq mu4e-view-fields '(:from :to :cc :subject :date :signature :decryption))
-#+END_SRC
-*** contexts
-We establish the context for a message by matching on the maildir. Originally I
-had matched on the "to" address, but many emails are sent to mailing lists,
-etc., so this did not work reliably. The exception is my website address, which
-shares a maildir with my protonmail address, so these cannot be distinguished by
-maildir. Right now what I'm doing is matching the protonmail address based on
-maildir and the website address based on address, so that the protonmail context
-acts as a "catchall" for emails sent to my protonmail account. Unfortunately,
-this means that the order for the contexts matters (i.e. the website context has
-to be defined first), and also emails sent to mailing lists that I signed up for
-with my website account will be put in the wrong context. I think I can fix this
-by setting the protonmail bridge to use separate inboxes or whatever, but that's
-a later me problem.
-#+BEGIN_SRC emacs-lisp
-  (setq mu4e-contexts
-     `( ,(make-mu4e-context
-           :name "website"
-           :enter-func (lambda () (mu4e-message "Entering context 'website'"))
-           :leave-func (lambda () (mu4e-message "Leaving context 'website'"))
-           :match-func (lambda (msg)
-                         (when msg
-                           (mu4e-message-contact-field-matches msg
-                             :to "david@davidudelson.com")))
-           :vars '( ( user-mail-address      . "david@davidudelson.com" )
-                    ( user-full-name         . "David Udelson" )
-                    ( mu4e-drafts-folder     . "/drafts")
-                    ( mu4e-sent-folder       . "/protonmail/Sent")
-                    ( mu4e-trash-folder      . "/protonmail/Trash")
-                    ( mu4e-refile-folder     . "/protonmail/Archive")
-                    ( mu4e-compose-signature . nil)))
-        ,(make-mu4e-context
-          :name "protonmail"
-          :enter-func (lambda () (mu4e-message "Entering context 'protonmail'"))
-          :leave-func (lambda () (mu4e-message "Leaving context 'protonmail'"))
-          ;; we match based on the contact-fields of the message
-          :match-func (lambda (msg)
-                        (when msg
-                          (string-match-p "^/protonmail"
-                                          (mu4e-message-field msg :maildir))))
-          :vars '( ( user-mail-address      . "dudelson@protonmail.com"  )
-                   ( user-full-name         . "David Udelson" )
-                   ( mu4e-drafts-folder     . "/drafts")
-                   ( mu4e-sent-folder       . "/protonmail/Sent")
-                   ( mu4e-trash-folder      . "/protonmail/Trash")
-                   ( mu4e-refile-folder     . "/protonmail/Archive")
-                   ( mu4e-compose-signature . nil)))
-        ,(make-mu4e-context
-           :name "cornell"
-           :enter-func (lambda () (mu4e-message "Entering context 'cornell'"))
-           :leave-func (lambda () (mu4e-message "Leaving context 'cornell'"))
-           :match-func (lambda (msg)
-                         (when msg
-                           (string-match-p "^/cornell"
-                                           (mu4e-message-field msg :maildir))))
-           :vars '( ( user-mail-address      . "dru5@cornell.edu" )
-                    ( user-full-name         . "David Udelson" )
-                    ( mu4e-drafts-folder     . "/cornell/Drafts")
-                    ( mu4e-sent-folder       . "/cornell/Sent")
-                    ( mu4e-trash-folder      . "/cornell/Trash")
-                    ( mu4e-refile-folder     . "/cornell/All_Mail")
-                    ( mu4e-compose-signature . (concat
-                                                "David Udelson\n"
-                                                "Cornell University '18\n"
-                                                "Dept. of Computer Science"))))
-        ,(make-mu4e-context
-          :name "aol"
-          :enter-func (lambda () (mu4e-message "Entering context 'aol'"))
-          :leave-func (lambda () (mu4e-message "Leaving context 'aol'"))
-          :match-func (lambda (msg)
-                        (when msg
-                          (string-match-p "^/aol"
-                                          (mu4e-message-field msg :maildir))))
-          :vars '( ( user-mail-address      . "ubeatlenine@aol.com" )
-                   ( mu4e-drafts-folder     . "/aol/Draft")
-                   ( mu4e-sent-folder       . "/aol/Sent")
-                   ( mu4e-trash-folder      . "/aol/Trash")
-                   ( mu4e-refile-folder     . "/aol/Archive")
-                   ( mu4e-compose-signature . nil)))
-        ,(make-mu4e-context
-          :name "gmail"
-          :enter-func (lambda () (mu4e-message "Entering context 'gmail"))
-          :leave-func (lambda () (mu4e-message "Leaving context 'gmail"))
-          :match-func (lambda (msg)
-                        (when msg
-                          (string-match-p "^/gmail"
-                                          (mu4e-message-field msg :maildir))))
-          :vars '( ( user-mail-address      . "udelsonindigo@gmail.com" )
-                   ( mu4e-drafts-folder     . "/gmail/Drafts")
-                   ( mu4e-sent-folder       . "/gmail/Sent")
-                   ( mu4e-trash-folder      . "/gmail/Trash")
-                   ( mu4e-refile-folder     . "/gmail/All_Mail")
-                   ( mu4e-compose-signature . nil)))))
-
-   ;; set `mu4e-context-policy` and `mu4e-compose-policy` to tweak when mu4e should
-   ;; guess or ask the correct context, e.g.
-
-   ;; start with the first (default) context;
-   ;; default is to ask-if-none (ask when there's no context yet, and none match)
-   (setq mu4e-context-policy 'pick-first)
-
-   ;; compose with the current context is no context matches;
-   ;; default is to ask
-   ;; (setq mu4e-compose-context-policy nil)
-#+END_SRC
-*** sending mail
-#+BEGIN_SRC emacs-lisp
-  (setq message-send-mail-function 'message-send-mail-with-sendmail
-        message-sendmail-f-is-evil t
-        message-sendmail-extra-arguments '("-a website"))
-#+END_SRC
-
-In order for sent emails to actually be sent from the address we intend, it is not
-enough to choose an address in emacs; msmtp must also be told which address to
-use. The following ensures that msmtp always uses the email address that appears
-in the "From:" header of the compose-message buffer, which in turn corresponds
-to the mu4e context for that message (or the currently-selected context, if
-we're sending a new email instead of replying to one).
-#+BEGIN_SRC emacs-lisp
-  ;; Choose account label to feed msmtp -a option based on From header
-  ;; in Message buffer; This function must be added to
-  ;; message-send-mail-hook for on-the-fly change of From address before
-  ;; sending message since message-send-mail-hook is processed right
-  ;; before sending message.
-  (defun du/choose-msmtp-account ()
-    (mu4e-message "PRINT ME")
-    (if (message-mail-p)
-        (save-excursion
-          (let*
-              ((from (save-restriction
-                       (message-narrow-to-headers)
-                       (message-fetch-field "from")))
-               (account
-                (cond
-                 ((string-match "david@davidudelson.com" from) "website")
-                 ((string-match "dudelson@protonmail.com" from) "protonmail")
-                 ((string-match "dru5@cornell.edu" from) "cornell"))))
-            (message "account set to %s" account)
-            (setq message-sendmail-extra-arguments (list '"-a" account))))))
-
-  ;;(setq message-sendmail-envelope-from 'header)
-  ;;(add-hook 'message-send-mail-hook (lambda () (setq message-sendmail-extra-arguments (list '"-P"))))
-#+END_SRC
-*** bookmarks
-#+BEGIN_SRC emacs-lisp
-  (setq mu4e-bookmarks
-        `( ,(make-mu4e-bookmark
-             :name  "Combined inbox"
-             :query (concat
-                     "maildir:/protonmail/INBOX OR "
-                     "(maildir:/cornell/* AND tag:\\\\Inbox) OR "
-                     "(maildir:/gmail/* AND tag:\\\\Inbox) OR "
-                     "maildir:/aol/Inbox")
-             :key ?i)
-           ,(make-mu4e-bookmark
-             :name  "Unread messages"
-             :query "flag:unread AND NOT flag:trashed"
-             :key ?u)
-           ,(make-mu4e-bookmark
-             :name "Today's messages"
-             :query "date:today..now"
-             :key ?t)
-           ,(make-mu4e-bookmark
-             :name "Last 7 days"
-             :query "date:7d..now"
-             :key ?w)))
-#+END_SRC
-*** misc
-#+BEGIN_SRC emacs-lisp
-  (defun mu4e-msgv-action-view-in-browser (msg)
-    "View the body of the message in a web browser."
-    (interactive)
-    (let ((html (mu4e-msg-field (mu4e-message-at-point t) :body-html))
-          (tmpfile (format "%s/%d.html" temporary-file-directory (random))))
-      (unless html (error "No html part for this message"))
-      (with-temp-file tmpfile
-        (insert
-         "<html>"
-         "<head><meta http-equiv=\"content-type\""
-         "content=\"text/html;charset=UTF-8\">"
-         html))
-      (browse-url (concat "file://" tmpfile))))
-
-  ;; (add-to-list 'mu4e-view-actions
-  ;;              '("View in browser" . mu4e-msgv-action-view-in-browser) t)
-
-    ;; (defvar my-mu4e-account-alist
-    ;;   '(
-    ;;     ;; ("Gmail"
-    ;;     ;;  (mu4e-sent-folder "/Gmail/sent")
-    ;;     ;;  (user-mail-address "YOUR.GMAIL.USERNAME@gmail.com")
-    ;;     ;;  (smtpmail-smtp-user "YOUR.GMAIL.USERNAME")
-    ;;     ;;  (smtpmail-local-domain "gmail.com")
-    ;;     ;;  (smtpmail-default-smtp-server "smtp.gmail.com")
-    ;;     ;;  (smtpmail-smtp-server "smtp.gmail.com")
-    ;;     ;;  (smtpmail-smtp-service 587))
-    ;;     ("protonmail default"
-    ;;      (mu4e-sent-folder "/protonmail/sent")
-    ;;      (user-mail-address "dudelson@protonmail.com")
-    ;;      (smtpmail-smtp-user "dudelson@protonmail.com")
-    ;;      (smtpmail-stream-type plain)
-    ;;      (smtpmail-local-domain "127.0.0.1")
-    ;;      (smtpmail-default-smtp-server "127.0.0.1")
-    ;;      (smtpmail-smtp-server "127.0.0.1")
-    ;;      (smtpmail-smtp-service 1025))
-    ;;     ;; Include any other accounts here ...
-    ;;     ))
-
-    ;; (defun du/mu4e-set-account ()
-    ;;   "Set the account for composing a message.
-    ;;    This function is taken from:
-    ;;    https://www.djcbsoftware.nl/code/mu/mu4e/Multiple-accounts.html"
-    ;;   (let* ((account
-    ;;           (if mu4e-compose-parent-message
-    ;;               (let ((maildir (mu4e-message-field mu4e-compose-parent-message :maildir)))
-    ;;                 (string-match "/\\(.*?\\)/" maildir)
-    ;;                 (match-string 1 maildir))
-    ;;             (completing-read (format "Compose with account: (%s) "
-    ;;                                      (mapconcat #'(lambda (var) (car var))
-    ;;                                                 my-mu4e-account-alist "/"))
-    ;;                              (mapcar #'(lambda (var) (car var)) my-mu4e-account-alist)
-    ;;                              nil t nil nil (caar my-mu4e-account-alist))))
-    ;;          (account-vars (cdr (assoc account my-mu4e-account-alist))))
-    ;;     (if account-vars
-    ;;         (mapc #'(lambda (var)
-    ;;                   (set (car var) (cadr var)))
-    ;;               account-vars)
-    ;;       (error "No email account found"))))
-    ;; (add-hook 'mu4e-compose-pre-hook 'du/mu4e-set-account)
-#+END_SRC
 ** latex
 Xetex is the only engine that appears to be compatible with all of the LaTeX
 packages I use.
@@ -835,7 +536,10 @@ issue.
   (setq auto-mode-alist (cons '("\\.txte" . 'enriched-mode) auto-mode-alist))
 #+END_SRC
 * experiments
-** disable mouse globally
+** [disabled] disable mouse globally
+:PROPERTIES:
+:header-args: :tangle no
+:END:
 Right now I'm trying to figure out how to disable the mouse globally. No dice
 yet, but here is my latest attempt. I simply installed the ~disable-mouse~
 package from melpa and make a call to enable it here. It works for some things,
@@ -860,3 +564,496 @@ using tuareg-mode. See this [[https://github.com/ocaml/tuareg/issues/162][tuareg
 This configuration was inspired by the configurations of many others:
     - [[https://github.com/ipburbank][Istvan Burbank]]
     - [[https://ogbe.net/emacsconfig.html][Dennis Ogbe]]
+* [disabled] mu4e
+:PROPERTIES:
+:header-args: :tangle no
+:END:
+sources: [[https://vxlabs.com/tag/mu4e/][1]] 2 3
+
+I was too lazy to manually disable every code block here, so I just moved this
+section to the end so that the errors don't prevent other code from loading.
+** basic config
+#+BEGIN_SRC emacs-lisp
+    (setq mu4e-maildir "~/.local/mail"
+          mu4e-get-mail-command "offlineimap -o")
+
+  ;; prevent issues with duplicate UIDs in mbsync
+  ;; see http://pragmaticemacs.com/emacs/fixing-duplicate-uid-errors-when-using-mbsync-and-mu4e/
+  ;; (setq mu4e-change-filenames-when-moving t)
+#+END_SRC
+** UI
+mu4e has a home buffer (called the "main view"), which allows you to jump to
+various other buffers. Most of these show a list of emails, the same as when you
+log onto an online mail client (called the "headers view").
+
+Create a custom header that shows which account the email was sent to.
+#+BEGIN_SRC emacs-lisp
+  (defun du/mu4e-get-account-foreground-face (acct)
+    "Given an account name as input (a string), returns the
+     proper foreground color (also a string)."
+    (cdr
+     (assoc acct
+            '(("protonmail" . "#6c71c4") ;; solarized violet
+              ;; make emails to my website address stand out,
+              ;; as these are usually important
+              ("website" . "white")
+              ("cornell" . "#B31B1B") ;; stole the hex code off cornell's website
+              ;; solarized orange for accounts I'm trying to stop using
+              ("aol" . "#cb4b16")
+              ("gmail" . "#cb4b16")))))
+
+  (add-to-list 'mu4e-header-info-custom
+               '(:account . (
+                   :name "Account Name" ;; long name, as seen in the message-view
+                   :shortname "Account" ;; short name, as seen in the headers view
+                   :help "Account to which this email was sent" ;; tooltip
+                   :function (lambda (msg)
+                               (let ((acct
+                                      (mu4e-context-name
+                                       (mu4e-context-determine msg 'ask))))
+                                 (propertize
+                                  acct
+                                  'face
+                                  `(:foreground
+                                    ,(du/mu4e-get-account-foreground-face
+                                      acct))))))))
+#+END_SRC
+
+Here I set the order and width of the columns in the headers view.
+#+BEGIN_SRC emacs-lisp
+  (setq mu4e-headers-fields
+        '((:human-date . 12) ;; can also use ":date"
+          (:from . 30)
+          (:account . 10)
+          (:flags . 6)
+          (:subject . 162))) ;; can also use ":thread-subject"
+#+END_SRC
+
+Disable unicode characters for flags and such, as this can easily screw up the
+column alignment.
+#+BEGIN_SRC emacs-lisp
+    (setq mu4e-use-fancy-chars nil)
+#+END_SRC
+
+This setting controls what details of a single email are displayed at the top
+when I open it.
+#+BEGIN_SRC emacs-lisp
+    (setq mu4e-view-fields '(:from :to :cc :subject :date :signature :decryption))
+#+END_SRC
+** contexts
+We establish the context for a message by matching on the maildir. Originally I
+had matched on the "to" address, but many emails are sent to mailing lists,
+etc., so this did not work reliably. The exception is my website address, which
+shares a maildir with my protonmail address, so these cannot be distinguished by
+maildir. Right now what I'm doing is matching the protonmail address based on
+maildir and the website address based on address, so that the protonmail context
+acts as a "catchall" for emails sent to my protonmail account. Unfortunately,
+this means that the order for the contexts matters (i.e. the website context has
+to be defined first), and also emails sent to mailing lists that I signed up for
+with my website account will be put in the wrong context. I think I can fix this
+by setting the protonmail bridge to use separate inboxes or whatever, but that's
+a later me problem.
+#+BEGIN_SRC emacs-lisp
+  (setq mu4e-contexts
+     `( ,(make-mu4e-context
+           :name "website"
+           :enter-func (lambda () (mu4e-message "Entering context 'website'"))
+           :leave-func (lambda () (mu4e-message "Leaving context 'website'"))
+           :match-func (lambda (msg)
+                         (when msg
+                           (mu4e-message-contact-field-matches msg
+                             :to "david@davidudelson.com")))
+           :vars '( ( user-mail-address      . "david@davidudelson.com" )
+                    ( user-full-name         . "David Udelson" )
+                    ( mu4e-drafts-folder     . "/drafts")
+                    ( mu4e-sent-folder       . "/protonmail/Sent")
+                    ( mu4e-trash-folder      . "/protonmail/Trash")
+                    ( mu4e-refile-folder     . "/protonmail/Archive")
+                    ( mu4e-compose-signature . nil)))
+        ,(make-mu4e-context
+          :name "protonmail"
+          :enter-func (lambda () (mu4e-message "Entering context 'protonmail'"))
+          :leave-func (lambda () (mu4e-message "Leaving context 'protonmail'"))
+          ;; we match based on the contact-fields of the message
+          :match-func (lambda (msg)
+                        (when msg
+                          (string-match-p "^/protonmail"
+                                          (mu4e-message-field msg :maildir))))
+          :vars '( ( user-mail-address      . "dudelson@protonmail.com"  )
+                   ( user-full-name         . "David Udelson" )
+                   ( mu4e-drafts-folder     . "/drafts")
+                   ( mu4e-sent-folder       . "/protonmail/Sent")
+                   ( mu4e-trash-folder      . "/protonmail/Trash")
+                   ( mu4e-refile-folder     . "/protonmail/Archive")
+                   ( mu4e-compose-signature . nil)))
+        ,(make-mu4e-context
+           :name "cornell"
+           :enter-func (lambda () (mu4e-message "Entering context 'cornell'"))
+           :leave-func (lambda () (mu4e-message "Leaving context 'cornell'"))
+           :match-func (lambda (msg)
+                         (when msg
+                           (string-match-p "^/cornell"
+                                           (mu4e-message-field msg :maildir))))
+           :vars '( ( user-mail-address      . "dru5@cornell.edu" )
+                    ( user-full-name         . "David Udelson" )
+                    ( mu4e-drafts-folder     . "/cornell/Drafts")
+                    ( mu4e-sent-folder       . "/cornell/Sent")
+                    ( mu4e-trash-folder      . "/cornell/Trash")
+                    ( mu4e-refile-folder     . "/cornell/All_Mail")
+                    ( mu4e-compose-signature . (concat
+                                                "David Udelson\n"
+                                                "Cornell University '18\n"
+                                                "Dept. of Computer Science"))))
+        ,(make-mu4e-context
+          :name "aol"
+          :enter-func (lambda () (mu4e-message "Entering context 'aol'"))
+          :leave-func (lambda () (mu4e-message "Leaving context 'aol'"))
+          :match-func (lambda (msg)
+                        (when msg
+                          (string-match-p "^/aol"
+                                          (mu4e-message-field msg :maildir))))
+          :vars '( ( user-mail-address      . "ubeatlenine@aol.com" )
+                   ( mu4e-drafts-folder     . "/aol/Draft")
+                   ( mu4e-sent-folder       . "/aol/Sent")
+                   ( mu4e-trash-folder      . "/aol/Trash")
+                   ( mu4e-refile-folder     . "/aol/Archive")
+                   ( mu4e-compose-signature . nil)))
+        ,(make-mu4e-context
+          :name "gmail"
+          :enter-func (lambda () (mu4e-message "Entering context 'gmail"))
+          :leave-func (lambda () (mu4e-message "Leaving context 'gmail"))
+          :match-func (lambda (msg)
+                        (when msg
+                          (string-match-p "^/gmail"
+                                          (mu4e-message-field msg :maildir))))
+          :vars '( ( user-mail-address      . "udelsonindigo@gmail.com" )
+                   ( mu4e-drafts-folder     . "/gmail/Drafts")
+                   ( mu4e-sent-folder       . "/gmail/Sent")
+                   ( mu4e-trash-folder      . "/gmail/Trash")
+                   ( mu4e-refile-folder     . "/gmail/All_Mail")
+                   ( mu4e-compose-signature . nil)))))
+
+   ;; set `mu4e-context-policy` and `mu4e-compose-policy` to tweak when mu4e should
+   ;; guess or ask the correct context, e.g.
+
+   ;; start with the first (default) context;
+   ;; default is to ask-if-none (ask when there's no context yet, and none match)
+   (setq mu4e-context-policy 'pick-first)
+
+   ;; compose with the current context is no context matches;
+   ;; default is to ask
+   ;; (setq mu4e-compose-context-policy nil)
+#+END_SRC
+** sending mail
+#+BEGIN_SRC emacs-lisp
+  (setq message-send-mail-function 'message-send-mail-with-sendmail
+        message-sendmail-f-is-evil t
+        message-sendmail-extra-arguments '("-a website"))
+#+END_SRC
+
+In order for sent emails to actually be sent from the address we intend, it is not
+enough to choose an address in emacs; msmtp must also be told which address to
+use. The following ensures that msmtp always uses the email address that appears
+in the "From:" header of the compose-message buffer, which in turn corresponds
+to the mu4e context for that message (or the currently-selected context, if
+we're sending a new email instead of replying to one).
+#+BEGIN_SRC emacs-lisp
+  ;; Choose account label to feed msmtp -a option based on From header
+  ;; in Message buffer; This function must be added to
+  ;; message-send-mail-hook for on-the-fly change of From address before
+  ;; sending message since message-send-mail-hook is processed right
+  ;; before sending message.
+  (defun du/choose-msmtp-account ()
+    (mu4e-message "PRINT ME")
+    (if (message-mail-p)
+        (save-excursion
+          (let*
+              ((from (save-restriction
+                       (message-narrow-to-headers)
+                       (message-fetch-field "from")))
+               (account
+                (cond
+                 ((string-match "david@davidudelson.com" from) "website")
+                 ((string-match "dudelson@protonmail.com" from) "protonmail")
+                 ((string-match "dru5@cornell.edu" from) "cornell"))))
+            (message "account set to %s" account)
+            (setq message-sendmail-extra-arguments (list '"-a" account))))))
+
+  ;;(setq message-sendmail-envelope-from 'header)
+  ;;(add-hook 'message-send-mail-hook (lambda () (setq message-sendmail-extra-arguments (list '"-P"))))
+#+END_SRC
+** bookmarks
+#+BEGIN_SRC emacs-lisp
+  (setq mu4e-bookmarks
+        `( ,(make-mu4e-bookmark
+             :name  "Combined inbox"
+             :query (concat
+                     "maildir:/protonmail/INBOX OR "
+                     "(maildir:/cornell/* AND tag:\\\\Inbox) OR "
+                     "(maildir:/gmail/* AND tag:\\\\Inbox) OR "
+                     "maildir:/aol/Inbox")
+             :key ?i)
+           ,(make-mu4e-bookmark
+             :name  "Unread messages"
+             :query "flag:unread AND NOT flag:trashed"
+             :key ?u)
+           ,(make-mu4e-bookmark
+             :name "Today's messages"
+             :query "date:today..now"
+             :key ?t)
+           ,(make-mu4e-bookmark
+             :name "Last 7 days"
+             :query "date:7d..now"
+             :key ?w)))
+#+END_SRC
+** misc
+#+BEGIN_SRC emacs-lisp
+  (defun mu4e-msgv-action-view-in-browser (msg)
+    "View the body of the message in a web browser."
+    (interactive)
+    (let ((html (mu4e-msg-field (mu4e-message-at-point t) :body-html))
+          (tmpfile (format "%s/%d.html" temporary-file-directory (random))))
+      (unless html (error "No html part for this message"))
+      (with-temp-file tmpfile
+        (insert
+         "<html>"
+         "<head><meta http-equiv=\"content-type\""
+         "content=\"text/html;charset=UTF-8\">"
+         html))
+      (browse-url (concat "file://" tmpfile))))
+
+  ;; (add-to-list 'mu4e-view-actions
+  ;;              '("View in browser" . mu4e-msgv-action-view-in-browser) t)
+
+    ;; (defvar my-mu4e-account-alist
+    ;;   '(
+    ;;     ;; ("Gmail"
+    ;;     ;;  (mu4e-sent-folder "/Gmail/sent")
+    ;;     ;;  (user-mail-address "YOUR.GMAIL.USERNAME@gmail.com")
+    ;;     ;;  (smtpmail-smtp-user "YOUR.GMAIL.USERNAME")
+    ;;     ;;  (smtpmail-local-domain "gmail.com")
+    ;;     ;;  (smtpmail-default-smtp-server "smtp.gmail.com")
+    ;;     ;;  (smtpmail-smtp-server "smtp.gmail.com")
+    ;;     ;;  (smtpmail-smtp-service 587))
+    ;;     ("protonmail default"
+    ;;      (mu4e-sent-folder "/protonmail/sent")
+    ;;      (user-mail-address "dudelson@protonmail.com")
+    ;;      (smtpmail-smtp-user "dudelson@protonmail.com")
+    ;;      (smtpmail-stream-type plain)
+    ;;      (smtpmail-local-domain "127.0.0.1")
+    ;;      (smtpmail-default-smtp-server "127.0.0.1")
+    ;;      (smtpmail-smtp-server "127.0.0.1")
+    ;;      (smtpmail-smtp-service 1025))
+    ;;     ;; Include any other accounts here ...
+    ;;     ))
+
+    ;; (defun du/mu4e-set-account ()
+    ;;   "Set the account for composing a message.
+    ;;    This function is taken from:
+    ;;    https://www.djcbsoftware.nl/code/mu/mu4e/Multiple-accounts.html"
+    ;;   (let* ((account
+    ;;           (if mu4e-compose-parent-message
+    ;;               (let ((maildir (mu4e-message-field mu4e-compose-parent-message :maildir)))
+    ;;                 (string-match "/\\(.*?\\)/" maildir)
+    ;;                 (match-string 1 maildir))
+    ;;             (completing-read (format "Compose with account: (%s) "
+    ;;                                      (mapconcat #'(lambda (var) (car var))
+    ;;                                                 my-mu4e-account-alist "/"))
+    ;;                              (mapcar #'(lambda (var) (car var)) my-mu4e-account-alist)
+    ;;                              nil t nil nil (caar my-mu4e-account-alist))))
+    ;;          (account-vars (cdr (assoc account my-mu4e-account-alist))))
+    ;;     (if account-vars
+    ;;         (mapc #'(lambda (var)
+    ;;                   (set (car var) (cadr var)))
+    ;;               account-vars)
+    ;;       (error "No email account found"))))
+    ;; (add-hook 'mu4e-compose-pre-hook 'du/mu4e-set-account)
+#+END_SRC
+* [disabled] emacspeak
+:PROPERTIES:
+:header-args: :tangle no
+:END:
+** old stuff
+#+BEGIN_SRC emacs-lisp
+  ;; load emacspeak
+  (load-file "/usr/share/emacs/site-lisp/emacspeak/lisp/emacspeak-setup.el")
+  ;; set TTS server
+  (espeak)
+
+  ;; cheap hack to allow emacspeak to be turned on/off, since emacspeak does
+  ;; not provide a means of disabling itself
+  (defvar du/is-emacspeak-enabled t
+    "Whether emacspeak is enabled or not")
+
+  (defun du/emacspeak ()
+    "Toggle emacspeak on/off"
+    (interactive)
+    (setq du/is-emacspeak-enabled (not du/is-emacspeak-enabled))
+    (if (or
+         (and du/is-emacspeak-enabled dtk-quiet)
+         (and (not du/is-emacspeak-enabled) (not dtk-quiet)))
+        (progn
+          (dtk-toggle-quiet 1)
+          ;; remove the buffer-local binding in the current buffer
+          (kill-local-variable 'dtk-quiet)))
+    (if (or
+          (and du/is-emacspeak-enabled (not emacspeak-use-auditory-icons))
+          (and (not du/is-emacspeak-enabled) emacspeak-use-auditory-icons))
+        (progn
+          (emacspeak-toggle-auditory-icons 1)
+          ;; remove the buffer-local binding in the current buffer
+          (kill-local-variable 'emacspeak-use-auditory-icons)))
+    (message "TURNED EMACSPEAK %s" (if du/is-emacspeak-enabled "on" "off")))
+
+  ;; turn emacspeak OFF initially
+  (du/emacspeak)
+
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; emacspeak configuration
+  (setq-default emacspeak-character-echo nil)
+
+
+  ;; spacemacs keybindings for emacspeak
+  (spacemacs/declare-prefix "ae" "emacspeak")
+  (spacemacs/set-leader-keys
+    "ae SPC" 'du/emacspeak
+    "aes" 'dtk-stop
+
+    "aec" 'emacspeak-speak-char
+    "aew" 'emacspeak-speak-word
+    "ael" 'emacspeak-speak-line
+    "aep" 'emacspeak-speak-paragraph
+    "aer" 'emacspeak-speak-region
+    "aeb" 'emacspeak-speak-buffer
+    "aef" 'emacspeak-speak-buffer-filename
+    "aeh" 'emacspeak-speak-help
+    "aem" 'emacspeak-speak-modeline
+    "aea" 'emacspeak-speak-message-again
+    )
+
+  (spacemacs/declare-prefix "aet" "toggles")
+  (spacemacs/set-leader-keys
+    "aeta" 'emacspeak-toggle-auditory-icons
+    "aetm" 'emacspeak-toggle-speak-messages
+    "aetp" 'dtk-toggle-punctuation-mode
+    "aetC" 'dtk-toggle-allcaps-beep
+    "aetk" 'emacspeak-toggle-character-echo
+    "aetw" 'emacspeak-toggle-word-echo
+    "aetl" 'emacspeak-toggle-line-echo)
+#+END_SRC
+
+#+RESULTS:
+
+** fix hydra
+From emacspeak 46, the hydra hints buffer was being read literally, which
+preventing the audio interface to the hydra from being useful. I traced the
+breaking change to [[https://github.com/tvraman/emacspeak/commit/320fc1ccfb3aea2de3390108b976b4adbdab610f?diff=unified][this commit]], which removes an advice on ~lv-message~. I guess
+the emacspeak author doesn't use this for hydra hints, but this is how all
+hydras work in spacemacs, so I have pasted the removed advice here and updated
+it to work with the latest version of emacspeak.
+#+BEGIN_SRC emacs-lisp
+  (defadvice lv-message (after emacspeak pre act comp)
+    "provide spoken feedback if idle, and hydra-is-helful is t."
+    (when hydra-is-helpful
+      (let ((buffer (get-buffer "*LV*"))
+            (dtk-stop-immediately  nil))
+        (when (and buffer  (buffer-live-p buffer))
+          (with-current-buffer buffer
+            (dtk-speak-list
+             (split-string
+              (propertize
+               (buffer-substring (point-min) (1- (point-max)))
+               :personality 'voice-smoothen)
+              ",")))))))
+#+END_SRC
+** org-mode
+Spacemacs transient state for navigating org files via the emacspeak audio
+interface alone.
+#+BEGIN_SRC emacs-lisp
+  (defun du/emacspeak-speak-org-current-heading ()
+    (interactive)
+    (let* ((heading (org-element-at-point))
+           ;; here we should check that the element we got back was a headline
+           ;; but I'll skip for now
+           (title (getf (nth 1 heading) :title)))
+      (dtk-speak title)))
+
+  (defun du/emacspeak-speak-org-next-heading ()
+    (interactive)
+    (org-forward-element)
+    (du/emacspeak-speak-org-current-heading))
+
+  (defun du/emacspeak-speak-org-prev-heading ()
+    (interactive)
+    (org-backward-element)
+    (du/emacspeak-speak-org-current-heading))
+
+  (defun du/emacspeak-speak-org-heading-tags ()
+    (interactive)
+    (let ((tags (org-get-tags-at)))
+      (dtk-speak (mapconcat 'identity tags " "))))
+
+  (defun du/org-parse-body-do (begin end action-alist)
+    (let ((next begin)
+          (e))
+      (while
+        (progn
+          (goto-char next)
+          (setq e (org-element-at-point))
+          (setq
+           action
+            (alist-get
+             (nth 0 e)
+             action-alist
+             (lambda (begin_ end_) nil)))
+          (funcall action next (getf (nth 1 e) :end))
+          (setq next (getf (nth 1 e) :end))
+          ;; (pcase (nth 0 e)
+          ;;   ('drawer (message "This is a drawer"))
+          ;;   ('planning (message "This is a planning block"))
+          ;;   ('paragraph (message "This is a paragraph"))
+          ;;   (- (message "This is the catch-all")))
+          (< next end)))))
+
+  (defun du/emacspeak-speak-org-heading-body ()
+    (interactive)
+    (let* ((heading (org-element-at-point))
+           (action-alist
+            '((drawer .
+               (lambda (begin end)
+                 (message "This is a drawer")))
+              (planning .
+               (lambda (begin end)
+                 (message "This is a planning block")))
+              (paragraph .
+               (lambda (begin end)
+                 (message "This is a paragraph"))))))
+      (du/org-parse-body-do
+       (getf (nth 1 heading) :contents-begin)
+       (getf (nth 1 heading) :contents-end)
+       action-alist)))
+
+  (defhydra du/emacspeak-org-nav
+    (:body-pre (emacspeak-hydra-body-pre "This is a test")
+               :pre emacspeak-hydra-pre
+               :post emacspeak-hydra-post)
+    "Audio interface for org-mode navigation"
+    ("." du/emacspeak-speak-org-current-heading "Current heading")
+    ("n" du/emacspeak-speak-org-next-heading "Next heading")
+    ("p" du/emacspeak-speak-org-prev-heading "Prev. heading")
+    ("u" ??? "Parent heading")
+    ("d" ??? "Drill down")
+    ;; ------------------------------------
+    ("b" du/emacspeak-speak-org-heading-body "Speak body text")
+    ("t" du/emacspeak-speak-org-heading-tags "Speak tags")
+    ("P" ??? "Speak properties")
+    ("T" ??? "Speak timestamps")
+    ("L" ??? "Speak logbook")
+    ("?" ??? "Speak help"))
+
+  (spacemacs/set-leader-keys-for-major-mode
+    'org-mode "SPC" 'du/emacspeak-org-nav/body)
+  #+END_SRC
+
+  #+RESULTS:
