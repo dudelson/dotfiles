@@ -152,7 +152,6 @@ The function ~sa-find-file-recursively~ was taken from [[https://stackoverflow.c
   (setq-default
    ;; files that appear in the agenda
    org-agenda-files (list (concat du/gtd-directory "/current.org")
-                          (concat du/gtd-directory "/areas+goals.org")
                           (concat du/gtd-directory "/repeat.org")
                           (concat du/gtd-directory "/tickler.org"))
    ;; files that are candidates for searches in addition to agenda files
@@ -651,6 +650,7 @@ I use this in my weekly plans heading template.
 #+END_SRC
 * temporary fixes
 Fixes [[https://github.com/syl20bnr/spacemacs/issues/9950][this bug]] that screws up org-mode todo keyword highlight colors.
+*This should be fixed with PR #11732*, need to update spacemacs and test.
 #+BEGIN_SRC emacs-lisp
   (add-hook 'org-mode-hook (lambda () (hl-todo-mode -1)))
 #+END_SRC
