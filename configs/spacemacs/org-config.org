@@ -231,7 +231,7 @@ I use refile extensively.
         ("d" "dump" entry (file ,(concat du/pkb-directory "/0 Inbox/INBOX.org"))
           "* *[DUMP]* %?\n" :prepend t :empty-lines 1)
         ("p" "project" entry (file+headline ,(concat du/gtd-directory "/current.org") "projects")
-          "* TODO %? [/]" :empty-lines 1)
+          (file "/home/david/s/doc/kb/3 Resources/_templates/project.template.org") :empty-lines 1)
         ;; templates for rwl.org
         ("r" "stuff to read")
         ("rb" "book" entry (file+headline du/rwl-file-path "books")
@@ -571,6 +571,66 @@ Search in PKB
     (spacemacs/helm-files-do-ag du/pkb-directory))
 
   (spacemacs/set-leader-keys "os" 'du/search-in-pkb)
+#+END_SRC
+
+Jump to project file from project
+#+BEGIN_SRC emacs-lisp
+  (defun du/jump-to-project-file ()
+    (interactive)
+    (let ((project-file-name))
+      (setq project-file-name
+            (org-element-property
+             :PROJECT_FILE
+             (org-element-at-point)))
+      (find-file
+       (concat
+        du/pkb-directory
+        "/1 Projects/"
+        project-file-name))))
+
+  (define-key org-mode-map (kbd "C-c C-p") 'du/jump-to-project-file)
+#+END_SRC
+
+Speed refile
+#+BEGIN_SRC emacs-lisp :tangle no
+  (defun du/gtd-speed-refile ()
+    (interactive)
+    (org-mks
+     '(("c" "current.org")
+       ("n" "notnow.org" nil)
+       ("s" "someday+maybe.org")
+
+       ("ch" "IDV: Health/Hygiene" "current.org")
+       ("cs" "IDV: Spirituality and Wholeheartedness" "current.org")
+       ("c$" "IDV: Finances" "current.org")
+       ("cS" "IDV: Social" "current.org")
+       ("cw" "IDV: WSD" "current.org")
+       ("cp" "IDV: Professional Dev't" "current.org")
+       ("cb" "IDV: FOSS and Blog" "current.org")
+       ("ca" "IDV: Admin" "current.org")
+       ("ci" "IDV: Digital Infrastructure" "current.org")
+       ("cm" "IDV: Misc" "current.org")
+       ("cf" "Family Member" "current.org")
+       ("cF" "Friend" "current.org")
+       ("cr" "Release Engineer" "current.org")
+
+       ("sh" "IDV: Health/Hygiene" "someday+maybe.org")
+       ("ss" "IDV: Spirituality and Wholeheartedness" "someday+maybe.org")
+       ("s$" "IDV: Finances" "someday+maybe.org")
+       ("sS" "IDV: Social" "someday+maybe.org")
+       ("sw" "IDV: WSD" "someday+maybe.org")
+       ("sp" "IDV: Professional Dev't" "someday+maybe.org")
+       ("sb" "IDV: FOSS and Blog" "someday+maybe.org")
+       ("sa" "IDV: Admin" "someday+maybe.org")
+       ("si" "IDV: Digital Infrastructure" "someday+maybe.org")
+       ("sm" "IDV: Misc" "someday+maybe.org")
+       ("sf" "Family Member" "someday+maybe.org")
+       ("sF" "Friend" "someday+maybe.org")
+       ("sr" "Release Engineer" "someday+maybe.org"))
+     "Choose refile location")
+
+    (org-refile nil nil )
+    )
 #+END_SRC
 ** gtd functions
 These functions open buffers (not associated with any file) with a checklist for
