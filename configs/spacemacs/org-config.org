@@ -123,6 +123,22 @@ DONE means done
       ("CANCELLED" . (:foreground "#dc322f" :weight bold))
       ("STUCK" . (:foreground "#6c71c4" :weight bold))))
 #+END_SRC
+* tags
+Here I set custom faces for a few tags which have special significance in my
+system.
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default
+     org-tag-faces
+      '(("task" . (:foreground "#2aa198" :weight bold))
+        ("pkb" . (:foreground "chartreuse" :weight bold))
+        ("diary" . (:foreground "yellow" :weight bold))
+        ("work" . (:foreground "cyan" :weight bold))
+        ("unsorted" . (:foreground "#6c71c4" :weight bold))
+        ("hl" . (:foreground "DeepPink1" :weight bold))
+        ("^[A-Z].*[a-z].*" . (:foreground "orange" :weight bold))
+        ))
+#+END_SRC
 * agenda
 The function ~sa-find-file-recursively~ was taken from [[https://stackoverflow.com/questions/11384516/how-to-make-all-org-files-under-a-folder-added-in-agenda-list-automatically#11384907][this stack overflow post]].
 #+BEGIN_SRC emacs-lisp
