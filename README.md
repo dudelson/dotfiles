@@ -14,8 +14,10 @@ This repo houses my dotfiles for the various unix systems I use (or have used).
 - zsh: z shell config
 
 ## Configuration and Profile Management
-Dotfiles are installed using dotbot. scripts/install (provided by dotbot) is idempotent, meaning I can use it to do either a first-time install or an update on an existing system.
-Dotbot reads dotbot.yaml, which tells it how to symlink the various configs to the proper user directories.
+Dotfiles are installed using dotbot. scripts/install (provided by dotbot) is
+idempotent, meaning I can use it to do either a first-time install or an update
+on an existing system. Dotbot reads dotbot.yaml, which tells it how to symlink
+the various configs to the proper user directories.
 
 I have a separate branch for each profile. And the branches really are separate --
 there's no notion of keeping one or more branches "in sync" with each other, since

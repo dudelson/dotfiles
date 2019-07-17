@@ -45,7 +45,7 @@ This function should only modify configuration layer settings."
      csv
      (elfeed
       :variables
-      rmh-elfeed-org-files (list "~/s/dot/spacemacs/feeds.org")
+      rmh-elfeed-org-files (list "~/.dotfiles/configs/spacemacs/feeds.org")
       )
      emacs-lisp
      ess
