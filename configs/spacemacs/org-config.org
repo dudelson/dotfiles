@@ -8,8 +8,8 @@ reasonable value for this variable. However, there are two directories where the
 majority of my org files are located, so here I define variables for those
 directories for convenience.
 #+BEGIN_SRC emacs-lisp
-  (defvar du/gtd-directory "~/s/doc/gtd")
-  (defvar du/pkb-directory "~/s/doc/kb")
+  (defvar du/gtd-directory "~/s/gtd")
+  (defvar du/pkb-directory "~/s/pkb")
 #+END_SRC
 
 Don't insert a CLOSED timestamp when I complete a task.
@@ -130,14 +130,27 @@ system.
 #+BEGIN_SRC emacs-lisp
   (setq-default
      org-tag-faces
-      '(("task" . (:foreground "#2aa198" :weight bold))
-        ("pkb" . (:foreground "chartreuse" :weight bold))
-        ("diary" . (:foreground "yellow" :weight bold))
+      '(("task" . (:foreground "green" :weight bold))
+        ("new_project" . "white")
+        ("pkb" . (:foreground "SkyBlue1" :weight bold))
+        ("diary" . (:foreground "SeaGreen3" :weight bold))
         ("work" . (:foreground "cyan" :weight bold))
         ("unsorted" . (:foreground "#6c71c4" :weight bold))
         ("hl" . (:foreground "DeepPink1" :weight bold))
-        ("^[A-Z].*[a-z].*" . (:foreground "orange" :weight bold))
+        ("^[A-Z].*[a-z].*" . "orange")
         ))
+
+  (defun org-get-tag-face (kwd)
+    "Get the right face for a TODO keyword KWD.
+  If KWD is a number, get the corresponding match group."
+    (if (numberp kwd)
+        (setq kwd (match-string kwd)))
+    (let ((special-tag-face (or (cdr (assoc kwd org-tag-faces))
+                                (and (string-match "^[A-Z].*[a-z].*" kwd)
+                                     (cdr (assoc "^[A-Z].*[a-z].*" org-tag-faces))))))
+      (or (org-face-from-face-or-color 'tag 'org-tag
+                                       special-tag-face)
+          'org-tag)))
 #+END_SRC
 * agenda
 The function ~sa-find-file-recursively~ was taken from [[https://stackoverflow.com/questions/11384516/how-to-make-all-org-files-under-a-folder-added-in-agenda-list-automatically#11384907][this stack overflow post]].
@@ -173,8 +186,15 @@ The function ~sa-find-file-recursively~ was taken from [[https://stackoverflow.c
    ;; files that are candidates for searches in addition to agenda files
    org-agenda-text-search-extra-files
     (append
+      ;; remaining GTD files
+      (list (concat du/gtd-directory "/notnow.org"))
       (sa-find-org-file-recursively (concat du/gtd-directory "/archives"))
-      (list (concat du/gtd-directory "/notnow.org")))
+      (sa-find-org-file-recursively (concat du/gtd-directory "/code"))
+      (sa-find-org-file-recursively (concat du/gtd-directory "/someday+maybe"))
+      ;; all files from first 3 PARA stacks
+      (sa-find-org-file-recursively (concat du/pkb-directory "/1 Projects"))
+      (sa-find-org-file-recursively (concat du/pkb-directory "/2 Areas"))
+      (sa-find-org-file-recursively (concat du/pkb-directory "/3 Resources")))
    ;; Make the tags not squished to the left in the agenda
    ;; Here they are right-aligned to column 100
    org-agenda-tags-column -100
@@ -216,14 +236,23 @@ I use refile extensively.
   ;; set an easy keybinding for refile
   (spacemacs/set-leader-keys-for-major-mode 'org-mode "r" 'org-refile)
   (setq-default
-   org-refile-targets '(("current.org" :maxlevel . 9)
-                        ("notnow.org" :maxlevel . 9)
-                        ("someday+maybe.org" :maxlevel . 9)
-                        ("repeat.org" :maxlevel . 9)
-                        ("tickler.org" :maxlevel . 9))
-   org-outline-path-complete-in-steps t ;; Refile in a single go
+   ;; org-refile-targets '(("current.org" :maxlevel . 9)
+   ;;                      ("notnow.org" :maxlevel . 9)
+   ;;                      ("someday+maybe.org" :maxlevel . 9)
+   ;;                      ("repeat.org" :maxlevel . 9)
+   ;;                      ("tickler.org" :maxlevel . 9))
+   org-refile-targets '((org-agenda-files :level . 1)
+                        (org-agenda-text-search-extra-files :level . 1))
+
+   org-outline-path-complete-in-steps nil
    org-refile-use-outline-path 'file ;; Show full paths for refiling
+   org-refile-allow-creating-parent-nodes 'confirm
+   org-refile-use-cache t
    )
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  (setq org-log-refile 'note)
 #+END_SRC
 * capture
 #+BEGIN_SRC emacs-lisp
@@ -247,7 +276,7 @@ I use refile extensively.
         ("d" "dump" entry (file ,(concat du/pkb-directory "/0 Inbox/INBOX.org"))
           "* *[DUMP]* %?\n" :prepend t :empty-lines 1)
         ("p" "project" entry (file+headline ,(concat du/gtd-directory "/current.org") "projects")
-          "* TODO %? [/]" :empty-lines 1)
+          (file "/home/david/s/pkb/3 Resources/_templates/project.template.org") :empty-lines 1)
         ;; templates for rwl.org
         ("r" "stuff to read")
         ("rb" "book" entry (file+headline du/rwl-file-path "books")
@@ -489,7 +518,7 @@ A better RET key for org-mode, from [[https://gist.github.com/alphapapa/61c1015f
 #+BEGIN_SRC emacs-lisp
   (defun ap/org-return (&optional ignore)
     "Add new list item, heading or table row with RET.
-  A double return on an empty element deletes it. Use a prefix arg 
+  A double return on an empty element deletes it. Use a prefix arg
   to get regular RET. "
     ;; See https://gist.github.com/alphapapa/61c1015f7d1f0d446bc7fd652b7ec4fe and
     ;; http://kitchingroup.cheme.cmu.edu/blog/2017/04/09/A-better-return-in-org-mode/
@@ -685,7 +714,7 @@ I'm using an app on my phone to track habits for the time being.
 I use the ~org-habit~ module to track my habits. It's not enabled by default, so
 I have to enable it and set it up manually.
 #+BEGIN_SRC emacs-lisp :tangle no
-  (setq-default 
+  (setq-default
    ;; enable org-mode habit tracking
    org-modules (append org-modules '(org-habit))
    ;; on the habit-tracking graph in the agenda,
