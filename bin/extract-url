@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+''' Given a url embedded in another url, print the inner url. '''
+
+import sys
+import urllib.parse as urlparse
+
+
+def extract_bluejeans_url(url):
+    query = urlparse.urlparse(url).query
+    unquoted_query = urlparse.unquote(query)
+    bj_url_idx = unquoted_query.find('https')
+    # chop any remaining ampersands and stuff (if any)
+    amp_idx = unquoted_query.find('&', bj_url_idx)
+    if amp_idx == -1:
+        return unquoted_query[bj_url_idx:]
+    return unquoted_query[bj_url_idx:amp_idx]
+
+
+def main():
+    # print('first arg is "{}"'.format(sys.argv[1]))
+    if len(sys.argv) < 2 or not sys.argv[1]:
+        print('Please provide the string to extract from as an argument', file=sys.stderr)
+        sys.exit(1)
+    print(extract_bluejeans_url(sys.argv[1]))
+
+
+if __name__ == '__main__':
+    main()

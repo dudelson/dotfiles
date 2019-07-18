@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+fetch-ticket "$1" 2> /dev/null | jq -r ".fields.description"
