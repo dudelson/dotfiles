@@ -82,16 +82,19 @@ alias history='noglob history'
 alias scp='noglob scp'
 
 alias ls='ls --group-directories-first --color=auto'
+alias sl='ls'
+alias la='ls -A'
+alias ll='ls -l'
 alias po='popd'
 alias pu='pushd'
-alias la='ls -A'
-alias sl='ls'
 
 # lists the ten most used commands (from zprezto history module)
 alias history-stat="history 0 | awk '{print \$2}' | sort | uniq -c | sort -n -r | head"
 
-# custom aliases
-alias feh='feh --scale-down'
+#-------------------#
+#   CUSTOM ALIASES  #
+#-------------------#
+
 # use `maim` to screenshot the entire screen to a file
 # screenshot the selected area to a file
 alias maims='maim -s -p 1 -c 1,0,0,0.5 --nokeyboard'
@@ -102,17 +105,6 @@ alias maimc='notify-send "Taking screenshot to clipboard in 3 seconds...";
 alias maimsc='maim -s -p 1 -c 1,0,0,0.5 --nokeyboard --format=png /dev/stdout | xclip -selection c -t image/png'
 # screenshot specifically for org-download
 alias maimdl='maim -s -p 1 -c 1,0,0,0.5 --nokeyboard /tmp/screenshot.png'
-alias top='htop'
-# alias pacman='yaourt'
-alias vim='nvim'
-alias sudovimdiff='SUDO_EDITOR="nvim -d" sudoedit'
-alias gdb='gdb -q'
-alias objdump='objdump -M intel'
-alias zmv='noglob zmv -W'
-alias pingtest='ping -c 3 8.8.8.8'
-# alias latex-clean='latexmk -c'
-# alias powercheck='cat /sys/class/power_supply/AC/online'
-alias copy='rsync -rh --info="progress2"'
 
 # fasd aliases
 alias v='f -e nvim'
@@ -120,23 +112,29 @@ alias e='f -e emacsclient'
 alias o='a -e xdg-open'
 alias l='d -e "ls --group-directories-first --color=auto"'
 
-# ledger aliases
-export LEDGER_FILE="~/s/doc/finance/y$(date +%Y).txt"
-alias bal="ledger -X \$ --strict --explicit --invert bal"
-alias reg="ledger -X \$ --strict --explicit reg"
-alias lgr="ledger -X \$ --strict --explicit"
-alias rkn="reckon -u -f ~/EXPORT.CSV -a Assets:Checking -l ~/s/doc/finance/y2012-2016.txt -o $LEDGER_FILE --ignore-columns 1,3,6,7,8 --contains-header 1 --date-format \"%m/%d/%y\""
-
-alias find-sync-conflicts='fd -t f "\.*sync-conflict\.*" ~/s/doc/gtd && fd -t f "\.*sync-conflict\.*" ~/s/doc/kb && fd -t f "\.*sync-conflict\.*" ~/.local/pkb-inbox'
-
-# systemd aliases
+# systemctl aliases
 alias sctl='sudo systemctl'
 alias uctl='systemctl --user'
 
-# place temporary aliases and variables here
+# replacements for existing commands which are more convenient than the originals
+alias top='htop'
+alias feh='feh --scale-down'
+alias vim='nvim'
+alias sudovimdiff='SUDO_EDITOR="nvim -d" sudoedit'
+alias gdb='gdb -q'
+alias objdump='objdump -M intel'
+alias zmv='noglob zmv -W'
+
+# new commands
+alias pingtest='ping -c 3 8.8.8.8'
+alias copy='rsync -rh --info="progress2"'
+alias find-sync-conflicts='fd -L -t f "\.*sync-conflict\.*" ~/s/gtd ~/s/pkb'
 alias swapcaps='setxkbmap -option "ctrl:swapcaps"'
 alias mon='xrandr --output DP-2-3 --auto'
 alias rcm-dev='ssh -KA rcm-dev.app.eng.bos.redhat.com'
+
+
+# place temporary aliases and variables here
 
 
 # magic aliases (expand with <SPACE>)
@@ -144,13 +142,13 @@ typeset -Ag abbreviations
 abbreviations=(
     "Ia"    "| awk"
     "Ic"    "| xclip -sel c"
-    "Ig"    "| ag"
+    "Ig"    "| rg"
     "Ih"    "| head"
     "Il"    "| less"
     "It"    "| tail"
     "Is"    "| sort"
     "Iv"    "| ${VISUAL:-${EDITOR}}"
-    "Iw"    "| wc"
+    "Iw"    "| wc -l"
     "Ix"    "| xargs"
 )
 
