@@ -1,3 +1,3 @@
 #!/usr/bin/sh
 
-play /usr/share/sounds/freedesktop/stereo/message.oga
+play /usr/share/sounds/purple/receive.wav
