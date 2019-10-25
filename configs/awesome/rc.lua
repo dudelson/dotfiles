@@ -136,7 +136,7 @@ context.screen_config = {
 
   ['docked'] = {
     screens = {
-      ['eDP-1'] = {
+      ['DP-2-1'] = {
         tags = {
           {
             name = 'term',
@@ -145,13 +145,13 @@ context.screen_config = {
             designated_for = context.designated_apps['terminal'],
           },
           {
-            name = 'irc',
+            name = 'spc',
             layout = awful.layout.suit.tile,
-            designated_for = context.designated_apps['irc_client'],
+            designated_for = context.designated_apps['editor'],
           },
         }
       },
-      ['DP-2-1'] = {
+      ['DP-2-3'] = {
         tags = {
           {
             name = 'web',
@@ -160,9 +160,9 @@ context.screen_config = {
             designated_for = context.designated_apps['browser'],
           },
           {
-            name = 'spc',
+            name = 'irc',
             layout = awful.layout.suit.tile,
-            designated_for = context.designated_apps['editor'],
+            designated_for = context.designated_apps['irc_client'],
           },
         }
       },
@@ -170,7 +170,7 @@ context.screen_config = {
   },
 }
 context.screen_config['undocked'].default_tag = context.screen_config['undocked'].screens['eDP-1'].tags[1]
-context.screen_config['docked'].default_tag = context.screen_config['docked'].screens['DP-2-1'].tags[1]
+context.screen_config['docked'].default_tag = context.screen_config['docked'].screens['DP-2-3'].tags[2]
 context.screen_config.default = context.screen_config['undocked']
 
 awful.util.terminal = context.vars.terminal
@@ -336,7 +336,7 @@ config.util.run_once({
 -- to spawn something other than a designated app, just pass in a table with
 -- the "exec", "class", and "tag" fields set. The "spawn_callback" field is optional
 config.util.spawn_once(context.designated_apps['terminal'])
-config.util.spawn_once(context.designated_apps['irc_client'])
-config.util.spawn_once(context.designated_apps['editor'])
-config.util.spawn_once(context.designated_apps['browser'])
+-- config.util.spawn_once(context.designated_apps['irc_client'])
+-- config.util.spawn_once(context.designated_apps['editor'])
+-- config.util.spawn_once(context.designated_apps['browser'])
 -- }}}

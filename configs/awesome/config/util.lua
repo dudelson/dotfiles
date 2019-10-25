@@ -30,6 +30,7 @@ config.spawn_once = function(args)
   local f
   f = function(c)
     if c.class == args.class then
+      config.log(string.format('moving %d(%s) to tag "%s" on screen %d', c.pid, c.name, args.tag.name, args.tag.screen.index))
       c:move_to_tag(args.tag)
       client.disconnect_signal("manage", f)
       args.spawn_callback(c)
