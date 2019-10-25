@@ -40,7 +40,7 @@ This function should only modify configuration layer settings."
       auto-completion-tab-key-behavior 'cycle
       :disabled-for org emacs-lisp markdown text)
      ;; c-c++
-     ;; calendar
+     calendar
      confluence
      csv
      (elfeed
@@ -103,12 +103,7 @@ This function should only modify configuration layer settings."
    ;; '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages '(highlight-escape-sequences
-                                      android-mode
-                                      disable-mouse
-                                      mozc
-                                      unfill
-                                      ox-clip
-                                      interleave)
+                                      calfw-ical)
 
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '(
@@ -519,8 +514,15 @@ before packages are loaded."
     (let ((f (concat dotspacemacs-directory "org-config.el")))
       (if (file-exists-p f)
           (load-file f)
-        (message "Could not find custom org-mode configuration!")))
-    )
+        (message "Could not find custom org-mode configuration!"))))
+
+  (require 'calfw-ical)
+  (defun du/open-calendar ()
+    (interactive)
+    (cfw:open-calendar-buffer
+     :contents-sources
+     (list
+      (cfw:ical-create-source "Redhat" "~/dudelson@redhat.com.very-small.ics" "Red"))))
 
   (let ((f (concat dotspacemacs-directory "config.el")))
     (if (file-exists-p f)
