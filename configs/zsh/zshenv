@@ -27,6 +27,8 @@ LS_COLORS=$LS_COLORS:'di=1;37:' ; export LS_COLORS
 
 # python config
 export PYTHONPATH="$PYTHONPATH":"$HOME"/.local/lib
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
 
 # golang config
 #export GOPATH=$HOME/.go
