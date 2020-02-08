@@ -1,5 +1,17 @@
-#+PROPERTY: header-args :tangle yes
-* general settings
+#+TITLE: Org-Mode Configuration
+#+AUTHOR: David Udelson
+#+BABEL: :cache yes
+#+PROPERTY: header-args :tangle yes :comments no
+* Preamble
+This is my emacs org-mode configuration. There are many like it, but this one is
+mine.
+
+Administrative notes:
+
+- The layout of this file mirrors that of the org-mode manual as closely as possible.
+- Sections containing code that depends on the specifics of my personal GTD
+system are tagged "gtd".
+* Preliminaries                                                                                :gtd:
 Settings that affect the layout and behavior of all org files.
 
 I don't keep my org files in one place; they are spread throughout my system.
@@ -11,144 +23,6 @@ directories for convenience.
   (defvar du/gtd-directory "~/s/gtd")
 #+END_SRC
 
-Don't insert a CLOSED timestamp when I complete a task.
-#+BEGIN_SRC emacs-lisp
-  (setq org-log-done nil)
-#+END_SRC
-
-Log habits to the "LOGBOOK" drawer
-#+BEGIN_SRC emacs-lisp
-  (setq org-log-into-drawer "LOGBOOK")
-#+END_SRC
-
-Prevent org files from opening to random sections when I open them.
-#+BEGIN_SRC emacs-lisp
-  (setq org-startup-folded t)
-#+END_SRC
-
-Move the tags column more to the right.
-#+BEGIN_SRC emacs-lisp
-  (setq org-tags-column -100)
-#+END_SRC
-
-Increase visibility of entries which are jumped to from the agenda view.
-#+BEGIN_SRC emacs-lisp
-  (setq org-show-context-detail
-        '((agenda . lineage)
-          (bookmark-jump . lineage)
-          (isearch . lineage)
-          (default . ancestors)))
-#+END_SRC
-
-Hide text markup delimiters
-#+BEGIN_SRC emacs-lisp
-  (setq org-hide-emphasis-markers t)
-#+END_SRC
-
-This setting allows me to navigate org-files a little bit more easily by
-changing the behavior of ~C-a~ and ~C-e~ in org-mode. At least that's what it's
-supposed to do, but because of spacemacs customizations to org-mode, this
-setting actually affects the evil-org keybindings ~^~ and ~$~. See the spacemacs
-org layer docs and [[https://emacs.stackexchange.com/questions/17502/how-to-navigate-most-efficiently-to-the-start-or-end-of-the-main-text-of-an-org][this stack overflow post]] for more.
-#+BEGIN_SRC emacs-lisp
-  (setq-default org-special-ctrl-a/e t)
-#+END_SRC
-** indentation
-Indent subheadings and sublists by two spaces.
-#+BEGIN_SRC emacs-lisp
-  (setq
-   org-indent-indentation-per-level 2
-   org-list-indent-offset 2)
-#+END_SRC
-
-Manually enable org-indent-mode because it [[https://github.com/syl20bnr/spacemacs/issues/2732][isn't a spacemacs default]] right now.
-#+BEGIN_SRC emacs-lisp
-  (setq org-startup-indented t)
-#+END_SRC
-** priorities
-Priorities are in the range "A" to "E", with the default being "D".
-#+BEGIN_SRC emacs-lisp
-  (setq
-   org-lowest-priority 69
-   org-default-priority 68)
-#+END_SRC
-** [disabled] links
-:PROPERTIES:
-:header-args: :tangle no
-:END:
-Keep ~.org-id-locations~ somewhere where it can access both my gtd and pkb files.
-#+BEGIN_SRC emacs-lisp
-  (setq-default org-id-locations-file "~/s/doc/.org-id-locations")
-#+END_SRC
-
-This custom function updates all org-id references in my gtd and pkb.
-#+BEGIN_SRC emacs-lisp
-  (defun du/update-org-id-locations ()
-    "runs org-id-update-id-locations on all org files in pkb-directory"
-    (interactive)
-    (org-id-update-id-locations (append
-                                 (sa-find-org-file-recursively du/pkb-directory)
-                                 (sa-find-org-file-recursively du/pkb-directory))))
-#+END_SRC
-
-We bind it to an easily-accessible key chord and run it when this file is
-loaded (i.e. when emacs starts).
-#+BEGIN_SRC emacs-lisp
-  (spacemacs/set-leader-keys "ou" 'du/update-org-id-locations)
-  (du/update-org-id-locations)
-#+END_SRC
-** attachments
-#+BEGIN_SRC emacs-lisp
-  (setq
-    org-attach-directory "media/"
-    org-download-method 'attach)
-#+END_SRC
-* todo keywords
-TODO items are those that I plan to start in the near future
-NEXT means this todo item is the next sub-task in an active project
-WAITING means I started the task but am waiting for some external event
-    to happen before I can complete it (I log what I'm waiting for)
-HOLD means the task is on hold for now (I make sure to log the reason why)
-STUCK means I started the task but got stuck (not due to an external event
-    beyond my control). Usually this means I am unsure of how to proceed (I log
-    what I'm stuck on)
-CANCELLED means I never completed the task and I no longer intend to (I log why
-    I cancelled it)
-DONE means done
-
-#+BEGIN_SRC emacs-lisp
-  (setq-default
-    org-todo-keywords '((sequence "TODO(t!)" "NEXT(n!)" "|" "WAITING(w@)" "HOLD(h@)" "STUCK(s@)" "CANCELLED(x@)" "DONE(d!)"))
-    org-todo-keyword-faces
-    '(("WAITING" . (:foreground "#b58900" :weight bold))
-      ("HOLD" . (:foreground "#dc322f" :weight bold))
-      ("NEXT" . (:foreground "#cb4b16" :weight bold))
-      ("CANCELLED" . (:foreground "#dc322f" :weight bold))
-      ("STUCK" . (:foreground "#6c71c4" :weight bold))))
-#+END_SRC
-* tags
-Here I set custom faces for a few tags which have special significance in my
-system.
-
-#+BEGIN_SRC emacs-lisp
-  (setq-default
-     org-tag-faces
-      '(("hl" . (:foreground "DeepPink1" :weight bold))
-        ))
-
-  (defun org-get-tag-face (kwd)
-    "Get the right face for a TODO keyword KWD.
-  If KWD is a number, get the corresponding match group."
-    (if (numberp kwd)
-        (setq kwd (match-string kwd)))
-    (let ((special-tag-face (or (cdr (assoc kwd org-tag-faces))
-                                (and (string-match "^[A-Z].*[a-z].*" kwd)
-                                     (cdr (assoc "^[A-Z].*[a-z].*" org-tag-faces))))))
-      (or (org-face-from-face-or-color 'tag 'org-tag
-                                       special-tag-face)
-          'org-tag)))
-#+END_SRC
-* agenda
 The function ~sa-find-file-recursively~ was taken from [[https://stackoverflow.com/questions/11384516/how-to-make-all-org-files-under-a-folder-added-in-agenda-list-automatically#11384907][this stack overflow post]].
 #+BEGIN_SRC emacs-lisp
     (defun sa-find-org-file-recursively (&optional directory filext)
@@ -173,102 +47,9 @@ The function ~sa-find-file-recursively~ was taken from [[https://stackoverflow.c
                                                             filext)
                               org-file-list) ; add files found to result
               (add-to-list 'org-file-list org-file)))))))
-
-    (setq-default
-     ;; files that appear in the agenda
-     org-agenda-files (list (concat du/gtd-directory "/current.org")
-                            (concat du/gtd-directory "/repeat.org")
-                            (concat du/gtd-directory "/tickler.org"))
-     ;; files that are candidates for searches in addition to agenda files
-     org-agenda-text-search-extra-files
-      (append
-        ;; remaining GTD files
-        (list (concat du/gtd-directory "/notnow.org"))
-        (list (concat du/gtd-directory "/backlog.org"))
-        (sa-find-org-file-recursively (concat du/gtd-directory "/archives"))
-        (sa-find-org-file-recursively (concat du/gtd-directory "/code"))
-        (sa-find-org-file-recursively (concat du/gtd-directory "/someday+maybe"))
-        )
-     ;; Make the tags not squished to the left in the agenda
-     ;; Here they are right-aligned to column 100
-     org-agenda-tags-column -100
-     org-deadline-warning-days 1
-     org-agenda-custom-commands
-      '(("d" "David's planner view"
-         ((agenda "")
-          (tags-todo "task-@work-SCHEDULED={.+}|project-@work+TODO=\"NEXT\"-SCHEDULED={.+}"
-                     ((org-agenda-overriding-header "Unscheduled Tasks and Next Actions")
-                      ;;(org-agenda-skip-function 'du/skip-projects-subprojects)
-                      (org-agenda-remove-tags t)))
-          (tags-todo "task+@work-SCHEDULED={.+}|project+@work+TODO=\"NEXT\"-SCHEDULED={.+}"
-                     ((org-agenda-overriding-header "Unscheduled Work Tasks and Next Actions")
-                      (org-agenda-remove-tags t)))
-          (tags-todo "project"
-                ((org-agenda-overriding-header "Stuck Projects")
-                 (org-agenda-skip-function 'dru/keep-stuck-projects)
-                 (org-tags-match-list-sublevels nil)
-                 (org-agenda-remove-tags t)))))))
-
-    (setq org-agenda-prefix-format
-          `((agenda . "%?t")
-            (todo . " %i %-12:c")
-            (tags . " %i %-12:c")
-            (search . " %i %-12:c")))
 #+END_SRC
-* refile
-I use refile extensively.
-
-/note/: The use of the cons cell ~(:tag . "doesnotexist")~ in the definition of
-~org-refile-targets~ is a hack used to only include the top-level file in the list
-of refile targets. There is probably a more elegant way to do this. (I tried
-using ~(:maxlevel . 0)~, but this gives an error.)
-
-#+BEGIN_SRC emacs-lisp
-  ;; set an easy keybinding for refile
-  (spacemacs/set-leader-keys-for-major-mode 'org-mode "r" 'org-refile)
-  (setq
-   org-refile-targets `(("current.org" :maxlevel . 2)
-                        ("notnow.org" :tag . "doesnotexist")
-                        ("backlog.org" :level . 1)
-                        (,(sa-find-org-file-recursively (concat du/gtd-directory "/someday+maybe")) :tag . "doesnotexist")
-                        ("repeat.org" :level . 1)
-                        ("tickler.org" :tag . "doesnotexist"))
-   ;; org-refile-targets '((org-agenda-files :level . 1)
-   ;;                      (org-agenda-text-search-extra-files :level . 1))
-
-   org-outline-path-complete-in-steps nil
-   org-refile-use-outline-path 'file ;; Show full paths for refiling
-   org-refile-allow-creating-parent-nodes 'confirm
-   org-refile-use-cache t
-   )
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp
-  (setq org-log-refile 'note)
-#+END_SRC
-* capture
-#+BEGIN_SRC emacs-lisp
-    (setq
-      org-default-notes-file "/home/david/captured.org"
-      org-capture-templates
-      `(("t" "task" entry (file+headline ,(concat du/gtd-directory "/current.org") "areas")
-          "* TODO %?\n" :empty-lines 1)
-        ("T" "task from clipboard" entry (file+headline ,(concat du/gtd-directory "/current.org") "areas")
-          "* TODO %c\n%?" :empty-lines 1)
-        ("p" "project" entry (file+headline ,(concat du/gtd-directory "/current.org") "projects")
-          (file "/home/david/s/pkb/3 Resources/_templates/project.template.org") :empty-lines 1)
-        ("n" "note" entry
-          "* %?\n%u\n" :empty-lines 1)
-        ("N" "note from clipboard" entry
-          "* %?\n%u\n%c" :empty-lines 1)
-        )
-     )
-
-    ;; start org-capture buffer in insert state
-    (add-hook 'org-capture-mode-hook 'evil-insert-state)
-#+END_SRC
-* projects
-** helper functions
+** GTD Projects Definition
+*** helper functions
 taken from http://doc.norang.ca/org-mode.html#GTDWeeklyReview
 #+BEGIN_SRC emacs-lisp
   (defun bh/is-project-p ()
@@ -422,7 +203,7 @@ taken from http://doc.norang.ca/org-mode.html#GTDWeeklyReview
         (if (or (bh/is-project-p) (bh/is-subproject-p)) next-headline nil))))
 
 #+END_SRC
-** project definitions
+*** project definitions
 Current disabled because I'm not using it, but might be useful for testing new
 project definition later.
 #+BEGIN_SRC emacs-lisp :tangle no
@@ -435,16 +216,36 @@ project definition later.
 
   (define-key org-mode-map (kbd "C-c C-m") 'dru/is-project)
 #+END_SRC
-* keybindings
-Add an easy keybinding for setting TODO keywords.
+* Document Structure
+Indent subheadings and sublists by two spaces.
 #+BEGIN_SRC emacs-lisp
-  (spacemacs/set-leader-keys-for-major-mode 'org-mode "w" 'org-todo)
+  (setq
+   org-indent-indentation-per-level 2
+   org-list-indent-offset 2)
 #+END_SRC
 
-Make the org-mode ", c" binding ~ox-clip-formatted-copy~. By default this is
-~org-capture~, but I already have a key for that.
+Manually enable org-indent-mode because it [[https://github.com/syl20bnr/spacemacs/issues/2732][isn't a spacemacs default]] right now.
 #+BEGIN_SRC emacs-lisp
-  (spacemacs/set-leader-keys-for-major-mode 'org-mode "c" 'ox-clip-formatted-copy)
+  (setq org-startup-indented t)
+#+END_SRC
+
+Prevent org files from opening to random sections when I open them.
+#+BEGIN_SRC emacs-lisp
+  (setq org-startup-folded t)
+#+END_SRC
+
+Hide text markup delimiters
+#+BEGIN_SRC emacs-lisp
+  (setq org-hide-emphasis-markers t)
+#+END_SRC
+
+This setting allows me to navigate org-files a little bit more easily by
+changing the behavior of ~C-a~ and ~C-e~ in org-mode. At least that's what it's
+supposed to do, but because of spacemacs customizations to org-mode, this
+setting actually affects the evil-org keybindings ~^~ and ~$~. See the spacemacs
+org layer docs and [[https://emacs.stackexchange.com/questions/17502/how-to-navigate-most-efficiently-to-the-start-or-end-of-the-main-text-of-an-org][this stack overflow post]] for more.
+#+BEGIN_SRC emacs-lisp
+  (setq-default org-special-ctrl-a/e t)
 #+END_SRC
 
 These keybindings do the same thing as the default ~C-ret~ and ~M-ret~
@@ -525,84 +326,260 @@ A better RET key for org-mode, from [[https://gist.github.com/alphapapa/61c1015f
   ;; (define-key org-mode-map (kbd "RET")   'ap/org-return)
 #+END_SRC
 
-Automatically git commit after weekly planning and daily adapting.
-#+BEGIN_SRC emacs-lisp
-  (defun du/org-auto-vc (message)
-    "Automatically adds and commits all org files.
-     'message' arg is the commit message. A timestamp will be automatically
-     added after this message."
-    (shell-command
-      (concat
-        "cd "
-        du/gtd-directory
-        " && git commit -am '"
-        message
-        " "
-        (format-time-string "%a %D")
-        "'")))
-
-  (defun du/org-auto-vc-daily ()
-    "Automatically git commit all org files after daily adapting"
-    (interactive)
-    (du/org-auto-vc "Daily adapting"))
-
-  (defun du/org-auto-vc-weekly ()
-    "Automatically git commit all org files after weekly planning"
-    (interactive)
-    (du/org-auto-vc "Weekly planning"))
-
-  (spacemacs/set-leader-keys-for-major-mode 'org-mode "vd" 'du/org-auto-vc-daily)
-  (spacemacs/set-leader-keys-for-major-mode 'org-mode "vw" 'du/org-auto-vc-weekly)
-  (spacemacs/declare-prefix-for-mode 'org-mode "mv" "commit")
-#+END_SRC
-
 Bind the useful ~org-reveal~ function to a better key than ~C-c C-r~.
 #+BEGIN_SRC emacs-lisp
   (spacemacs/set-leader-keys-for-major-mode 'org-mode "R" 'org-reveal)
 #+END_SRC
-
-Speed refile
-#+BEGIN_SRC emacs-lisp :tangle no
-  (defun du/gtd-speed-refile ()
+* Hyperlinks
+I use the "id" property to link between org files. This function automatically
+creates an id for a heading if one doesn't already exist and copies the id to
+the clipboard.
+#+BEGIN_SRC emacs-lisp
+  (defun du/org-id-create-and-copy ()
     (interactive)
-    (org-mks
-     '(("c" "current.org")
-       ("n" "notnow.org" nil)
-       ("s" "someday+maybe.org")
-
-       ("ch" "IDV: Health/Hygiene" "current.org")
-       ("cs" "IDV: Spirituality and Wholeheartedness" "current.org")
-       ("c$" "IDV: Finances" "current.org")
-       ("cS" "IDV: Social" "current.org")
-       ("cw" "IDV: WSD" "current.org")
-       ("cp" "IDV: Professional Dev't" "current.org")
-       ("cb" "IDV: FOSS and Blog" "current.org")
-       ("ca" "IDV: Admin" "current.org")
-       ("ci" "IDV: Digital Infrastructure" "current.org")
-       ("cm" "IDV: Misc" "current.org")
-       ("cf" "Family Member" "current.org")
-       ("cF" "Friend" "current.org")
-       ("cr" "Release Engineer" "current.org")
-
-       ("sh" "IDV: Health/Hygiene" "someday+maybe.org")
-       ("ss" "IDV: Spirituality and Wholeheartedness" "someday+maybe.org")
-       ("s$" "IDV: Finances" "someday+maybe.org")
-       ("sS" "IDV: Social" "someday+maybe.org")
-       ("sw" "IDV: WSD" "someday+maybe.org")
-       ("sp" "IDV: Professional Dev't" "someday+maybe.org")
-       ("sb" "IDV: FOSS and Blog" "someday+maybe.org")
-       ("sa" "IDV: Admin" "someday+maybe.org")
-       ("si" "IDV: Digital Infrastructure" "someday+maybe.org")
-       ("sm" "IDV: Misc" "someday+maybe.org")
-       ("sf" "Family Member" "someday+maybe.org")
-       ("sF" "Friend" "someday+maybe.org")
-       ("sr" "Release Engineer" "someday+maybe.org"))
-     "Choose refile location")
-
-    (org-refile nil nil )
-    )
+    (org-id-get-create)
+    (org-id-copy))
+  (define-key org-mode-map (kbd "C-l") 'du/org-id-create-and-copy)
 #+END_SRC
-** gtd functions
+
+** [disabled] org-id-locations
+:PROPERTIES:
+:header-args: :tangle no
+:END:
+Keep ~.org-id-locations~ somewhere where it can access both my gtd and pkb files.
+#+BEGIN_SRC emacs-lisp
+  (setq-default org-id-locations-file "~/s/doc/.org-id-locations")
+#+END_SRC
+
+This custom function updates all org-id references in my gtd and pkb.
+#+BEGIN_SRC emacs-lisp
+  (defun du/update-org-id-locations ()
+    "runs org-id-update-id-locations on all org files in pkb-directory"
+    (interactive)
+    (org-id-update-id-locations (append
+                                 (sa-find-org-file-recursively du/pkb-directory)
+                                 (sa-find-org-file-recursively du/pkb-directory))))
+#+END_SRC
+
+We bind it to an easily-accessible key chord and run it when this file is
+loaded (i.e. when emacs starts).
+#+BEGIN_SRC emacs-lisp
+  (spacemacs/set-leader-keys "ou" 'du/update-org-id-locations)
+  (du/update-org-id-locations)
+#+END_SRC
+* Todo Items
+** Todo Keywords
+I use the following todo keywords as incomplete states:
+
+- TODO :: tasks that are unstarted and unblocked
+- NEXT :: a special case of the TODO keyword for tasks which are the next action
+          of an active project
+
+And the following todo keywords as complete states:
+
+- WAITING :: I started the task but am waiting for some external event
+    to happen before I can complete it (I log what I'm waiting for)
+- HOLD :: the task is on hold for now (I make sure to log the reason why)
+- STUCK :: I started the task but got stuck (not due to an external event
+    beyond my control). Usually this means I am unsure of how to proceed (I log
+    what I'm stuck on)
+- CANCELLED :: I never completed the task and I no longer intend to (I log why
+    I cancelled it)
+- DONE :: I completed the task
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default
+    org-todo-keywords '((sequence "TODO(t!)" "NEXT(n!)" "|" "WAITING(w@)" "HOLD(h@)" "STUCK(s@)" "CANCELLED(x@)" "DONE(d!)"))
+    org-todo-keyword-faces
+    '(("WAITING" . (:foreground "#b58900" :weight bold))
+      ("HOLD" . (:foreground "#dc322f" :weight bold))
+      ("NEXT" . (:foreground "#cb4b16" :weight bold))
+      ("CANCELLED" . (:foreground "#dc322f" :weight bold))
+      ("STUCK" . (:foreground "#6c71c4" :weight bold))))
+#+END_SRC
+
+Add an easy keybinding for setting TODO keywords.
+#+BEGIN_SRC emacs-lisp
+  (spacemacs/set-leader-keys-for-major-mode 'org-mode "w" 'org-todo)
+#+END_SRC
+** Progress Logging
+Log into the "LOGBOOK" drawer.
+#+BEGIN_SRC emacs-lisp
+  (setq org-log-into-drawer "LOGBOOK")
+#+END_SRC
+
+Don't insert a CLOSED timestamp when I complete a task.
+#+BEGIN_SRC emacs-lisp
+  (setq org-log-done nil)
+#+END_SRC
+
+** Priorities
+Priorities are in the range "A" to "E", with the default being "D".
+#+BEGIN_SRC emacs-lisp
+  (setq
+   org-lowest-priority 69
+   org-default-priority 68)
+#+END_SRC
+* Tags                                                                                         :gtd:
+Move the tags column more to the right.
+#+BEGIN_SRC emacs-lisp
+  (setq org-tags-column -100)
+#+END_SRC
+
+Set custom faces for tags which have special significance in my system.
+#+BEGIN_SRC emacs-lisp
+  (setq-default
+     org-tag-faces
+      '(("hl" . (:foreground "DeepPink1" :weight bold))
+        ))
+
+  (defun org-get-tag-face (kwd)
+    "Get the right face for a TODO keyword KWD.
+  If KWD is a number, get the corresponding match group."
+    (if (numberp kwd)
+        (setq kwd (match-string kwd)))
+    (let ((special-tag-face (or (cdr (assoc kwd org-tag-faces))
+                                (and (string-match "^[A-Z].*[a-z].*" kwd)
+                                     (cdr (assoc "^[A-Z].*[a-z].*" org-tag-faces))))))
+      (or (org-face-from-face-or-color 'tag 'org-tag
+                                       special-tag-face)
+          'org-tag)))
+#+END_SRC
+* Refiling                                                                                     :gtd:
+I use refile extensively. Below are my refile targets.
+
+/note/: The use of the cons cell ~(:tag . "doesnotexist")~ in the definition of
+~org-refile-targets~ is a hack used to only include the top-level file in the list
+of refile targets. There is probably a more elegant way to do this. (I tried
+using ~(:maxlevel . 0)~, but this gives an error.)
+
+#+BEGIN_SRC emacs-lisp
+  (setq
+   org-refile-targets `(("current.org" :maxlevel . 2)
+                        ("notnow.org" :tag . "doesnotexist")
+                        ("backlog.org" :level . 1)
+                        (,(sa-find-org-file-recursively (concat du/gtd-directory "/someday+maybe")) :tag . "doesnotexist")
+                        ("repeat.org" :level . 1)
+                        ("tickler.org" :tag . "doesnotexist")))
+#+END_SRC
+
+Other refile settings.
+#+BEGIN_SRC emacs-lisp
+  (setq
+   org-log-refile 'note
+   org-outline-path-complete-in-steps nil
+   org-refile-use-outline-path 'file ;; Show full paths for refiling
+   org-refile-allow-creating-parent-nodes 'confirm
+   org-refile-use-cache t
+   )
+#+END_SRC
+
+Set an easy keybinding for refile.
+#+BEGIN_SRC emacs-lisp
+  (spacemacs/set-leader-keys-for-major-mode 'org-mode "r" 'org-refile)
+#+END_SRC
+* Capture and Attachments                                                                      :gtd:
+** Capture
+#+BEGIN_SRC emacs-lisp
+    (setq
+      org-default-notes-file "/home/david/captured.org"
+      org-capture-templates
+      `(("t" "task" entry (file+headline ,(concat du/gtd-directory "/current.org") "areas")
+          "* TODO %?\n" :empty-lines 1)
+        ("T" "task from clipboard" entry (file+headline ,(concat du/gtd-directory "/current.org") "areas")
+          "* TODO %c\n%?" :empty-lines 1)
+        ("p" "project" entry (file+headline ,(concat du/gtd-directory "/current.org") "projects")
+          (file "/home/david/s/pkb/3 Resources/_templates/project.template.org") :empty-lines 1)
+        ("n" "note" entry
+          "* %?\n%u\n" :empty-lines 1)
+        ("N" "note from clipboard" entry
+          "* %?\n%u\n%c" :empty-lines 1)
+        )
+     )
+
+    ;; start org-capture buffer in insert state
+    (add-hook 'org-capture-mode-hook 'evil-insert-state)
+#+END_SRC
+** Attachments
+#+BEGIN_SRC emacs-lisp
+  (setq
+    org-attach-directory "media/"
+    org-download-method 'attach)
+#+END_SRC
+* Agenda Views                                                                                 :gtd:
+My list of org-agenda-files.
+#+BEGIN_SRC emacs-lisp
+  (setq
+   ;; files that appear in the agenda
+   org-agenda-files (list (concat du/gtd-directory "/current.org")
+                          (concat du/gtd-directory "/repeat.org")
+                          (concat du/gtd-directory "/tickler.org"))
+
+   ;; files that are candidates for searches in addition to agenda files
+   org-agenda-text-search-extra-files
+   (append
+    ;; remaining GTD files
+    (list (concat du/gtd-directory "/notnow.org"))
+    (list (concat du/gtd-directory "/backlog.org"))
+    (sa-find-org-file-recursively (concat du/gtd-directory "/archives"))
+    (sa-find-org-file-recursively (concat du/gtd-directory "/code"))
+    (sa-find-org-file-recursively (concat du/gtd-directory "/someday+maybe"))
+    ))
+#+END_SRC
+
+My custom agenda view.
+#+BEGIN_SRC emacs-lisp
+  (setq
+   org-agenda-custom-commands
+   '(("d" "David's planner view"
+      ((agenda "")
+       (tags-todo "task-@work-SCHEDULED={.+}|project-@work+TODO=\"NEXT\"-SCHEDULED={.+}"
+                  ((org-agenda-overriding-header "Unscheduled Tasks and Next Actions")
+                   ;;(org-agenda-skip-function 'du/skip-projects-subprojects)
+                   (org-agenda-remove-tags t)))
+       (tags-todo "task+@work-SCHEDULED={.+}|project+@work+TODO=\"NEXT\"-SCHEDULED={.+}"
+                  ((org-agenda-overriding-header "Unscheduled Work Tasks and Next Actions")
+                   (org-agenda-remove-tags t)))
+       (tags-todo "project"
+                  ((org-agenda-overriding-header "Stuck Projects")
+                   (org-agenda-skip-function 'dru/keep-stuck-projects)
+                   (org-tags-match-list-sublevels nil)
+                   (org-agenda-remove-tags t)))))))
+#+END_SRC
+
+Increase visibility of entries which are jumped to from the agenda view.
+#+BEGIN_SRC emacs-lisp
+  (setq org-show-context-detail
+        '((agenda . lineage)
+          (bookmark-jump . lineage)
+          (isearch . lineage)
+          (default . ancestors)))
+#+END_SRC
+
+Other misc. settings related to the agenda.
+#+BEGIN_SRC emacs-lisp
+  (setq
+   ;; Make the tags not squished to the left in the agenda
+   ;; Here they are right-aligned to column 100
+   org-agenda-tags-column -100
+   org-deadline-warning-days 1
+   org-agenda-prefix-format
+   `((agenda . "%?t")
+     (todo . " %i %-12:c")
+     (tags . " %i %-12:c")
+     (search . " %i %-12:c"))
+   )
+#+END_SRC
+* Extras
+** Encryption
+Note: ~epa-file~ is already required by spacemacs
+#+BEGIN_SRC emacs-lisp
+  (require 'org-crypt)
+  (org-crypt-use-before-save-magic)
+  (setq org-tags-exclude-from-inheritance (quote ("crypt")))
+  (setq org-crypt-key "david@davidudelson.com")
+#+END_SRC
+** GTD Reviews                                                                                :gtd:
 These functions open buffers (not associated with any file) with a checklist for
 daily, weekly, or monthly GTD habits. They are bound to the SPC o g prefix.
 #+BEGIN_SRC emacs-lisp
@@ -635,44 +612,44 @@ daily, weekly, or monthly GTD habits. They are bound to the SPC o g prefix.
   (spacemacs/set-leader-keys "ogd" 'du/gtd-daily-adapting)
   (spacemacs/declare-prefix "og" "GTD")
 #+END_SRC
-* encryption
-Note: ~epa-file~ is already required by spacemacs
+** Version Control                                                                            :gtd:
+Automatically git commit after weekly planning and daily adapting.
 #+BEGIN_SRC emacs-lisp
-  (require 'org-crypt)
-  (org-crypt-use-before-save-magic)
-  (setq org-tags-exclude-from-inheritance (quote ("crypt")))
-  (setq org-crypt-key "david@davidudelson.com")
-#+END_SRC
-* other useful tidbits
-** easy linking by id
-I use the "id" property to link between org files. This function automatically
-creates an id for a heading if one doesn't already exist and copies the id to
-the clipboard.
-#+BEGIN_SRC emacs-lisp
-  (defun du/org-id-create-and-copy ()
+  (defun du/org-auto-vc (message)
+    "Automatically adds and commits all org files.
+     'message' arg is the commit message. A timestamp will be automatically
+     added after this message."
+    (shell-command
+      (concat
+        "cd "
+        du/gtd-directory
+        " && git commit -am '"
+        message
+        " "
+        (format-time-string "%a %D")
+        "'")))
+
+  (defun du/org-auto-vc-daily ()
+    "Automatically git commit all org files after daily adapting"
     (interactive)
-    (org-id-get-create)
-    (org-id-copy))
-  (define-key org-mode-map (kbd "C-l") 'du/org-id-create-and-copy)
+    (du/org-auto-vc "Daily adapting"))
+
+  (defun du/org-auto-vc-weekly ()
+    "Automatically git commit all org files after weekly planning"
+    (interactive)
+    (du/org-auto-vc "Weekly planning"))
+
+  (spacemacs/set-leader-keys-for-major-mode 'org-mode "vd" 'du/org-auto-vc-daily)
+  (spacemacs/set-leader-keys-for-major-mode 'org-mode "vw" 'du/org-auto-vc-weekly)
+  (spacemacs/declare-prefix-for-mode 'org-mode "mv" "commit")
 #+END_SRC
-** function that creates weekly plans heading
-I use this in my weekly plans heading template.
+** Formatted Copy
+Make the org-mode ", c" binding ~ox-clip-formatted-copy~. By default this is
+~org-capture~, but I already have a key for that.
 #+BEGIN_SRC emacs-lisp
-  (defun du/generate-weekly-plans-heading ()
-    (let* ((cmd "import time; print(time.strftime('%%m/%%d', time.strptime('%s %s %s', '%%Y %%W %%w')), end='')")
-           (year (format-time-string "%Y"))
-           (week-num (format-time-string "%W"))
-           (week-begin (python-shell-internal-send-string (format cmd year week-num "1")))
-           (week-end (python-shell-internal-send-string (format cmd year week-num "0"))))
-       (format "* W%s (%s - %s)" week-num week-begin week-end)))
+  (spacemacs/set-leader-keys-for-major-mode 'org-mode "c" 'ox-clip-formatted-copy)
 #+END_SRC
-* temporary fixes
-Fixes [[https://github.com/syl20bnr/spacemacs/issues/9950][this bug]] that screws up org-mode todo keyword highlight colors.
-*This should be fixed with PR #11732*, need to update spacemacs and test.
-#+BEGIN_SRC emacs-lisp
-  (add-hook 'org-mode-hook (lambda () (hl-todo-mode -1)))
-#+END_SRC
-* [disabled] habits
+** [disabled] Habits
 :PROPERTIES:
 :header-args: :tangle no
 :END:
@@ -695,7 +672,7 @@ I have to enable it and set it up manually.
    ;; do not show the habits in the calendar!
    org-habit-show-habits nil)
 #+END_SRC
-** display habits in special agenda block instead of schedule
+*** display habits in special agenda block instead of schedule
 I like the habit-tracking graphs that appear in the agenda schedule by default,
 but I don't use the agenda schedule (see [[agenda]]), so this code displays the
 habit-tracking graphs in their own agenda block instead.
@@ -737,7 +714,7 @@ habit-tracking graphs in their own agenda block instead.
 
   (advice-add #'org-agenda-finalize :before #'my/org-agenda-mark-habits)
 #+END_SRC
-* [disabled] calendar
+** [disabled] Calendar
 :PROPERTIES:
 :header-args: :tangle no
 :END:
@@ -762,4 +739,63 @@ schedule, because it actually looks like a calendar, which I really like. I use
   ;; calfw-org settings
   (setq-default
    cfw:org-schedule-summary-transformer 'dudelson/org-cal-transformer)
+#+END_SRC
+* Fixes and Experiments
+Fixes [[https://github.com/syl20bnr/spacemacs/issues/9950][this bug]] that screws up org-mode todo keyword highlight colors.
+*This should be fixed with PR #11732*, need to update spacemacs and test.
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'org-mode-hook (lambda () (hl-todo-mode -1)))
+#+END_SRC
+** Speed Refile                                                                               :gtd:
+#+BEGIN_SRC emacs-lisp :tangle no
+  (defun du/gtd-speed-refile ()
+    (interactive)
+    (org-mks
+     '(("c" "current.org")
+       ("n" "notnow.org" nil)
+       ("s" "someday+maybe.org")
+
+       ("ch" "IDV: Health/Hygiene" "current.org")
+       ("cs" "IDV: Spirituality and Wholeheartedness" "current.org")
+       ("c$" "IDV: Finances" "current.org")
+       ("cS" "IDV: Social" "current.org")
+       ("cw" "IDV: WSD" "current.org")
+       ("cp" "IDV: Professional Dev't" "current.org")
+       ("cb" "IDV: FOSS and Blog" "current.org")
+       ("ca" "IDV: Admin" "current.org")
+       ("ci" "IDV: Digital Infrastructure" "current.org")
+       ("cm" "IDV: Misc" "current.org")
+       ("cf" "Family Member" "current.org")
+       ("cF" "Friend" "current.org")
+       ("cr" "Release Engineer" "current.org")
+
+       ("sh" "IDV: Health/Hygiene" "someday+maybe.org")
+       ("ss" "IDV: Spirituality and Wholeheartedness" "someday+maybe.org")
+       ("s$" "IDV: Finances" "someday+maybe.org")
+       ("sS" "IDV: Social" "someday+maybe.org")
+       ("sw" "IDV: WSD" "someday+maybe.org")
+       ("sp" "IDV: Professional Dev't" "someday+maybe.org")
+       ("sb" "IDV: FOSS and Blog" "someday+maybe.org")
+       ("sa" "IDV: Admin" "someday+maybe.org")
+       ("si" "IDV: Digital Infrastructure" "someday+maybe.org")
+       ("sm" "IDV: Misc" "someday+maybe.org")
+       ("sf" "Family Member" "someday+maybe.org")
+       ("sF" "Friend" "someday+maybe.org")
+       ("sr" "Release Engineer" "someday+maybe.org"))
+     "Choose refile location")
+
+    (org-refile nil nil )
+    )
+#+END_SRC
+
+** function that creates weekly plans heading
+I use this in my weekly plans heading template.
+#+BEGIN_SRC emacs-lisp
+  (defun du/generate-weekly-plans-heading ()
+    (let* ((cmd "import time; print(time.strftime('%%m/%%d', time.strptime('%s %s %s', '%%Y %%W %%w')), end='')")
+           (year (format-time-string "%Y"))
+           (week-num (format-time-string "%W"))
+           (week-begin (python-shell-internal-send-string (format cmd year week-num "1")))
+           (week-end (python-shell-internal-send-string (format cmd year week-num "0"))))
+       (format "* W%s (%s - %s)" week-num week-begin week-end)))
 #+END_SRC
