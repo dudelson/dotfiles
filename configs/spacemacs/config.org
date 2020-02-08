@@ -245,34 +245,6 @@ not require ibus.
 * keybindings
 ** private
 #+BEGIN_SRC emacs-lisp
-  (defvar du/toggle-planner-enabled nil
-    "Whether the planner view is enabled")
-
-  (defvar du/toggle-planner-window-config nil
-    "Saves the window config so it can be restored later")
-
-  (defun du/toggle-planner ()
-    "Toggles my custom planner view
-    When toggled on, displays my org file on the left, and my custom agenda on the right.
-    When toggled off, restores the window layout from before the last time it was toggled on"
-    (interactive)
-    (if du/toggle-planner-enabled
-        ;; restore previous window configuration
-        (set-window-configuration du/toggle-planner-window-config)
-      ;; otherwise store window configuration so it can be restored later
-      (setq du/toggle-planner-window-config (current-window-configuration))
-      (find-file "~/s/doc/gtd/current.org")
-      (delete-other-windows)
-      (split-window-right-and-focus)
-      (find-file "~/s/doc/kb/0 Inbox/INBOX.org"))
-    ;; toggle the thingy
-    (setq du/toggle-planner-enabled (not (symbol-value du/toggle-planner-enabled)))
-    (message "Toggled planner view %s" du/toggle-planner-enabled))
-
-  (defun du/open-kaizen ()
-    (interactive)
-    (find-file "~/s/doc/org/topics/kaizen.org"))
-
   ;; NOTE: due to an idiosyncracy of how emacs handles symlinks, I cannot use
   ;; (concat dotspacemacs-directory "relative/path") to refer to the files to
   ;; tangle or org-babel-tangle-file will close the config.org buffer after
@@ -300,16 +272,11 @@ not require ibus.
           (load-file f)
         (message "Could not find org-config.el"))))
 
-  ;; open my planner from anywhere in emacs
-  (spacemacs/set-leader-keys "oo" 'du/toggle-planner)
   ;; org-capture keybinding that isn't as easily confused with the keybinding for
   ;; calc-dispatch (SPC a c)
   (spacemacs/set-leader-keys "oc" 'org-capture)
-  ;; open kaizen file
-  (spacemacs/set-leader-keys "ok" 'du/open-kaizen)
   ;; retangle and reload literate config
   (spacemacs/set-leader-keys "or" 'du/retangle-reload)
-  (spacemacs/declare-prefix "o" "private")
 #+END_SRC
 
 Here's a function to copy an auto-filled region of text, automatically joining
