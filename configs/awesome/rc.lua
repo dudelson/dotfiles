@@ -340,7 +340,7 @@ config.util.run_once({
    -- TODO: start gnome keyring
    "nm-applet",          -- network manager
    "udiskie",            -- for automounting usbs
-   "xflux -z 03304",     -- takes the blues out of the monitor after sunset
+   "redshift -l 43.159:-71.545 -t 5500:4500",     -- takes the blues out of the monitor after sunset
    "xss-lock -- " .. context.vars.scrlocker,
    "Desktop-Bridge",     -- protonmail bridge
    "nextcloud",
