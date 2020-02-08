@@ -413,7 +413,10 @@ a less awkward keybinding for ~hippie-expand~.
       (add-hook 'elfeed-mode-hook #'du/add-elfeed-buffer-to-persp)
       (call-interactively 'elfeed)))
 #+END_SRC
-** mu4e
+** [disabled] mu4e
+:PROPERTIES:
+:header-args: :tangle no
+:END:
 sources: [[https://vxlabs.com/tag/mu4e/][1]] 2 3
 *** basic config
 #+BEGIN_SRC emacs-lisp
@@ -711,6 +714,51 @@ we're sending a new email instead of replying to one).
     ;;               account-vars)
     ;;       (error "No email account found"))))
     ;; (add-hook 'mu4e-compose-pre-hook 'du/mu4e-set-account)
+#+END_SRC
+** [disabled] notmuch
+:PROPERTIES:
+:header-args: :tangle no
+:END:
+#+BEGIN_SRC emacs-lisp
+  (defface du/notmuch-tag-protonmail
+    '((t :foreground "blue"))
+    "Face for emails in protonmail inbox")
+
+  (defface du/notmuch-tag-website
+    '((t :foreground "white"))
+    "Face for emails sent to website email address")
+
+  (defface du/notmuch-tag-cornell
+    '((t :foreground "red"))
+    "Face for emails in cornell inbox")
+
+  (defface du/notmuch-tag-deprecated-inbox
+    '((t :foreground "orange"))
+    "Face for emails sent to addresses I am trying to phase out")
+
+  (setq notmuch-archive-tags '("-inbox +process_me")
+        notmuch-search-oldest-first nil
+        notmuch-tag-formats '(("unread"
+                               (propertize tag 'face 'notmuch-tag-unread))
+                              ("protonmail"
+                               (propertize tag 'face 'du/notmuch-tag-protonmail))
+                              ("website"
+                               (propertize tag 'face 'du/notmuch-tag-website))
+                              ("cornell"
+                               (propertize tag 'face 'du/notmuch-tag-cornell))
+                              ("gmail"
+                               (propertize tag 'face 'du/notmuch-tag-deprecated-inbox))
+                              ("aol"
+                               (propertize tag 'face 'du/notmuch-tag-deprecated-inbox))
+                              ("flagged"
+                               (propertize tag 'face 'notmuch-tag-flagged)
+                               (notmuch-tag-format-image-data tag (notmuch-tag-star-icon))))
+
+        notmuch-search-result-format '(("date" . "%12s ")
+                                       ("tags" . "%20s ")
+                                       ("authors" . "%50s ")
+                                       ("subject" . "%s")
+                                       ))
 #+END_SRC
 ** latex
 Xetex is the only engine that appears to be compatible with all of the LaTeX
