@@ -202,6 +202,11 @@ function zzl {
     fasd_cd -di $@ && ls --group-directories-first --color=auto
 }
 
+function tablist-convert {
+    xclip -o -sel c | pandoc --from=markdown --to=org --wrap=none | xclip -sel c
+    echo "Converted tab list copied to clipboard"
+}
+
 # enables magic expansion using <SPACE>
 magic-abbrev-expand() {
     local MATCH
