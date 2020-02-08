@@ -91,9 +91,9 @@ alias sl='ls'
 # lists the ten most used commands (from zprezto history module)
 alias history-stat="history 0 | awk '{print \$2}' | sort | uniq -c | sort -n -r | head"
 
-# custom aliases
-alias feh='feh --scale-down'
-alias mpv='optirun mpv'
+########## custom aliases ##########
+####################################
+
 # use `maim` to screenshot the entire screen to a file
 # screenshot the selected area to a file
 alias maims='maim -s -p 1 -c 1,0,0,0.5 --nokeyboard'
@@ -104,33 +104,6 @@ alias maimc='notify-send "Taking screenshot to clipboard in 3 seconds...";
 alias maimsc='maim -s -p 1 -c 1,0,0,0.5 --nokeyboard --format=png /dev/stdout | xclip -selection c -t image/png'
 # screenshot specifically for org-download
 alias maimdl='maim -s -p 1 -c 1,0,0,0.5 --nokeyboard /tmp/screenshot.png'
-alias top='htop'
-alias pacman='yaourt'
-alias vim='nvim'
-alias sudovimdiff='SUDO_EDITOR="nvim -d" sudoedit'
-alias gdb='gdb -q'
-alias objdump='objdump -M intel'
-alias zmv='noglob zmv -W'
-alias pingtest='ping -c 3 8.8.8.8'
-alias latex-clean='latexmk -c'
-alias powercheck='cat /sys/class/power_supply/AC/online'
-alias copy='rsync -rh --info="progress2"'
-
-# place temporary aliases and variables here
-
-# systemctl aliases
-alias enable!="sudo systemctl enable"
-alias disable!="sudo systemctl disable"
-alias start!="sudo systemctl start"
-alias stop!="sudo systemctl stop"
-alias status!="systemctl status"
-alias stat!="systemctl status"
-alias enable!u="systemctl --user enable"
-alias disable!u="systemctl --user disable"
-alias start!u="systemctl --user start"
-alias stop!u="systemctl --user stop"
-alias status!u="systemctl --user status"
-alias stat!u="systemctl --user status"
 
 # fasd aliases
 alias v='f -e nvim'
@@ -138,28 +111,45 @@ alias e='f -e emacsclient'
 alias o='a -e xdg-open'
 alias l='d -e "ls --group-directories-first --color=auto"'
 
-# ledger aliases
-export LEDGER_FILE="~/s/doc/finance/y$(date +%Y).txt"
-alias bal="ledger -X \$ --strict --explicit --invert bal"
-alias reg="ledger -X \$ --strict --explicit reg"
-alias lgr="ledger -X \$ --strict --explicit"
-alias rkn="reckon -u -f ~/EXPORT.CSV -a Assets:Checking -l ~/s/doc/finance/y2012-2016.txt -o $LEDGER_FILE --ignore-columns 1,3,6,7,8 --contains-header 1 --date-format \"%m/%d/%y\""
-alias find-sync-conflicts='fd -t f "\.*sync-conflict\.*" ~/s/doc/gtd && fd -t f "\.*sync-conflict\.*" ~/s/doc/kb && fd -t f "\.*sync-conflict\.*" ~/.local/pkb-inbox'
+# kittens
+alias kdiff='kitty +kitten diff'
 
 # systemd aliases
 alias sctl='sudo systemctl'
 alias uctl='systemctl --user'
 
-# place temporary aliases and variables here
+# more convenient alternatives to common commands
+alias feh='feh --scale-down'
+alias mpv='optirun mpv'
+alias open='xdg-open 2> /dev/null'
+alias pacman='yaourt'
+alias top='htop'
+alias vim='nvim'
+alias gdb='gdb -q'
+alias objdump='objdump -M intel'
+alias zmv='noglob zmv -W'
 
+# new commands
+alias sudovimdiff='SUDO_EDITOR="nvim -d" sudoedit'
+alias pingtest='ping -c 3 8.8.8.8'
+alias latex-clean='latexmk -c'
+alias powercheck='cat /sys/class/power_supply/AC/online'
+alias copy='rsync -rh --info="progress2"'
 # alias to refresh external monitor
-alias refmon="xrandr --output DP1 --off && xrandr --output DP1 --mode 1920x1080"
+alias swapcaps='setxkbmap -option "ctrl:swapcaps"'
+alias mon='xrandr --output DP1 --off && xrandr --output DP1 --mode 1920x1080'
+alias find-sync-conflicts='fd -L -t f "\.*sync-conflict\.*" ~/s/gtd ~/s/pkb'
 
 # haskell aliases
-
 alias ghc="stack ghc"
 alias ghci="stack ghci"
 alias runghc="stack runghc"
+
+
+# place temporary aliases and variables here
+alias jcap="joplin-capture"
+
+
 
 # magic aliases (expand with <SPACE>)
 typeset -Ag abbreviations
