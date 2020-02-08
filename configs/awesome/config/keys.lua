@@ -147,6 +147,15 @@ function config.init(context)
                 awful.tag.find_by_name(awful.screen.focused(), "spc"):view_only()
               end,
               {description = "jump to spacemacs tag", group = "tag"}),
+    -- jump to notes tag
+    awful.key({ modkey, "Mod1"   }, ";",
+      function ()
+        -- local tag = dudelson_config.application_layout.emacs[2]
+        -- awful.tag.viewonly(tags[apps.emacs.screen][apps.emacs.tag])
+        -- awful.screen.focus(apps.emacs.screen)
+        awful.tag.find_by_name(awful.screen.focused(), "notes"):view_only()
+      end,
+      {description = "jump to notes tag", group = "tag"}),
 
     -- dynamic tagging
     -- TODO
@@ -167,19 +176,19 @@ function config.init(context)
                   end
                 }
               end),
-    awful.key({ modkey, altkey }, "n",
-              function ()
-                awful.prompt.run {
-                  prompt = "Tag name: ",
-                  textbox = mouse.screen.mypromptbox.widget,
-                  exe_callback = function(input)
-                    if not input or #input == 0 then return end
-                    local t = awful.tag.add(input, { selected = true })
-                    t:view_only()
-                  end
-                }
-              end),
-    awful.key({modkey, altkey}, "m", function() lain.util.add_tag() end),
+    -- awful.key({ modkey, altkey }, "n",
+    --           function ()
+    --             awful.prompt.run {
+    --               prompt = "Tag name: ",
+    --               textbox = mouse.screen.mypromptbox.widget,
+    --               exe_callback = function(input)
+    --                 if not input or #input == 0 then return end
+    --                 local t = awful.tag.add(input, { selected = true })
+    --                 t:view_only()
+    --               end
+    --             }
+    --           end),
+    awful.key({modkey, altkey}, "n", function() lain.util.add_tag() end),
     awful.key({modkey, altkey }, "d",
               function ()
                   local t = awful.screen.focused().selected_tag
