@@ -72,7 +72,10 @@ Priorities are in the range "A" to "E", with the default being "D".
    org-lowest-priority 69
    org-default-priority 68)
 #+END_SRC
-** links
+** [disabled] links
+:PROPERTIES:
+:header-args: :tangle no
+:END:
 Keep ~.org-id-locations~ somewhere where it can access both my gtd and pkb files.
 #+BEGIN_SRC emacs-lisp
   (setq-default org-id-locations-file "~/s/doc/.org-id-locations")
@@ -92,7 +95,7 @@ We bind it to an easily-accessible key chord and run it when this file is
 loaded (i.e. when emacs starts).
 #+BEGIN_SRC emacs-lisp
   (spacemacs/set-leader-keys "ou" 'du/update-org-id-locations)
-  ;;(du/update-org-id-locations)
+  (du/update-org-id-locations)
 #+END_SRC
 ** attachments
 #+BEGIN_SRC emacs-lisp
@@ -112,6 +115,7 @@ STUCK means I started the task but got stuck (not due to an external event
 CANCELLED means I never completed the task and I no longer intend to (I log why
     I cancelled it)
 DONE means done
+
 #+BEGIN_SRC emacs-lisp
   (setq-default
     org-todo-keywords '((sequence "TODO(t!)" "NEXT(n!)" "|" "WAITING(w@)" "HOLD(h@)" "STUCK(s@)" "CANCELLED(x@)" "DONE(d!)"))
