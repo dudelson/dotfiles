@@ -147,94 +147,90 @@ system.
 * agenda
 The function ~sa-find-file-recursively~ was taken from [[https://stackoverflow.com/questions/11384516/how-to-make-all-org-files-under-a-folder-added-in-agenda-list-automatically#11384907][this stack overflow post]].
 #+BEGIN_SRC emacs-lisp
-  (defun sa-find-org-file-recursively (&optional directory filext)
-    "Return .org and .org_archive files recursively from DIRECTORY.
-      If FILEXT is provided, return files with extension FILEXT instead."
-    (interactive "DDirectory: ")
-    (let* (org-file-list (case-fold-search t) ; filesystems are case sensitive
-                         (file-name-regex "^[^.#].*") ; exclude dot, autosave, and backup files
+    (defun sa-find-org-file-recursively (&optional directory filext)
+      "Return .org and .org_archive files recursively from DIRECTORY.
+        If FILEXT is provided, return files with extension FILEXT instead."
+      (interactive "DDirectory: ")
+      (let* (org-file-list (case-fold-search t) ; filesystems are case sensitive
+                           (file-name-regex "^[^.#].*") ; exclude dot, autosave, and backup files
 
-                         (filext (or filext "org$\\\|org_archive"))
-                         (fileregex (format "%s\\.\\(%s$\\)" file-name-regex filext))
-                         (cur-dir-list (directory-files directory t file-name-regex)))
-      ;; loop over directory listing
+                           (filext (or filext "org$\\\|org_archive"))
+                           (fileregex (format "%s\\.\\(%s$\\)" file-name-regex filext))
+                           (cur-dir-list (directory-files directory t file-name-regex)))
+        ;; loop over directory listing
 
-      (dolist (file-or-dir cur-dir-list org-file-list) ; returns org-file-list
-        (cond
-         ((file-regular-p file-or-dir) ; regular files
-          (if (string-match fileregex file-or-dir) ; org files
-              (add-to-list 'org-file-list file-or-dir)))
-         ((file-directory-p file-or-dir)
-          (dolist (org-file (sa-find-org-file-recursively file-or-dir
-                                                          filext)
-                            org-file-list) ; add files found to result
-            (add-to-list 'org-file-list org-file)))))))
+        (dolist (file-or-dir cur-dir-list org-file-list) ; returns org-file-list
+          (cond
+           ((file-regular-p file-or-dir) ; regular files
+            (if (string-match fileregex file-or-dir) ; org files
+                (add-to-list 'org-file-list file-or-dir)))
+           ((file-directory-p file-or-dir)
+            (dolist (org-file (sa-find-org-file-recursively file-or-dir
+                                                            filext)
+                              org-file-list) ; add files found to result
+              (add-to-list 'org-file-list org-file)))))))
 
-  (setq-default
-   ;; files that appear in the agenda
-   org-agenda-files (list (concat du/gtd-directory "/current.org")
-                          (concat du/gtd-directory "/repeat.org")
-                          (concat du/gtd-directory "/tickler.org"))
-   ;; files that are candidates for searches in addition to agenda files
-   org-agenda-text-search-extra-files
-    (append
-      ;; remaining GTD files
-      (list (concat du/gtd-directory "/notnow.org"))
-      (sa-find-org-file-recursively (concat du/gtd-directory "/archives"))
-      (sa-find-org-file-recursively (concat du/gtd-directory "/code"))
-      (sa-find-org-file-recursively (concat du/gtd-directory "/someday+maybe"))
-      ;; all files from first 3 PARA stacks
-      (sa-find-org-file-recursively (concat du/pkb-directory "/1 Projects"))
-      (sa-find-org-file-recursively (concat du/pkb-directory "/2 Areas"))
-      (sa-find-org-file-recursively (concat du/pkb-directory "/3 Resources")))
-   ;; Make the tags not squished to the left in the agenda
-   ;; Here they are right-aligned to column 100
-   org-agenda-tags-column -100
-   org-deadline-warning-days 1
-   org-agenda-custom-commands
-    '(("d" "David's planner view"
-       ((agenda "")
-        (tags-todo "task-@work-SCHEDULED={.+}|project-@work+TODO=\"NEXT\"-SCHEDULED={.+}"
-                   ((org-agenda-overriding-header "Unscheduled Tasks and Next Actions")
-                    ;;(org-agenda-skip-function 'du/skip-projects-subprojects)
-                    (org-agenda-remove-tags t)))
-        (tags-todo "task+@work-SCHEDULED={.+}|project+@work+TODO=\"NEXT\"-SCHEDULED={.+}"
-                   ((org-agenda-overriding-header "Unscheduled Work Tasks and Next Actions")
-                    (org-agenda-remove-tags t)))
-        (tags-todo "project"
-              ((org-agenda-overriding-header "Stuck Projects")
-               (org-agenda-skip-function 'dru/keep-stuck-projects)
-               (org-tags-match-list-sublevels nil)
-               (org-agenda-remove-tags t)))))
-      ("g" "Goals"
-       ((tags "goal_short+GOAL=\"t\""
-              ((org-agenda-overriding-header "Short-term Goals")))
-        (tags "goal_medium+GOAL=\"t\""
-              ((org-agenda-overriding-header "Medium-term Goals")))
-        (tags "goal_long+GOAL=\"t\""
-              ((org-agenda-overriding-header "Long-term Goals")))
-        (tags "goal_dream+GOAL=\"t\""
-              ((org-agenda-overriding-header "Dreams")))))))
+    (setq-default
+     ;; files that appear in the agenda
+     org-agenda-files (list (concat du/gtd-directory "/current.org")
+                            (concat du/gtd-directory "/repeat.org")
+                            (concat du/gtd-directory "/tickler.org"))
+     ;; files that are candidates for searches in addition to agenda files
+     org-agenda-text-search-extra-files
+      (append
+        ;; remaining GTD files
+        (list (concat du/gtd-directory "/notnow.org"))
+        (list (concat du/gtd-directory "/backlog.org"))
+        (sa-find-org-file-recursively (concat du/gtd-directory "/archives"))
+        (sa-find-org-file-recursively (concat du/gtd-directory "/code"))
+        (sa-find-org-file-recursively (concat du/gtd-directory "/someday+maybe"))
+        )
+     ;; Make the tags not squished to the left in the agenda
+     ;; Here they are right-aligned to column 100
+     org-agenda-tags-column -100
+     org-deadline-warning-days 1
+     org-agenda-custom-commands
+      '(("d" "David's planner view"
+         ((agenda "")
+          (tags-todo "task-@work-SCHEDULED={.+}|project-@work+TODO=\"NEXT\"-SCHEDULED={.+}"
+                     ((org-agenda-overriding-header "Unscheduled Tasks and Next Actions")
+                      ;;(org-agenda-skip-function 'du/skip-projects-subprojects)
+                      (org-agenda-remove-tags t)))
+          (tags-todo "task+@work-SCHEDULED={.+}|project+@work+TODO=\"NEXT\"-SCHEDULED={.+}"
+                     ((org-agenda-overriding-header "Unscheduled Work Tasks and Next Actions")
+                      (org-agenda-remove-tags t)))
+          (tags-todo "project"
+                ((org-agenda-overriding-header "Stuck Projects")
+                 (org-agenda-skip-function 'dru/keep-stuck-projects)
+                 (org-tags-match-list-sublevels nil)
+                 (org-agenda-remove-tags t)))))))
 
-  (setq org-agenda-prefix-format
-        `((agenda . "%?t")
-          (todo . " %i %-12:c")
-          (tags . " %i %-12:c")
-          (search . " %i %-12:c")))
+    (setq org-agenda-prefix-format
+          `((agenda . "%?t")
+            (todo . " %i %-12:c")
+            (tags . " %i %-12:c")
+            (search . " %i %-12:c")))
 #+END_SRC
 * refile
 I use refile extensively.
+
+/note/: The use of the cons cell ~(:tag . "doesnotexist")~ in the definition of
+~org-refile-targets~ is a hack used to only include the top-level file in the list
+of refile targets. There is probably a more elegant way to do this. (I tried
+using ~(:maxlevel . 0)~, but this gives an error.)
+
 #+BEGIN_SRC emacs-lisp
   ;; set an easy keybinding for refile
   (spacemacs/set-leader-keys-for-major-mode 'org-mode "r" 'org-refile)
-  (setq-default
-   ;; org-refile-targets '(("current.org" :maxlevel . 9)
-   ;;                      ("notnow.org" :maxlevel . 9)
-   ;;                      ("someday+maybe.org" :maxlevel . 9)
-   ;;                      ("repeat.org" :maxlevel . 9)
-   ;;                      ("tickler.org" :maxlevel . 9))
-   org-refile-targets '((org-agenda-files :level . 1)
-                        (org-agenda-text-search-extra-files :level . 1))
+  (setq
+   org-refile-targets `(("current.org" :maxlevel . 2)
+                        ("notnow.org" :tag . "doesnotexist")
+                        ("backlog.org" :level . 1)
+                        (,(sa-find-org-file-recursively (concat du/gtd-directory "/someday+maybe")) :tag . "doesnotexist")
+                        ("repeat.org" :level . 1)
+                        ("tickler.org" :tag . "doesnotexist"))
+   ;; org-refile-targets '((org-agenda-files :level . 1)
+   ;;                      (org-agenda-text-search-extra-files :level . 1))
 
    org-outline-path-complete-in-steps nil
    org-refile-use-outline-path 'file ;; Show full paths for refiling
