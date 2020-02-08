@@ -811,20 +811,6 @@ Various hooks that do useful things.
   (interactive)
   (shell-command (format "md5sum %s" (buffer-file-name))))
 #+END_SRC
-** enriched text
-I want emacs to open files with the extension ~.txte~ as enriched text. It looks
-like using ~text-mode~ as the major mode for enriched text files does something
-which causes emacs to not display the text properties (to see this, call
-~text-mode~ on a correctly-displayed enriched text buffer; the text properties
-disappear immediately). Maybe ~font-lock-fontify-buffer~ is being called at some
-point when ~text-mode~ is enabled? Regardless, I have this cheap hack which turns
-on ~enriched-mode~ without turning on ~text-mode~ (the major mode defaults to
-~fundamental-mode~). This makes it work nicely. Notably, the fact that
-~font-lock-mode~ is automatically enabled for the buffer doesn't seem to be an
-issue.
-#+BEGIN_SRC emacs-lisp
-  (setq auto-mode-alist (cons '("\\.txte" . 'enriched-mode) auto-mode-alist))
-#+END_SRC
 * experiments
 ** disable mouse globally
 Right now I'm trying to figure out how to disable the mouse globally. No dice
