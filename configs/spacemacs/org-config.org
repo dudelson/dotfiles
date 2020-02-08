@@ -9,7 +9,6 @@ majority of my org files are located, so here I define variables for those
 directories for convenience.
 #+BEGIN_SRC emacs-lisp
   (defvar du/gtd-directory "~/s/gtd")
-  (defvar du/pkb-directory "~/s/pkb")
 #+END_SRC
 
 Don't insert a CLOSED timestamp when I complete a task.
@@ -130,14 +129,7 @@ system.
 #+BEGIN_SRC emacs-lisp
   (setq-default
      org-tag-faces
-      '(("task" . (:foreground "green" :weight bold))
-        ("new_project" . "white")
-        ("pkb" . (:foreground "SkyBlue1" :weight bold))
-        ("diary" . (:foreground "SeaGreen3" :weight bold))
-        ("work" . (:foreground "cyan" :weight bold))
-        ("unsorted" . (:foreground "#6c71c4" :weight bold))
-        ("hl" . (:foreground "DeepPink1" :weight bold))
-        ("^[A-Z].*[a-z].*" . "orange")
+      '(("hl" . (:foreground "DeepPink1" :weight bold))
         ))
 
   (defun org-get-tag-face (kwd)
@@ -256,54 +248,22 @@ I use refile extensively.
 #+END_SRC
 * capture
 #+BEGIN_SRC emacs-lisp
-    (defvar du/rwl-file-path (concat du/pkb-directory "/2_areas/Indiv-Self_Change/rwl.org"))
     (setq
-      org-default-notes-file (concat du/pkb-directory "/0 Inbox/INBOX.org")
+      org-default-notes-file "/home/david/captured.org"
       org-capture-templates
-      ;; most-used templates
-      `(("t" "TODO" entry (file+headline ,(concat du/gtd-directory "/current.org") "tasks")
+      `(("t" "task" entry (file+headline ,(concat du/gtd-directory "/current.org") "areas")
           "* TODO %?\n" :empty-lines 1)
-        ("T" "TODO from clipboard" entry (file+headline ,(concat du/gtd-directory "/current.org") "tasks")
+        ("T" "task from clipboard" entry (file+headline ,(concat du/gtd-directory "/current.org") "areas")
           "* TODO %c\n%?" :empty-lines 1)
-        ; ("f" "thought" entry (file+headline ,(concat du/gtd-directory "/current.org") "thoughts")
-        ;   "* %?\n%u\n" :empty-lines 1)
-        ; ("F" "thought from clipboard" entry (file+headline ,(concat du/gtd-directory "/current.org") "thoughts")
-        ;   "* %?\n%u\n%c" :empty-lines 1)
-        ("n" "note" entry (file ,(concat du/pkb-directory "/0 Inbox/INBOX.org"))
-          "* %?\n%u\n" :empty-lines 1)
-        ("N" "note from clipboard" entry (file ,(concat du/pkb-directory "/0 Inbox/INBOX.org"))
-          "* %?\n%u\n%c" :empty-lines 1)
-        ("d" "dump" entry (file ,(concat du/pkb-directory "/0 Inbox/INBOX.org"))
-          "* *[DUMP]* %?\n" :prepend t :empty-lines 1)
         ("p" "project" entry (file+headline ,(concat du/gtd-directory "/current.org") "projects")
           (file "/home/david/s/pkb/3 Resources/_templates/project.template.org") :empty-lines 1)
-        ;; templates for rwl.org
-        ("r" "stuff to read")
-        ("rb" "book" entry (file+headline du/rwl-file-path "books")
-          "* *%?* by \n" :prepend t :kill-buffer t)
-        ("rp" "paper" item (file+headline 'du/rwl-file-path "papers")
-          "- [ ] %?\n" :prepend t :kill-buffer t)
-        ("w" "stuff to watch")
-        ("wm" "movie" item (file+headline 'du/rwl-file-path "movies")
-          "- [ ] %?\n" :prepend t :kill-buffer t)
-        ("wt" "TV show" item (file+headline 'du/rwl-file-path "tv shows")
-          "- [ ] %?\n" :prepend t :kill-buffer t)
-        ("wa" "anime" item (file+headline 'du/rwl-file-path "anime")
-          "- [ ] %?\n" :prepend t :kill-buffer t)
-        ("wv" "video" item (file+headline 'du/rwl-file-path "videos")
-          "- [ ] %?\n" :prepend t :kill-buffer t)
-        ("l" "stuff to listen to")
-        ("lm" "music")
-        ("lmc" "check out" item (file+headline 'du/rwl-file-path "check out")
-          "- [ ] %?\n" :prepend t :kill-buffer t)
-        ("lmd" "download" item (file+headline 'du/rwl-file-path "download")
-          "- [ ] %?\n" :prepend t :kill-buffer t)
-        ("lp" "podcast" item (file+headline 'du/rwl-file-path "podcasts")
-          "- [ ] %?\n" :prepend t :kill-buffer t)
-        ;; misc template; goes to notes file
-        ;; ("m" "Misc" plain (file "") "%?" :empty-lines 1)
+        ("n" "note" entry
+          "* %?\n%u\n" :empty-lines 1)
+        ("N" "note from clipboard" entry
+          "* %?\n%u\n%c" :empty-lines 1)
         )
      )
+
     ;; start org-capture buffer in insert state
     (add-hook 'org-capture-mode-hook 'evil-insert-state)
 #+END_SRC
@@ -579,13 +539,6 @@ Automatically git commit after weekly planning and daily adapting.
         message
         " "
         (format-time-string "%a %D")
-        "'"))
-    (shell-command
-      (concat
-        "cd "
-        du/pkb-directory
-        " && git commit -am 'auto-commit "
-        (format-time-string "%a %D")
         "'")))
 
   (defun du/org-auto-vc-daily ()
@@ -606,34 +559,6 @@ Automatically git commit after weekly planning and daily adapting.
 Bind the useful ~org-reveal~ function to a better key than ~C-c C-r~.
 #+BEGIN_SRC emacs-lisp
   (spacemacs/set-leader-keys-for-major-mode 'org-mode "R" 'org-reveal)
-#+END_SRC
-
-Search in PKB
-#+BEGIN_SRC emacs-lisp
-  (defun du/search-in-pkb ()
-    "search in PKB using ag"
-    (interactive)
-    (spacemacs/helm-files-do-ag du/pkb-directory))
-
-  (spacemacs/set-leader-keys "os" 'du/search-in-pkb)
-#+END_SRC
-
-Jump to project file from project
-#+BEGIN_SRC emacs-lisp
-  (defun du/jump-to-project-file ()
-    (interactive)
-    (let ((project-file-name))
-      (setq project-file-name
-            (org-element-property
-             :PROJECT_FILE
-             (org-element-at-point)))
-      (find-file
-       (concat
-        du/pkb-directory
-        "/1 Projects/"
-        project-file-name))))
-
-  (define-key org-mode-map (kbd "C-c C-p") 'du/jump-to-project-file)
 #+END_SRC
 
 Speed refile
@@ -740,24 +665,6 @@ I use this in my weekly plans heading template.
            (week-begin (python-shell-internal-send-string (format cmd year week-num "1")))
            (week-end (python-shell-internal-send-string (format cmd year week-num "0"))))
        (format "* W%s (%s - %s)" week-num week-begin week-end)))
-#+END_SRC
-** function that jumps between goals and projects/habits
-#+BEGIN_SRC emacs-lisp
-  (defun du/org-jump-to-goal-or-action ()
-    "Jumps to the action (habit or project) for the goal represented by the heading
-     currently under point or vice versa based on the CUSTOM_ID contained in
-     either the GOAL_ACTION property (for goals) or the ACTION_GOAL property (for
-     habits and projects)."
-    (interactive)
-    (let ((goal-action-id (org-entry-get (point) "GOAL_ACTION"))
-          (action-goal-id (org-entry-get (point) "ACTION_GOAL")))
-      (if goal-action-id
-          (org-open-link-from-string (format "[[id:%s]]" goal-action-id))
-        (if action-goal-id
-            (org-open-link-from-string (format "[[id:%s]]" action-goal-id))
-          (message "no value")))))
-
-  (define-key org-mode-map (kbd "C-c C-j") 'du/org-jump-to-goal-or-action)
 #+END_SRC
 * temporary fixes
 Fixes [[https://github.com/syl20bnr/spacemacs/issues/9950][this bug]] that screws up org-mode todo keyword highlight colors.
