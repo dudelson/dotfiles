@@ -673,12 +673,15 @@ Fixes [[https://github.com/syl20bnr/spacemacs/issues/9950][this bug]] that screw
   (add-hook 'org-mode-hook (lambda () (hl-todo-mode -1)))
 #+END_SRC
 * [disabled] habits
+:PROPERTIES:
+:header-args: :tangle no
+:END:
 *currently disabled because there were a lot of problems with org-habits*
 I'm using an app on my phone to track habits for the time being.
 
 I use the ~org-habit~ module to track my habits. It's not enabled by default, so
 I have to enable it and set it up manually.
-#+BEGIN_SRC emacs-lisp :tangle no
+#+BEGIN_SRC emacs-lisp
   (setq-default
    ;; enable org-mode habit tracking
    org-modules (append org-modules '(org-habit))
@@ -696,7 +699,7 @@ I have to enable it and set it up manually.
 I like the habit-tracking graphs that appear in the agenda schedule by default,
 but I don't use the agenda schedule (see [[agenda]]), so this code displays the
 habit-tracking graphs in their own agenda block instead.
-#+BEGIN_SRC emacs-lisp :tangle no
+#+BEGIN_SRC emacs-lisp
   (defvar my/org-habit-show-graphs-everywhere t
     "If non-nil, show habit graphs in all types of agenda buffers.
 
@@ -735,13 +738,17 @@ habit-tracking graphs in their own agenda block instead.
   (advice-add #'org-agenda-finalize :before #'my/org-agenda-mark-habits)
 #+END_SRC
 * [disabled] calendar
+:PROPERTIES:
+:header-args: :tangle no
+:END:
 *currently disabled because there are problems with calfw*
 I'm using google calendar for the time being.
 
 I use the [[https://github.com/kiwanami/emacs-calfw][calfw]] package for my calendar in place of the built-in agenda
 schedule, because it actually looks like a calendar, which I really like. I use
 [[https://github.com/kiwanami/emacs-calfw][org-gcal]] to sync this with google calendar, which is synced with an app on my phone.
-#+BEGIN_SRC emacs-lisp :tangle no
+
+#+BEGIN_SRC emacs-lisp
   ;; org-gcal settings are in emacs.secrets
   (setq-default
     org-gcal-client-id my-org-gcal-client-id
