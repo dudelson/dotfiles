@@ -62,11 +62,11 @@ This function should only modify configuration layer settings."
      gtags
      haskell
      html
+     ibuffer
      japanese
      (java
       :variables
-      meghanada-debug t
-      meghanada-javac-xlint "-Xlint:none"
+      java-backend 'lsp
       )
      (javascript
       :variables
