@@ -681,26 +681,32 @@ Speed refile
 These functions open buffers (not associated with any file) with a checklist for
 daily, weekly, or monthly GTD habits. They are bound to the SPC o g prefix.
 #+BEGIN_SRC emacs-lisp
-  (defun du/open-gtd-buffer (bufname snippet-name)
+  (defun du/open-gtd-buffer (bufname note-id)
     (spacemacs/new-empty-buffer)
     (rename-buffer (generate-new-buffer-name bufname))
-    (org-mode)
-    (yas-expand-snippet (yas-lookup-snippet snippet-name)))
+    (markdown-mode)
+    (call-process-shell-command
+     (format
+      "curl -s 'http://localhost:41184/notes/%s?fields=body&token=%s' | jq -r '.body'"
+      note-id
+      du/joplin-api-token)
+     nil
+     t))
 
-  (defun du/gtd-monthly-rotation ()
+  (defun du/gtd-monthly-review ()
     (interactive)
-    (du/open-gtd-buffer "gtd-monthly" "GTD monthly review checklist"))
+    (du/open-gtd-buffer "gtd-monthly" "b7e6b43d55a74b86822ff8290539df6d"))
 
-  (defun du/gtd-weekly-planning ()
+  (defun du/gtd-weekly-review ()
     (interactive)
-    (du/open-gtd-buffer "gtd-weekly" "GTD weekly planning checklist"))
+    (du/open-gtd-buffer "gtd-weekly" "3706e6e1abb049d5928d2bd0216cc509"))
 
   (defun du/gtd-daily-adapting ()
     (interactive)
-    (du/open-gtd-buffer "gtd-daily" "GTD daily adapting checklist"))
+    (du/open-gtd-buffer "gtd-daily" "de758658d23444528f889bacd9d81e46"))
 
-  (spacemacs/set-leader-keys "ogm" 'du/gtd-monthly-rotation)
-  (spacemacs/set-leader-keys "ogw" 'du/gtd-weekly-planning)
+  (spacemacs/set-leader-keys "ogm" 'du/gtd-monthly-review)
+  (spacemacs/set-leader-keys "ogw" 'du/gtd-weekly-review)
   (spacemacs/set-leader-keys "ogd" 'du/gtd-daily-adapting)
   (spacemacs/declare-prefix "og" "GTD")
 #+END_SRC
