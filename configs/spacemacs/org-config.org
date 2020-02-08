@@ -432,18 +432,6 @@ Set custom faces for tags which have special significance in my system.
      org-tag-faces
       '(("hl" . (:foreground "DeepPink1" :weight bold))
         ))
-
-  (defun org-get-tag-face (kwd)
-    "Get the right face for a TODO keyword KWD.
-  If KWD is a number, get the corresponding match group."
-    (if (numberp kwd)
-        (setq kwd (match-string kwd)))
-    (let ((special-tag-face (or (cdr (assoc kwd org-tag-faces))
-                                (and (string-match "^[A-Z].*[a-z].*" kwd)
-                                     (cdr (assoc "^[A-Z].*[a-z].*" org-tag-faces))))))
-      (or (org-face-from-face-or-color 'tag 'org-tag
-                                       special-tag-face)
-          'org-tag)))
 #+END_SRC
 * Refiling                                                                                     :gtd:
 I use refile extensively. Below are my refile targets.
@@ -786,16 +774,4 @@ Fixes [[https://github.com/syl20bnr/spacemacs/issues/9950][this bug]] that screw
 
     (org-refile nil nil )
     )
-#+END_SRC
-
-** function that creates weekly plans heading
-I use this in my weekly plans heading template.
-#+BEGIN_SRC emacs-lisp
-  (defun du/generate-weekly-plans-heading ()
-    (let* ((cmd "import time; print(time.strftime('%%m/%%d', time.strptime('%s %s %s', '%%Y %%W %%w')), end='')")
-           (year (format-time-string "%Y"))
-           (week-num (format-time-string "%W"))
-           (week-begin (python-shell-internal-send-string (format cmd year week-num "1")))
-           (week-end (python-shell-internal-send-string (format cmd year week-num "0"))))
-       (format "* W%s (%s - %s)" week-num week-begin week-end)))
 #+END_SRC
