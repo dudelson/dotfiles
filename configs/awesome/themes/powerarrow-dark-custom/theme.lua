@@ -203,6 +203,7 @@ function theme.create_wibar(s, context)
             s.systray,
             caffeine.widget,
             spr, spr,
+            -- widgets.pkg,
             arrl_ld,
             wibox.container.background(cpuicon, theme.bg_alt),
             wibox.container.background(context.widgets.cpu, theme.bg_alt),

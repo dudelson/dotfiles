@@ -1,7 +1,9 @@
 local awful = require('awful')
 local wibox = require('wibox')
 local beautiful = require('beautiful')
+local naughty = require('naughty')
 local lain = require('lain')
+local widgets_lib = require('widgets')
 
 local config = {}
 
@@ -142,16 +144,17 @@ function config.init(context)
   widgets.weather = weather.widget
 
   -- Package updates
-  -- local pkg = widgets.pkg {
-  --     command = context.vars.checkupdate,
-  --     notify = "on",
-  --     notification_preset = naughty.config.presets.normal,
-  --     settings = function()
-  --       local _color = beautiful.fg_normal
-  --       local _font = beautiful.font
-  --       widget:set_markup(markup.fontfg(_font, _color, available))
-  --     end,
-  -- }
+  local pkg = widgets_lib.pkg {
+      command = context.vars.check_pkg_update,
+      -- notify = "off",
+      -- notification_preset = naughty.config.presets.normal,
+      -- settings = function()
+      --   local _color = beautiful.fg_normal
+      --   local _font = beautiful.font
+      --   widget:set_markup(markup.fontfg(_font, _color, available))
+      -- end,
+  }
+  widgets.pkg = pkg.widget
 
   -- ALSA volume
   local volicon = wibox.widget.imagebox(beautiful.widget_vol)
