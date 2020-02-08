@@ -326,30 +326,6 @@ auto-filled emacs buffer.
   (spacemacs/set-leader-keys "oq" 'du/unfill-and-copy)
 #+END_SRC
 ** override spacemacs built-ins
-Make SPC b y do the same thing as SPC f y, because I can never remember which
-one it is.
-#+BEGIN_SRC emacs-lisp
-  (spacemacs/set-leader-keys "by" 'spacemacs/show-and-copy-buffer-filename)
-#+END_SRC
-
-I never use the actions which are bound by default to SPC b C-d and SPC b C-D.
-However, I quite frequently use the SPC b d and SPC b D commands with the
-universal arg, which closes the window in addition to the buffer. I think five
-keystrokes is too many for keys I use so frequently, therefore we're going to do
-some reshuffling.
-#+BEGIN_SRC emacs-lisp
-  (defun du/close-buffer-window ()
-    (interactive)
-    (spacemacs/kill-this-buffer '(4)))
-
-  (defun du/ace-close-buffer-window ()
-    (interactive)
-    (spacemacs/ace-kill-this-buffer '(4)))
-
-  (spacemacs/set-leader-keys "b C-d" 'du/close-buffer-window)
-  (spacemacs/set-leader-keys "b C-S-d" 'du/ace-close-buffer-window)
-#+END_SRC
-
 Currently SPC ' isn't bound to anything, so it's safe to use as a shortcut for
 SPC b b (so I don't have to move my hand so much for this common key sequence).
 #+BEGIN_SRC emacs-lisp
