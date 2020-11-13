@@ -1,20 +1,226 @@
-#+TITLE: Emacs Configuration
+#+TITLE: David's Emacs Config
 #+AUTHOR: David Udelson
 #+BABEL: :cache yes
 #+PROPERTY: header-args :tangle yes :comments no
 * general
+These sections are in alphabetical order (for lack of a more intuitive
+organization scheme).
+
+** abbrevs
+Things that I'm too lazy to type correctly
+#+BEGIN_SRC emacs-lisp
+  (define-abbrev-table 'global-abbrev-table '(
+                                              ("Flase" "False")
+                                              ))
+  ;; stop asking whether to save newly added abbrev when quitting emacs
+  (setq save-abbrevs nil)
+  ;; turn on abbrev mode globally
+  (setq-default abbrev-mode t)
+#+END_SRC
+** backups
+ Taken from this [[http://pragmaticemacs.com/emacs/auto-save-and-backup-every-save/][Pragmatic Emacs]] post. Note that by default Spacemacs turns
+ backups off completely (but not autosave). See [[https://github.com/syl20bnr/spacemacs/issues/8947][this issue]] for more details.
+ #+BEGIN_SRC emacs-lisp
+   (setq
+    make-backup-files t     ; take backups!
+    backup-by-copying t     ; don't clobber symlinks
+    kept-new-versions 10    ; keep 10 latest versions
+    kept-old-versions 0     ; don't bother with old versions
+    delete-old-versions t   ; don't ask about deleting old versions
+    version-control t       ; number backups
+    vc-make-backup-files t  ; backup version controlled files
+    backup-directory-alist `((".*" . ,(concat user-emacs-directory ".cache/backup"))))
+ #+END_SRC
+** config
+#+BEGIN_SRC emacs-lisp
+  ;; NOTE: due to an idiosyncracy of how emacs handles symlinks, I cannot use
+  ;; (concat dotspacemacs-directory "relative/path") to refer to the files to
+  ;; tangle or org-babel-tangle-file will close the config.org buffer after
+  ;; tangling, which is pretty annoying. In this case, I'd rather deal with the
+  ;; annoyance of having to change the absolute paths every time they change.
+  (defun du/retangle-reload ()
+    (interactive)
+    (let ((src "/home/david/.dotfiles/configs/spacemacs/config.org")
+          (dst "/home/david/.dotfiles/configs/spacemacs/config.el"))
+      (if (file-exists-p src)
+          (org-babel-tangle-file src dst)
+        (message "Could not find config.org")))
+    ;; (let ((src "/home/david/s/dot/configs/spacemacs/org-config.org")
+    ;;       (dst "/home/david/s/dot/configs/spacemacs/org-config.el"))
+    ;;   (if (file-exists-p src)
+    ;;       (org-babel-tangle-file src dst)
+    ;;     (message "Could not find org-config.org")))
+    (dotspacemacs/sync-configuration-layers)
+    (let ((f "/home/david/.dotfiles/configs/spacemacs/config.el"))
+      (if (file-exists-p f)
+          (load-file f)
+        (message "Could not find config.el")))
+    ;; (let ((f "/home/david/s/dot/configs/spacemacs/org-config.el"))
+    ;;   (if (file-exists-p f)
+    ;;       (load-file f)
+    ;;     (message "Could not find org-config.el")))
+    )
+
+  ;; retangle and reload literate config
+  (spacemacs/set-leader-keys "or" 'du/retangle-reload)
+#+END_SRC
+** fill column
+I enable the fill column indicator by default in programming modes and set the
+color to go well with my default theme (solarized dark).
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default fci-rule-color "#073642")
+  (add-hook 'prog-mode-hook (lambda () (spacemacs/toggle-fill-column-indicator-on) nil))
+#+END_SRC
+** indentation                                                      :revisit:
+ I've found it's easiest to put all tab- and indentation-related settings in one
+ place, because they're sort of tricky to get right, and this prevents me from
+ going crazy. Coming from vim, emacs' tab settings seem like they try to do too
+ much by default, and a lot of these settings attempt to make the tab key more
+ predictable for me.
+
+ First, prevent ~<~ and ~>~ from rounding to the nearest tabstop
+ #+BEGIN_SRC emacs-lisp
+   (setq-default evil-shift-round nil)
+ #+END_SRC
+
+ Next, try to minimize unexpected tab behavior by telling the tab key to only
+ indent.
+ #+BEGIN_SRC emacs-lisp
+   (setq-default
+    tab-always-indent t
+    c-tab-always-indent t)
+ #+END_SRC
+
+ From [[https://www.emacswiki.org/emacs/IndentationBasics]]: True tab characters are
+ displayed as being ~tab-width~ spaces wide. It's best to have these three
+ settings always agree with each other to prevent interoperability problems with
+ editors that can't separate tab width from indentation settings.
+ #+BEGIN_SRC emacs-lisp
+   (setq-default
+    tab-width 4
+    c-basic-offset 4
+    cperl-indent-level 4)
+ #+END_SRC
+
+ Set the tab-stop list according to the tab width, and automatically indent when
+ return is pressed
+ #+BEGIN_SRC emacs-lisp
+   (setq-default tab-stop-list (number-sequence tab-width 120 tab-width))
+   (global-set-key (kbd "RET") 'newline-and-indent)
+ #+END_SRC
+
+ In text-mode, I want zero tab shenanigans. This was the only way I could come up
+ with to get the tab key to reliably insert a tab without simultaneously screwing
+ up things like ~c c~ and ~o~ in evil normal-state, which also depend on
+ ~insert-line-function~. It suits my needs fine.
+ #+BEGIN_SRC emacs-lisp
+   (add-hook 'text-mode-hook (lambda ()
+                               (define-key evil-insert-state-local-map (kbd "<tab>")
+                                 (lambda () (interactive) (insert-tab)))))
+ #+END_SRC
+
+ Lastly, javascript and react have a whole bunch of indentation-related variables
+ to set.
+ #+BEGIN_SRC emacs-lisp
+   (setq-default
+    js2-basic-offset tab-width css-indent-offset
+    tab-width web-mode-markup-indent-offset tab-width
+    web-mode-css-indent-offset tab-width web-mode-code-indent-offset
+    tab-width web-mode-attr-indent-offset tab-width)
+ #+END_SRC
+** input
+*** [disabled] disable mouse globally
+ Right now I'm trying to figure out how to disable the mouse globally. No dice
+ yet, but here is my latest attempt. I simply installed the ~disable-mouse~
+ package from melpa and make a call to enable it here. It works for some things,
+ but not others.
+
+ #+BEGIN_SRC emacs-lisp :tangle no
+   (global-disable-mouse-mode)
+ #+END_SRC
+** misc
 Tell emacs my name and email address
 #+BEGIN_SRC emacs-lisp
   (defun make-email-addr (name domain ext)
     (concat name "@" domain "." ext))
   (setq user-full-name "David Udelson"
-        user-mail-address (make-email-addr "david" "davidudelson" "com"))
+        user-mail-address (make-email-addr "david.udelson" "threatx" "com"))
 #+END_SRC
 
-Make spacemacs use UTF-8 by default (I don't know why this isn't already a
-default...).
+*** [disabled] highlight escape sequences and format strings
+ #+BEGIN_SRC emacs-lisp :tangle no
+   ;; highlight escape sequences
+   (hes-mode)
+   ;; highlight format strings in C-like languages
+   (defvar font-lock-format-specifier-face 'font-lock-format-specifier-face
+     "Face name to use for format specifiers.")
+
+   (defface font-lock-format-specifier-face '((t (:foreground "OrangeRed1")))
+     "Font Lock mode face used to highlight format specifiers."
+     :group 'font-lock-faces)
+
+   (add-hook 'c-mode-common-hook
+             (lambda ()
+               (font-lock-add-keywords nil
+                                       '(("[^%]\\(%\\([[:digit:]]+\\$\\)?[-+' #0*]*\\([[:digit:]]*\\|\\*\\|\\*[[:digit:]]+\\$\\)\\(\\.\\([[:digit:]]*\\|\\*\\|\\*[[:digit:]]+\\$\\)\\)?\\([hlLjzt]\\|ll\\|hh\\)?\\([aAbdiuoxXDOUfFeEgGcCsSpn]\\|\\[\\^?.[^]]*\\]\\)\\)"
+                                          1 font-lock-format-specifier-face t)
+                                         ("\\(%%\\)" 1 font-lock-format-specifier-face
+                                          t)))))
+ #+END_SRC
+*** hooks
+ Various hooks that do useful things.
+ #+BEGIN_SRC emacs-lisp
+   ;; copied from Elvind
+   (add-hook 'text-mode-hook 'auto-fill-mode)
+   (add-hook 'makefile-mode-hook 'whitespace-mode)
+   ;; turn on fill column indicator by default
+   ;; don't color delimiters in C-like code
+   (add-hook 'c-mode-hook (lambda () (rainbow-delimiters-mode -1)))
+   ;; save buffer on focus lost
+   ;; (add-hook 'focus-out-hook 'save-buffer)
+   ;; disable relative line numbers on focus lost
+   ;; (add-hook 'focus-out-hook 'nlinum-relative-off)
+   ;; (add-hook 'focus-in-hook 'nlinum-relative-on)
+   ;; auto-refersh magit status buffer when files change
+                                           ;(add-hook 'after-save-hook 'magit-after-save-refresh-status)
+   ;; disable evilification of Info pages
+   (evil-set-initial-state 'Info-mode 'emacs)
+ #+END_SRC
+*** function that prints the md5 hash of the file in the current buffer
+ #+BEGIN_SRC emacs-lisp
+ (defun du/current-buffer-md5sum ()
+   (interactive)
+   (shell-command (format "md5sum %s" (buffer-file-name))))
+ #+END_SRC
+*** auto-fill and copy
+Here's a function to copy an auto-filled region of text, automatically joining
+all the lines together in the process ("unfilling" the region). This makes the
+copied text suitable for pasting into an online document without altering the
+auto-filled emacs buffer.
 #+BEGIN_SRC emacs-lisp
-  (set-language-environment "UTF-8")
+  (defun du/unfill-and-copy (beg end)
+    (interactive (list (region-beginning) (region-end)))
+    (unfill-region beg end)
+    (ox-clip-formatted-copy (region-beginning) (region-end))
+    (fill-region (region-beginning) (region-end)))
+
+  (spacemacs/set-leader-keys "oq" 'du/unfill-and-copy)
+#+END_SRC
+** navigation
+Currently SPC ' isn't bound to anything, so it's safe to use as a shortcut for
+SPC b b (so I don't have to move my hand so much for this common key sequence).
+#+BEGIN_SRC emacs-lisp
+  (spacemacs/set-leader-keys "'" 'helm-mini)
+#+END_SRC
+
+And I think just to get in the habit of it I'm going to temporarily rebind
+SPC b b so it doesn't work.
+#+BEGIN_SRC emacs-lisp
+  (spacemacs/set-leader-keys "bb"
+    (lambda ()
+      (interactive)
+      (message "Use SPC ' !")))
 #+END_SRC
 ** scrolling
 Setting ~scroll-consevatively~ to a crazy high value makes sure that the point
@@ -31,7 +237,75 @@ a definition, because I'm guaranteed to have 10 lines of context on either side.
    scroll-conservatively 1000000
    )
 #+END_SRC
-** whitespace                                                                             :revisit:
+** search
+ I use the following search methods:
+     - *avy*: great for jumping around. I use this very very often, which is why
+       it's bound to ~s~.
+     - *evil-snipe*: enhanced evil-mode commands for ~f~, ~F~, ~t~, ~T~, ~/~, and
+       ~?~. For jumping around I also use these quite often.
+     - *helm-swoop*: better for actually searching than isearch or
+       evil-search-forward. I use this less than the jumping commands, which is
+       why this command is under the ~g~ prefix instead of being bound to ~/~,
+       for example.
+     - *evil-search-forward*: sometimes this functionality is better than
+       helm-swoop (for example if I need to do the same commands to a bunch of
+       occurances of a search), so I keep it around. Note that there are two
+       pairs of search functions: ~evil-search-forward~ is just a vim-like
+       interface to the built-in emacs isearch, and ~evil-ex-search-forward~ is a
+       pure evil implementation that tries to mimic vim's search as closely as
+       possible. See [[https://emacs.stackexchange.com/questions/24896/difference-between-evil-search-forward-and-evil-ex-search-forward][here]] for more details. Note that because my spacemacs
+       editing style is "vim", evil-search-module is set to evil-search, which
+       means if I don't use evil-ex-search-* a lot of things won't work as
+       expected.
+ #+BEGIN_SRC emacs-lisp
+   ;; first turn off evil-snipe-mode (but not evil-snipe-override-mode) so that
+   ;; s and S are not bound
+   (evil-snipe-mode 0)
+   (evil-snipe-override-mode 1)
+   ;; define my custom search keys
+   (define-key evil-normal-state-map (kbd "/") 'evil-snipe-s)
+   (define-key evil-normal-state-map (kbd "?") 'evil-snipe-S)
+   (define-key evil-normal-state-map (kbd "g/") 'evil-ex-search-forward)
+   (define-key evil-normal-state-map (kbd "g?") 'evil-ex-search-backward)
+   (define-key evil-normal-state-map (kbd "n") 'evil-ex-search-next)
+   (define-key evil-normal-state-map (kbd "N") 'evil-ex-search-previous)
+   (define-key evil-normal-state-map (kbd "s") 'evil-avy-goto-char-2)
+   (define-key evil-normal-state-map (kbd "S") 'evil-avy-goto-line)
+   ;; I want this one in visual-state, too
+   (define-key evil-visual-state-map (kbd "S") 'evil-avy-goto-line)
+   (define-key evil-normal-state-map (kbd "gs") 'helm-swoop)
+   ;; this is going to be bound to "resume last helm-swoop search"
+   ;; but I don't think that function exists yet, so I have to write it myself
+   ;; (define-key evil-normal-state-map (kbd "gS") 'helm-swoop-resume)
+   (define-key evil-normal-state-map (kbd "C-s C-s") 'avy-resume)
+   (define-key evil-normal-state-map (kbd "C-s k l") 'avy-kill-whole-line)
+   (define-key evil-normal-state-map (kbd "C-s k r") 'avy-kill-region)
+   (define-key evil-normal-state-map (kbd "C-s c l") 'avy-copy-line)
+   (define-key evil-normal-state-map (kbd "C-s c r") 'avy-copy-region)
+   (define-key evil-normal-state-map (kbd "C-s m l") 'avy-move-line)
+   (define-key evil-normal-state-map (kbd "C-s m r") 'avy-move-region)
+   (define-key evil-normal-state-map (kbd "C-s r l") 'avy-kill-ring-save-whole-line)
+   (define-key evil-normal-state-map (kbd "C-s r r") 'avy-kill-ring-save-region)
+   (define-key evil-normal-state-map (kbd "C-s C-d") 'avy-goto-word-or-subword-1)
+   (define-key evil-normal-state-map (kbd "C-s C-i") 'avy-isearch)
+   (define-key evil-normal-state-map (kbd "C-s s")   'avy-goto-symbol-1)
+
+   ;; also disable SPC w l and SPC w h for now in order to build more efficient habits
+   (spacemacs/set-leader-keys "wl" nil)
+   (spacemacs/set-leader-keys "wh" nil)
+ #+END_SRC
+** unicode
+Make spacemacs use UTF-8 by default (I don't know why this isn't already a
+default...).
+#+BEGIN_SRC emacs-lisp
+  (set-language-environment "UTF-8")
+#+END_SRC
+
+This setting makes it convenient to input hexadecimal unicode character codes using =C-q=.
+#+BEGIN_SRC emacs-lisp
+  (setq-default read-quoted-char-radix 16)
+#+END_SRC
+** whitespace                                                       :revisit:
 Spacemacs has a toggle that highlights whitespace, but what kind of whitespace
 is highlighted is controlled by this setting. See also
 ~dotspacemacs-whitespace-cleanup~.
@@ -47,282 +321,11 @@ is highlighted is controlled by this setting. See also
                                    space-mark
                                    tab-mark))
 #+END_SRC
-** fill column
-I enable the fill column indicator by default in programming modes and set the
-color to go well with my default theme (solarized dark).
-
-#+BEGIN_SRC emacs-lisp
-  (setq-default fci-rule-color "#073642")
-  (add-hook 'prog-mode-hook (lambda () (spacemacs/toggle-fill-column-indicator-on) nil))
-#+END_SRC
-** unicode
-This makes it convenient to input hexadecimal unicode character codes using C-q.
-#+BEGIN_SRC emacs-lisp
-  (setq-default read-quoted-char-radix 16)
-#+END_SRC
-** tramp
-Tell TRAMP to use ssh by default (instead of the slower default, scp):
-#+BEGIN_SRC emacs-lisp
-  (setq tramp-default-method "ssh")
-#+END_SRC
-* evil-mode
-~evil-escape-key-sequence~ allows me to define an alternative to emacs' ~C-g~ and
-spacemacs' default ~f d~.
-
-Because I sometimes press these escape sequence keys out of order,
-~evil-escape-unordered-key-sequence~ allows ~k j~ to be interpreted the same as
-~j k~.
-
-The default spacemacs behavior is to move the cursor back one character when I
-switch from insert-state to normal-state. This really annoys me, so I disabled it.
-#+BEGIN_SRC emacs-lisp
-  (setq-default
-   evil-escape-key-sequence "jk"
-   evil-escape-unordered-key-sequence t
-   evil-move-cursor-back nil
-   )
-#+END_SRC
-
-I also have a whole bunch of custom keybindings for evil-mode. I'm used to
-emacs-style ~C-a~ and ~C-e~ for jumping to the beginning and end of a line,
-respectively, so I add those to ~evil-insert-state~. In order to do this, I have
-to free up ~C-a~ by moving ~evil-paste-last-insertion~ to ~C-p~, which makes
-more sense anyway.
-#+BEGIN_SRC emacs-lisp
-  (define-key evil-insert-state-map (kbd "C-p") 'evil-paste-last-insertion)
-  (define-key evil-insert-state-map (kbd "C-a") (kbd "C-o ^"))
-  (define-key evil-insert-state-map (kbd "C-e") (kbd "C-o $"))
-#+END_SRC
-
-I rebound the keys for incrementing and decrementing numbers because I rebound
-~C-a~ above and ~C-x~ is a common prefix arg in emacs. I kind of like ~+~ and
-~-~ more anyway, they're easier for me to remember.
-#+BEGIN_SRC emacs-lisp
-  (define-key evil-normal-state-map (kbd "+") 'evil-numbers/inc-at-pt)
-  (define-key evil-normal-state-map (kbd "-") 'evil-numbers/dec-at-pt)
-#+END_SRC
-* search
-I use the following search methods:
-    - *avy*: great for jumping around. I use this very very often, which is why
-      it's bound to ~s~.
-    - *evil-snipe*: enhanced evil-mode commands for ~f~, ~F~, ~t~, ~T~, ~/~, and
-      ~?~. For jumping around I also use these quite often.
-    - *helm-swoop*: better for actually searching than isearch or
-      evil-search-forward. I use this less than the jumping commands, which is
-      why this command is under the ~g~ prefix instead of being bound to ~/~,
-      for example.
-    - *evil-search-forward*: sometimes this functionality is better than
-      helm-swoop (for example if I need to do the same commands to a bunch of
-      occurances of a search), so I keep it around. Note that there are two
-      pairs of search functions: ~evil-search-forward~ is just a vim-like
-      interface to the built-in emacs isearch, and ~evil-ex-search-forward~ is a
-      pure evil implementation that tries to mimic vim's search as closely as
-      possible. See [[https://emacs.stackexchange.com/questions/24896/difference-between-evil-search-forward-and-evil-ex-search-forward][here]] for more details. Note that because my spacemacs
-      editing style is "vim", evil-search-module is set to evil-search, which
-      means if I don't use evil-ex-search-* a lot of things won't work as
-      expected.
-#+BEGIN_SRC emacs-lisp
-  ;; first turn off evil-snipe-mode (but not evil-snipe-override-mode) so that
-  ;; s and S are not bound
-  (evil-snipe-mode 0)
-  (evil-snipe-override-mode 1)
-  ;; define my custom search keys
-  (define-key evil-normal-state-map (kbd "/") 'evil-snipe-s)
-  (define-key evil-normal-state-map (kbd "?") 'evil-snipe-S)
-  (define-key evil-normal-state-map (kbd "g/") 'evil-ex-search-forward)
-  (define-key evil-normal-state-map (kbd "g?") 'evil-ex-search-backward)
-  (define-key evil-normal-state-map (kbd "n") 'evil-ex-search-next)
-  (define-key evil-normal-state-map (kbd "N") 'evil-ex-search-previous)
-  (define-key evil-normal-state-map (kbd "s") 'evil-avy-goto-char-2)
-  (define-key evil-normal-state-map (kbd "S") 'evil-avy-goto-line)
-  ;; I want this one in visual-state, too
-  (define-key evil-visual-state-map (kbd "S") 'evil-avy-goto-line)
-  (define-key evil-normal-state-map (kbd "gs") 'helm-swoop)
-  ;; this is going to be bound to "resume last helm-swoop search"
-  ;; but I don't think that function exists yet, so I have to write it myself
-  ;; (define-key evil-normal-state-map (kbd "gS") 'helm-swoop-resume)
-  (define-key evil-normal-state-map (kbd "C-s C-s") 'avy-resume)
-  (define-key evil-normal-state-map (kbd "C-s k l") 'avy-kill-whole-line)
-  (define-key evil-normal-state-map (kbd "C-s k r") 'avy-kill-region)
-  (define-key evil-normal-state-map (kbd "C-s c l") 'avy-copy-line)
-  (define-key evil-normal-state-map (kbd "C-s c r") 'avy-copy-region)
-  (define-key evil-normal-state-map (kbd "C-s m l") 'avy-move-line)
-  (define-key evil-normal-state-map (kbd "C-s m r") 'avy-move-region)
-  (define-key evil-normal-state-map (kbd "C-s r l") 'avy-kill-ring-save-whole-line)
-  (define-key evil-normal-state-map (kbd "C-s r r") 'avy-kill-ring-save-region)
-  (define-key evil-normal-state-map (kbd "C-s C-d") 'avy-goto-word-or-subword-1)
-  (define-key evil-normal-state-map (kbd "C-s C-i") 'avy-isearch)
-  (define-key evil-normal-state-map (kbd "C-s s")   'avy-goto-symbol-1)
-
-  ;; also disable SPC w l and SPC w h for now in order to build more efficient habits
-  (spacemacs/set-leader-keys "wl" nil)
-  (spacemacs/set-leader-keys "wh" nil)
-#+END_SRC
-* indentation                                                                              :revisit:
-I've found it's easiest to put all tab- and indentation-related settings in one
-place, because they're sort of tricky to get right, and this prevents me from
-going crazy. Coming from vim, emacs' tab settings seem like they try to do too
-much by default, and a lot of these settings attempt to make the tab key more
-predictable for me.
-
-First, prevent ~<~ and ~>~ from rounding to the nearest tabstop
-#+BEGIN_SRC emacs-lisp
-  (setq-default evil-shift-round nil)
-#+END_SRC
-
-Next, try to minimize unexpected tab behavior by telling the tab key to only
-indent.
-#+BEGIN_SRC emacs-lisp
-  (setq-default
-   tab-always-indent t
-   c-tab-always-indent t)
-#+END_SRC
-
-From [[https://www.emacswiki.org/emacs/IndentationBasics]]: True tab characters are
-displayed as being ~tab-width~ spaces wide. It's best to have these three
-settings always agree with each other to prevent interoperability problems with
-editors that can't separate tab width from indentation settings.
-#+BEGIN_SRC emacs-lisp
-  (setq-default
-   tab-width 4
-   c-basic-offset 4
-   cperl-indent-level 4)
-#+END_SRC
-
-Set the tab-stop list according to the tab width, and automatically indent when
-return is pressed
-#+BEGIN_SRC emacs-lisp
-  (setq-default tab-stop-list (number-sequence tab-width 120 tab-width))
-  (global-set-key (kbd "RET") 'newline-and-indent)
-#+END_SRC
-
-In text-mode, I want zero tab shenanigans. This was the only way I could come up
-with to get the tab key to reliably insert a tab without simultaneously screwing
-up things like ~c c~ and ~o~ in evil normal-state, which also depend on
-~insert-line-function~. It suits my needs fine.
-#+BEGIN_SRC emacs-lisp
-  (add-hook 'text-mode-hook (lambda ()
-                              (define-key evil-insert-state-local-map (kbd "<tab>")
-                                (lambda () (interactive) (insert-tab)))))
-#+END_SRC
-
-Lastly, javascript and react have a whole bunch of indentation-related variables
-to set.
-#+BEGIN_SRC emacs-lisp
-  (setq-default
-   js2-basic-offset tab-width css-indent-offset
-   tab-width web-mode-markup-indent-offset tab-width
-   web-mode-css-indent-offset tab-width web-mode-code-indent-offset
-   tab-width web-mode-attr-indent-offset tab-width)
-#+END_SRC
-* backups
-Taken from this [[http://pragmaticemacs.com/emacs/auto-save-and-backup-every-save/][Pragmatic Emacs]] post. Note that by default Spacemacs turns
-backups off completely (but not autosave). See [[https://github.com/syl20bnr/spacemacs/issues/8947][this issue]] for more details.
-#+BEGIN_SRC emacs-lisp
-  (setq
-   make-backup-files t     ; take backups!
-   backup-by-copying t     ; don't clobber symlinks
-   kept-new-versions 10    ; keep 10 latest versions
-   kept-old-versions 0     ; don't bother with old versions
-   delete-old-versions t   ; don't ask about deleting old versions
-   version-control t       ; number backups
-   vc-make-backup-files t  ; backup version controlled files
-   backup-directory-alist `((".*" . ,(concat user-emacs-directory ".cache/backup"))))
-#+END_SRC
-* japanese input
-Migemo is a package provided by the spacemacs japanese layer which allows
-searching for japanese text using romaji. In order for it to do this, you have
-to point it at the dictionary file (provided by installing migemo on your
-system). I also setup japanese input using mozc. I use mozc for this purpose
-system-wide, with the difference that emacs is the only application that does
-not require ibus.
-
-#+BEGIN_SRC emacs-lisp
-  (with-eval-after-load "migemo"
-    (setq-default migemo-dictionary "/usr/share/migemo/utf-8/migemo-dict"))
-  (setq-default default-input-method "japanese-mozc")
-#+END_SRC
-* keybindings
-** private
-#+BEGIN_SRC emacs-lisp
-  ;; NOTE: due to an idiosyncracy of how emacs handles symlinks, I cannot use
-  ;; (concat dotspacemacs-directory "relative/path") to refer to the files to
-  ;; tangle or org-babel-tangle-file will close the config.org buffer after
-  ;; tangling, which is pretty annoying. In this case, I'd rather deal with the
-  ;; annoyance of having to change the absolute paths every time they change.
-  (defun du/retangle-reload ()
-    (interactive)
-    (let ((src "/home/david/s/dot/configs/spacemacs/config.org")
-          (dst "/home/david/s/dot/configs/spacemacs/config.el"))
-      (if (file-exists-p src)
-          (org-babel-tangle-file src dst)
-        (message "Could not find config.org")))
-    (let ((src "/home/david/s/dot/configs/spacemacs/org-config.org")
-          (dst "/home/david/s/dot/configs/spacemacs/org-config.el"))
-      (if (file-exists-p src)
-          (org-babel-tangle-file src dst)
-        (message "Could not find org-config.org")))
-    (dotspacemacs/sync-configuration-layers)
-    (let ((f "/home/david/s/dot/configs/spacemacs/config.el"))
-      (if (file-exists-p f)
-          (load-file f)
-        (message "Could not find config.el")))
-    (let ((f "/home/david/s/dot/configs/spacemacs/org-config.el"))
-      (if (file-exists-p f)
-          (load-file f)
-        (message "Could not find org-config.el"))))
-
-  ;; org-capture keybinding that isn't as easily confused with the keybinding for
-  ;; calc-dispatch (SPC a c)
-  (spacemacs/set-leader-keys "oc" 'org-capture)
-  ;; retangle and reload literate config
-  (spacemacs/set-leader-keys "or" 'du/retangle-reload)
-#+END_SRC
-
-Here's a function to copy an auto-filled region of text, automatically joining
-all the lines together in the process ("unfilling" the region). This makes the
-copied text suitable for pasting into an online document without altering the
-auto-filled emacs buffer.
-#+BEGIN_SRC emacs-lisp
-  (defun du/unfill-and-copy (beg end)
-    (interactive (list (region-beginning) (region-end)))
-    (unfill-region beg end)
-    (ox-clip-formatted-copy (region-beginning) (region-end))
-    (fill-region (region-beginning) (region-end)))
-
-  (spacemacs/set-leader-keys "oq" 'du/unfill-and-copy)
-#+END_SRC
-** override spacemacs built-ins
-Currently SPC ' isn't bound to anything, so it's safe to use as a shortcut for
-SPC b b (so I don't have to move my hand so much for this common key sequence).
-#+BEGIN_SRC emacs-lisp
-  (spacemacs/set-leader-keys "'" 'helm-mini)
-#+END_SRC
-
-And I think just to get in the habit of it I'm going to temporarily rebind
-SPC b b so it doesn't work.
-#+BEGIN_SRC emacs-lisp
-  (spacemacs/set-leader-keys "bb"
-    (lambda ()
-      (interactive)
-      (message "Use SPC ' !")))
-#+END_SRC
-* layer-specific
-A lot of these settings are grouped with their respective spacemacs layers.
-** android development
-I've never actually developed anything in android, but I tried once, which is
-why I have these settings. They may or may not work. Basically we tell the
-android package where the android SDK is located on the system and try to set
-some reasonable defaults for gradle.
-
-#+BEGIN_SRC emacs-lisp
-  (setq-default
-   android-mode-sdk-dir "/home/david/.local/android/android-sdk-linux"
-   android-mode-builder 'gradle
-   android-mode-root-file-plist '(ant "AndroidManifest.xml"
-                                  maven "AndroidManifest.xml"
-                                  gradle "gradlew"))
-#+END_SRC
+* layers and modes
+When config for a layer is very short and simple, it is usually inserted under
+the ~:variables~ key for the layer in ~dotspacemacs-configuration-layers~ in the
+spacemacs ~init.el~. Layer configs are moved here when they grow sufficiently
+complex.
 ** auto-completion (includes snippets)
 Most of the autocompletion settings are for the spacemacs auto-completion layer
 in init.el, but here I try to clean up the suggestions window a bit, and define
@@ -333,331 +336,42 @@ a less awkward keybinding for ~hippie-expand~.
   ;; note: this overrides `evil-scroll-line-up`
   (define-key evil-insert-state-map (kbd "C-y") 'hippie-expand)
 #+END_SRC
-** elfeed
-#+BEGIN_SRC emacs-lisp
-  (setq elfeed-search-title-max-width 140)
+** evil
+ ~evil-escape-key-sequence~ allows me to define an alternative to emacs' ~C-g~ and
+ spacemacs' default ~f d~.
 
-  (defface elfeed-starred-feed
-    '((t :foreground "#859900"))
-    "Marks all entries from elfeed blogs tagged 'star'")
+ Because I sometimes press these escape sequence keys out of order,
+ ~evil-escape-unordered-key-sequence~ allows ~k j~ to be interpreted the same as
+ ~j k~.
 
-  ;; push starred face last (because that takes priority)
-  (with-eval-after-load 'elfeed
-    (push '(star elfeed-starred-feed) elfeed-search-face-alist))
+ The default spacemacs behavior is to move the cursor back one character when I
+ switch from insert-state to normal-state. This really annoys me, so I disabled it.
+ #+BEGIN_SRC emacs-lisp
+   (setq-default
+    evil-escape-key-sequence "jk"
+    evil-escape-unordered-key-sequence t
+    evil-move-cursor-back nil
+    )
+ #+END_SRC
 
-  ;; define custom layout for elfeed
-  (spacemacs|define-custom-layout "@Elfeed"
-    :binding "f"
-    :body
-    (progn
-      ;; hook to add all elfeed buffers to the layout
-      (defun du/add-elfeed-buffer-to-persp ()
-        (persp-add-buffer (current-buffer)))
-      (add-hook 'elfeed-mode-hook #'du/add-elfeed-buffer-to-persp)
-      (call-interactively 'elfeed)))
-#+END_SRC
-** [disabled] mu4e
-:PROPERTIES:
-:header-args: :tangle no
-:END:
-sources: [[https://vxlabs.com/tag/mu4e/][1]] 2 3
-*** basic config
-#+BEGIN_SRC emacs-lisp
-    (setq mu4e-maildir "~/.local/mail"
-          mu4e-get-mail-command "offlineimap -o")
+ I also have a whole bunch of custom keybindings for evil-mode. I'm used to
+ emacs-style ~C-a~ and ~C-e~ for jumping to the beginning and end of a line,
+ respectively, so I add those to ~evil-insert-state~. In order to do this, I have
+ to free up ~C-a~ by moving ~evil-paste-last-insertion~ to ~C-p~, which makes
+ more sense anyway.
+ #+BEGIN_SRC emacs-lisp
+   (define-key evil-insert-state-map (kbd "C-p") 'evil-paste-last-insertion)
+   (define-key evil-insert-state-map (kbd "C-a") (kbd "C-o ^"))
+   (define-key evil-insert-state-map (kbd "C-e") (kbd "C-o $"))
+ #+END_SRC
 
-  ;; prevent issues with duplicate UIDs in mbsync
-  ;; see http://pragmaticemacs.com/emacs/fixing-duplicate-uid-errors-when-using-mbsync-and-mu4e/
-  ;; (setq mu4e-change-filenames-when-moving t)
-#+END_SRC
-*** UI
-mu4e has a home buffer (called the "main view"), which allows you to jump to
-various other buffers. Most of these show a list of emails, the same as when you
-log onto an online mail client (called the "headers view").
-
-Create a custom header that shows which account the email was sent to.
-#+BEGIN_SRC emacs-lisp
-  (defun du/mu4e-get-account-foreground-face (acct)
-    "Given an account name as input (a string), returns the
-     proper foreground color (also a string)."
-    (cdr
-     (assoc acct
-            '(("protonmail" . "#6c71c4") ;; solarized violet
-              ;; make emails to my website address stand out,
-              ;; as these are usually important
-              ("website" . "white")
-              ("cornell" . "#B31B1B") ;; stole the hex code off cornell's website
-              ;; solarized orange for accounts I'm trying to stop using
-              ("aol" . "#cb4b16")
-              ("gmail" . "#cb4b16")))))
-
-  (add-to-list 'mu4e-header-info-custom
-               '(:account . (
-                   :name "Account Name" ;; long name, as seen in the message-view
-                   :shortname "Account" ;; short name, as seen in the headers view
-                   :help "Account to which this email was sent" ;; tooltip
-                   :function (lambda (msg)
-                               (let ((acct
-                                      (mu4e-context-name
-                                       (mu4e-context-determine msg 'ask))))
-                                 (propertize
-                                  acct
-                                  'face
-                                  `(:foreground
-                                    ,(du/mu4e-get-account-foreground-face
-                                      acct))))))))
-#+END_SRC
-
-Here I set the order and width of the columns in the headers view.
-#+BEGIN_SRC emacs-lisp
-  (setq mu4e-headers-fields
-        '((:human-date . 12) ;; can also use ":date"
-          (:from . 30)
-          (:account . 10)
-          (:flags . 6)
-          (:subject . 162))) ;; can also use ":thread-subject"
-#+END_SRC
-
-Disable unicode characters for flags and such, as this can easily screw up the
-column alignment.
-#+BEGIN_SRC emacs-lisp
-    (setq mu4e-use-fancy-chars nil)
-#+END_SRC
-
-This setting controls what details of a single email are displayed at the top
-when I open it.
-#+BEGIN_SRC emacs-lisp
-    (setq mu4e-view-fields '(:from :to :cc :subject :date :signature :decryption))
-#+END_SRC
-*** contexts
-We establish the context for a message by matching on the maildir. Originally I
-had matched on the "to" address, but many emails are sent to mailing lists,
-etc., so this did not work reliably. The exception is my website address, which
-shares a maildir with my protonmail address, so these cannot be distinguished by
-maildir. Right now what I'm doing is matching the protonmail address based on
-maildir and the website address based on address, so that the protonmail context
-acts as a "catchall" for emails sent to my protonmail account. Unfortunately,
-this means that the order for the contexts matters (i.e. the website context has
-to be defined first), and also emails sent to mailing lists that I signed up for
-with my website account will be put in the wrong context. I think I can fix this
-by setting the protonmail bridge to use separate inboxes or whatever, but that's
-a later me problem.
-#+BEGIN_SRC emacs-lisp
-  (setq mu4e-contexts
-     `( ,(make-mu4e-context
-           :name "website"
-           :enter-func (lambda () (mu4e-message "Entering context 'website'"))
-           :leave-func (lambda () (mu4e-message "Leaving context 'website'"))
-           :match-func (lambda (msg)
-                         (when msg
-                           (mu4e-message-contact-field-matches msg
-                             :to "david@davidudelson.com")))
-           :vars '( ( user-mail-address      . "david@davidudelson.com" )
-                    ( user-full-name         . "David Udelson" )
-                    ( mu4e-drafts-folder     . "/drafts")
-                    ( mu4e-sent-folder       . "/protonmail/Sent")
-                    ( mu4e-trash-folder      . "/protonmail/Trash")
-                    ( mu4e-refile-folder     . "/protonmail/Archive")
-                    ( mu4e-compose-signature . nil)))
-        ,(make-mu4e-context
-          :name "protonmail"
-          :enter-func (lambda () (mu4e-message "Entering context 'protonmail'"))
-          :leave-func (lambda () (mu4e-message "Leaving context 'protonmail'"))
-          ;; we match based on the contact-fields of the message
-          :match-func (lambda (msg)
-                        (when msg
-                          (string-match-p "^/protonmail"
-                                          (mu4e-message-field msg :maildir))))
-          :vars '( ( user-mail-address      . "dudelson@protonmail.com"  )
-                   ( user-full-name         . "David Udelson" )
-                   ( mu4e-drafts-folder     . "/drafts")
-                   ( mu4e-sent-folder       . "/protonmail/Sent")
-                   ( mu4e-trash-folder      . "/protonmail/Trash")
-                   ( mu4e-refile-folder     . "/protonmail/Archive")
-                   ( mu4e-compose-signature . nil)))
-        ,(make-mu4e-context
-           :name "cornell"
-           :enter-func (lambda () (mu4e-message "Entering context 'cornell'"))
-           :leave-func (lambda () (mu4e-message "Leaving context 'cornell'"))
-           :match-func (lambda (msg)
-                         (when msg
-                           (string-match-p "^/cornell"
-                                           (mu4e-message-field msg :maildir))))
-           :vars '( ( user-mail-address      . "dru5@cornell.edu" )
-                    ( user-full-name         . "David Udelson" )
-                    ( mu4e-drafts-folder     . "/cornell/Drafts")
-                    ( mu4e-sent-folder       . "/cornell/Sent")
-                    ( mu4e-trash-folder      . "/cornell/Trash")
-                    ( mu4e-refile-folder     . "/cornell/All_Mail")
-                    ( mu4e-compose-signature . (concat
-                                                "David Udelson\n"
-                                                "Cornell University '18\n"
-                                                "Dept. of Computer Science"))))
-        ,(make-mu4e-context
-          :name "aol"
-          :enter-func (lambda () (mu4e-message "Entering context 'aol'"))
-          :leave-func (lambda () (mu4e-message "Leaving context 'aol'"))
-          :match-func (lambda (msg)
-                        (when msg
-                          (string-match-p "^/aol"
-                                          (mu4e-message-field msg :maildir))))
-          :vars '( ( user-mail-address      . "ubeatlenine@aol.com" )
-                   ( mu4e-drafts-folder     . "/aol/Draft")
-                   ( mu4e-sent-folder       . "/aol/Sent")
-                   ( mu4e-trash-folder      . "/aol/Trash")
-                   ( mu4e-refile-folder     . "/aol/Archive")
-                   ( mu4e-compose-signature . nil)))
-        ,(make-mu4e-context
-          :name "gmail"
-          :enter-func (lambda () (mu4e-message "Entering context 'gmail"))
-          :leave-func (lambda () (mu4e-message "Leaving context 'gmail"))
-          :match-func (lambda (msg)
-                        (when msg
-                          (string-match-p "^/gmail"
-                                          (mu4e-message-field msg :maildir))))
-          :vars '( ( user-mail-address      . "udelsonindigo@gmail.com" )
-                   ( mu4e-drafts-folder     . "/gmail/Drafts")
-                   ( mu4e-sent-folder       . "/gmail/Sent")
-                   ( mu4e-trash-folder      . "/gmail/Trash")
-                   ( mu4e-refile-folder     . "/gmail/All_Mail")
-                   ( mu4e-compose-signature . nil)))))
-
-   ;; set `mu4e-context-policy` and `mu4e-compose-policy` to tweak when mu4e should
-   ;; guess or ask the correct context, e.g.
-
-   ;; start with the first (default) context;
-   ;; default is to ask-if-none (ask when there's no context yet, and none match)
-   (setq mu4e-context-policy 'pick-first)
-
-   ;; compose with the current context is no context matches;
-   ;; default is to ask
-   ;; (setq mu4e-compose-context-policy nil)
-#+END_SRC
-*** sending mail
-#+BEGIN_SRC emacs-lisp
-  (setq message-send-mail-function 'message-send-mail-with-sendmail
-        message-sendmail-f-is-evil t
-        message-sendmail-extra-arguments '("-a website"))
-#+END_SRC
-
-In order for sent emails to actually be sent from the address we intend, it is not
-enough to choose an address in emacs; msmtp must also be told which address to
-use. The following ensures that msmtp always uses the email address that appears
-in the "From:" header of the compose-message buffer, which in turn corresponds
-to the mu4e context for that message (or the currently-selected context, if
-we're sending a new email instead of replying to one).
-#+BEGIN_SRC emacs-lisp
-  ;; Choose account label to feed msmtp -a option based on From header
-  ;; in Message buffer; This function must be added to
-  ;; message-send-mail-hook for on-the-fly change of From address before
-  ;; sending message since message-send-mail-hook is processed right
-  ;; before sending message.
-  (defun du/choose-msmtp-account ()
-    (mu4e-message "PRINT ME")
-    (if (message-mail-p)
-        (save-excursion
-          (let*
-              ((from (save-restriction
-                       (message-narrow-to-headers)
-                       (message-fetch-field "from")))
-               (account
-                (cond
-                 ((string-match "david@davidudelson.com" from) "website")
-                 ((string-match "dudelson@protonmail.com" from) "protonmail")
-                 ((string-match "dru5@cornell.edu" from) "cornell"))))
-            (message "account set to %s" account)
-            (setq message-sendmail-extra-arguments (list '"-a" account))))))
-
-  ;;(setq message-sendmail-envelope-from 'header)
-  ;;(add-hook 'message-send-mail-hook (lambda () (setq message-sendmail-extra-arguments (list '"-P"))))
-#+END_SRC
-*** bookmarks
-#+BEGIN_SRC emacs-lisp
-  (setq mu4e-bookmarks
-        `( ,(make-mu4e-bookmark
-             :name  "Combined inbox"
-             :query (concat
-                     "maildir:/protonmail/INBOX OR "
-                     "(maildir:/cornell/* AND tag:\\\\Inbox) OR "
-                     "(maildir:/gmail/* AND tag:\\\\Inbox) OR "
-                     "maildir:/aol/Inbox")
-             :key ?i)
-           ,(make-mu4e-bookmark
-             :name  "Unread messages"
-             :query "flag:unread AND NOT flag:trashed"
-             :key ?u)
-           ,(make-mu4e-bookmark
-             :name "Today's messages"
-             :query "date:today..now"
-             :key ?t)
-           ,(make-mu4e-bookmark
-             :name "Last 7 days"
-             :query "date:7d..now"
-             :key ?w)))
-#+END_SRC
-*** misc
-#+BEGIN_SRC emacs-lisp
-  (defun mu4e-msgv-action-view-in-browser (msg)
-    "View the body of the message in a web browser."
-    (interactive)
-    (let ((html (mu4e-msg-field (mu4e-message-at-point t) :body-html))
-          (tmpfile (format "%s/%d.html" temporary-file-directory (random))))
-      (unless html (error "No html part for this message"))
-      (with-temp-file tmpfile
-        (insert
-         "<html>"
-         "<head><meta http-equiv=\"content-type\""
-         "content=\"text/html;charset=UTF-8\">"
-         html))
-      (browse-url (concat "file://" tmpfile))))
-
-  ;; (add-to-list 'mu4e-view-actions
-  ;;              '("View in browser" . mu4e-msgv-action-view-in-browser) t)
-
-    ;; (defvar my-mu4e-account-alist
-    ;;   '(
-    ;;     ;; ("Gmail"
-    ;;     ;;  (mu4e-sent-folder "/Gmail/sent")
-    ;;     ;;  (user-mail-address "YOUR.GMAIL.USERNAME@gmail.com")
-    ;;     ;;  (smtpmail-smtp-user "YOUR.GMAIL.USERNAME")
-    ;;     ;;  (smtpmail-local-domain "gmail.com")
-    ;;     ;;  (smtpmail-default-smtp-server "smtp.gmail.com")
-    ;;     ;;  (smtpmail-smtp-server "smtp.gmail.com")
-    ;;     ;;  (smtpmail-smtp-service 587))
-    ;;     ("protonmail default"
-    ;;      (mu4e-sent-folder "/protonmail/sent")
-    ;;      (user-mail-address "dudelson@protonmail.com")
-    ;;      (smtpmail-smtp-user "dudelson@protonmail.com")
-    ;;      (smtpmail-stream-type plain)
-    ;;      (smtpmail-local-domain "127.0.0.1")
-    ;;      (smtpmail-default-smtp-server "127.0.0.1")
-    ;;      (smtpmail-smtp-server "127.0.0.1")
-    ;;      (smtpmail-smtp-service 1025))
-    ;;     ;; Include any other accounts here ...
-    ;;     ))
-
-    ;; (defun du/mu4e-set-account ()
-    ;;   "Set the account for composing a message.
-    ;;    This function is taken from:
-    ;;    https://www.djcbsoftware.nl/code/mu/mu4e/Multiple-accounts.html"
-    ;;   (let* ((account
-    ;;           (if mu4e-compose-parent-message
-    ;;               (let ((maildir (mu4e-message-field mu4e-compose-parent-message :maildir)))
-    ;;                 (string-match "/\\(.*?\\)/" maildir)
-    ;;                 (match-string 1 maildir))
-    ;;             (completing-read (format "Compose with account: (%s) "
-    ;;                                      (mapconcat #'(lambda (var) (car var))
-    ;;                                                 my-mu4e-account-alist "/"))
-    ;;                              (mapcar #'(lambda (var) (car var)) my-mu4e-account-alist)
-    ;;                              nil t nil nil (caar my-mu4e-account-alist))))
-    ;;          (account-vars (cdr (assoc account my-mu4e-account-alist))))
-    ;;     (if account-vars
-    ;;         (mapc #'(lambda (var)
-    ;;                   (set (car var) (cadr var)))
-    ;;               account-vars)
-    ;;       (error "No email account found"))))
-    ;; (add-hook 'mu4e-compose-pre-hook 'du/mu4e-set-account)
-#+END_SRC
+ I rebound the keys for incrementing and decrementing numbers because I rebound
+ ~C-a~ above and ~C-x~ is a common prefix arg in emacs. I kind of like ~+~ and
+ ~-~ more anyway, they're easier for me to remember.
+ #+BEGIN_SRC emacs-lisp
+   (define-key evil-normal-state-map (kbd "+") 'evil-numbers/inc-at-pt)
+   (define-key evil-normal-state-map (kbd "-") 'evil-numbers/dec-at-pt)
+ #+END_SRC
 ** [disabled] notmuch
 :PROPERTIES:
 :header-args: :tangle no
@@ -703,48 +417,6 @@ we're sending a new email instead of replying to one).
                                        ("subject" . "%s")
                                        ))
 #+END_SRC
-** latex
-Xetex is the only engine that appears to be compatible with all of the LaTeX
-packages I use.
-#+BEGIN_SRC emacs-lisp
-  (setq-default TeX-engine 'xetex)
-#+END_SRC
-
-*NOTE*: The spacemacs LaTeX layer appears to use its own variable,
-=latex-build-command=, in place of the AUCTeX variable =latex-run-command=. I do
-not know why this is the case, but it seems likely that at least some LaTeX
-layer functions depend on the latter variable, since the layer is built on top
-of AUCTeX. Therefore if you experience build errors, check to see if
-=latex-run-command= is involved. If it is, you'll have to figure out a way to
-keep these two variables in sync.
-
-Set the pdf viewer for LaTeX compilation output.
-#+BEGIN_SRC emacs-lisp
-  (setq-default TeX-view-program-selection '((output-pdf "PDF Tools")))
-#+END_SRC
-
-Turn off some of the "magic" LaTeX features that format things in the buffer. I
-find these annoying.
-#+BEGIN_SRC emacs-lisp
-  (setq magic-latex-enable-block-highlight nil
-        magic-latex-enable-pretty-symbols nil
-        magic-latex-enable-suscript nil
-        font-latex-fontify-script nil)
-#+END_SRC
-
-Prevent latex from jumping to matching dollar signs (also annoying).
-#+BEGIN_SRC emacs-lisp
-  (add-hook 'LaTeX-mode-hook (lambda () (setq blink-matching-paren nil)))
-#+END_SRC
-** pdf-tools
-#+BEGIN_SRC emacs-lisp
-  ;; open pdfs scaled to fit page
-  (setq-default pdf-view-display-size 'fit-page)
-  ;; automatically annotate highlights
-  (setq pdf-annot-activate-created-annotations t)
-  ;; add hook to turn off global-disable-mouse-mode when pdf-tools loads
-  (add-hook 'pdf-view-mode-hook (lambda () (global-disable-mouse-mode -1)))
-#+END_SRC
 ** rust
 Enable racer, which provides code-completion for rust, and point it to the rust
 source.
@@ -753,73 +425,10 @@ source.
    racer-rust-src-path "/usr/src/rust/src"
    rust-enable-racer t)
 #+END_SRC
-* misc
-Stuff that I can't find a place for anywhere else
-** abbrevs
-Things that I'm too lazy to type correctly
+** tramp
+Tell TRAMP to use ssh by default (instead of the slower default, scp):
 #+BEGIN_SRC emacs-lisp
-  (define-abbrev-table 'global-abbrev-table '(
-                                              ("Flase" "False")
-                                              ))
-  ;; stop asking whether to save newly added abbrev when quitting emacs
-  (setq save-abbrevs nil)
-  ;; turn on abbrev mode globally
-  (setq-default abbrev-mode t)
-#+END_SRC
-** highlight escape sequences and format strings
-#+BEGIN_SRC emacs-lisp
-  ;; highlight escape sequences
-  (hes-mode)
-  ;; highlight format strings in C-like languages
-  (defvar font-lock-format-specifier-face 'font-lock-format-specifier-face
-    "Face name to use for format specifiers.")
-
-  (defface font-lock-format-specifier-face '((t (:foreground "OrangeRed1")))
-    "Font Lock mode face used to highlight format specifiers."
-    :group 'font-lock-faces)
-
-  (add-hook 'c-mode-common-hook
-            (lambda ()
-              (font-lock-add-keywords nil
-                                      '(("[^%]\\(%\\([[:digit:]]+\\$\\)?[-+' #0*]*\\([[:digit:]]*\\|\\*\\|\\*[[:digit:]]+\\$\\)\\(\\.\\([[:digit:]]*\\|\\*\\|\\*[[:digit:]]+\\$\\)\\)?\\([hlLjzt]\\|ll\\|hh\\)?\\([aAbdiuoxXDOUfFeEgGcCsSpn]\\|\\[\\^?.[^]]*\\]\\)\\)"
-                                         1 font-lock-format-specifier-face t)
-                                        ("\\(%%\\)" 1 font-lock-format-specifier-face
-                                         t)))))
-#+END_SRC
-** hooks
-Various hooks that do useful things.
-#+BEGIN_SRC emacs-lisp
-  ;; copied from Elvind
-  (add-hook 'text-mode-hook 'auto-fill-mode)
-  (add-hook 'makefile-mode-hook 'whitespace-mode)
-  ;; turn on fill column indicator by default
-  ;; don't color delimiters in C-like code
-  (add-hook 'c-mode-hook (lambda () (rainbow-delimiters-mode -1)))
-  ;; save buffer on focus lost
-  ;; (add-hook 'focus-out-hook 'save-buffer)
-  ;; disable relative line numbers on focus lost
-  ;; (add-hook 'focus-out-hook 'nlinum-relative-off)
-  ;; (add-hook 'focus-in-hook 'nlinum-relative-on)
-  ;; auto-refersh magit status buffer when files change
-                                          ;(add-hook 'after-save-hook 'magit-after-save-refresh-status)
-  ;; disable evilification of Info pages
-  (evil-set-initial-state 'Info-mode 'emacs)
-#+END_SRC
-** function that prints the md5 hash of the file in the current buffer
-#+BEGIN_SRC emacs-lisp
-(defun du/current-buffer-md5sum ()
-  (interactive)
-  (shell-command (format "md5sum %s" (buffer-file-name))))
-#+END_SRC
-* experiments
-** disable mouse globally
-Right now I'm trying to figure out how to disable the mouse globally. No dice
-yet, but here is my latest attempt. I simply installed the ~disable-mouse~
-package from melpa and make a call to enable it here. It works for some things,
-but not others.
-
-#+BEGIN_SRC emacs-lisp
-  (global-disable-mouse-mode)
+  (setq tramp-default-method "ssh")
 #+END_SRC
 * temporary fixes
 Fixes helm buffers causing one window to disappear in a split view.

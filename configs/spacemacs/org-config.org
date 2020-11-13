@@ -469,6 +469,12 @@ Set an easy keybinding for refile.
 * Capture and Attachments                                                                      :gtd:
 ** Capture
 #+BEGIN_SRC emacs-lisp
+  ;; org-capture keybinding that isn't as easily confused with the keybinding for
+  ;; calc-dispatch (SPC a c)
+  (spacemacs/set-leader-keys "oc" 'org-capture)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
     (setq
       org-default-notes-file "/home/david/captured.org"
       org-capture-templates
