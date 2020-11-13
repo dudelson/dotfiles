@@ -417,14 +417,6 @@ a less awkward keybinding for ~hippie-expand~.
                                        ("subject" . "%s")
                                        ))
 #+END_SRC
-** rust
-Enable racer, which provides code-completion for rust, and point it to the rust
-source.
-#+BEGIN_SRC emacs-lisp
-  (setq-default
-   racer-rust-src-path "/usr/src/rust/src"
-   rust-enable-racer t)
-#+END_SRC
 ** tramp
 Tell TRAMP to use ssh by default (instead of the slower default, scp):
 #+BEGIN_SRC emacs-lisp
