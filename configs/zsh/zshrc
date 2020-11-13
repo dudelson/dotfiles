@@ -119,10 +119,7 @@ alias sctl='sudo systemctl'
 alias uctl='systemctl --user'
 
 # more convenient alternatives to common commands
-alias feh='feh --scale-down'
-alias mpv='optirun mpv'
 alias open='xdg-open 2> /dev/null'
-alias pacman='yaourt'
 alias top='htop'
 alias vim='nvim'
 alias gdb='gdb -q'
@@ -266,6 +263,10 @@ source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zs
 # autosuggestions (broken in conjunction with syntax highlighting as of june 2016)
 #source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 
+# node version manager (best installed as a zsh plugin, for convenience)
+source $HOME/.local/share/zsh/zsh-nvm/zsh-nvm.plugin.zsh
+
+
 #############################################################################
 ##`````````````````````````````````````````````````````````````````````````##
 ##```````````````````````````````KEYBINDINGS```````````````````````````````##
@@ -294,3 +295,6 @@ export PROMPT="%M %{$fg[blue]%}%~%{$reset_color%} %# "
 # enable powerline
 powerline-daemon -q
 source /usr/share/powerline/bindings/zsh/powerline.zsh
+
+# source secret threatx-specific config
+source $HOME/.threatx.zshrc
