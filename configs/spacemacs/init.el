@@ -33,55 +33,36 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(
+   '(nginx
      (auto-completion
       :variables
       auto-completion-return-key-behavior nil
       auto-completion-tab-key-behavior 'cycle
       :disabled-for org emacs-lisp markdown text)
-     ;; c-c++
-     calendar
-     csv
-     (elfeed
-      :variables
-      rmh-elfeed-org-files (list "~/s/dot/spacemacs/feeds.org")
-      )
      emacs-lisp
-     ess
-     ;; (evil-habits
-     ;;  :disabled-for org
-     ;;  )
      (evil-snipe
       :variables
       evil-snipe-enable-alternate-f-and-t-behaviors t
       evil-snipe-scope 'visible
       evil-snipe-repeat-scope 'visible
       )
-     finance
      git
-     gtags
-     haskell
      html
      ibuffer
-     japanese
-     (java
-      :variables
-      java-backend 'lsp
-      )
      (javascript
       :variables
       j2-basic-offset 2)
      (json
       :variables
       js-indent-level 2)
-     lua
-     latex
-     lsp
+     (lsp
+      :variables
+      lsp-log-io t
+      lsp-rust-server 'rust-analyzer)
      (markdown
       ;; :variables markdown-live-preview-engine 'vmd
       )
      notmuch
-     ocaml
      (org
       :variables
       ;; org-projectile-file "TODOs.org"
@@ -101,10 +82,8 @@ This function should only modify configuration layer settings."
      semantic
      shell
      shell-scripts
-     (spell-checking
-      :variables spell-checking-enable-by-default nil
-      )
      syntax-checking
+     typescript
      web-beautify
      yaml
      )
@@ -116,20 +95,12 @@ This function should only modify configuration layer settings."
    ;; To use a local version of a package, use the `:location' property:
    ;; '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
-   dotspacemacs-additional-packages '(highlight-escape-sequences
-                                      android-mode
-                                      disable-mouse
-                                      mozc
-                                      unfill
-                                      ox-clip
-                                      interleave)
+   dotspacemacs-additional-packages '()
 
    ;; A list of packages that cannot be updated.
-   dotspacemacs-frozen-packages '(
-                                  pdf-tools
-                                  )
+   dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
-   dotspacemacs-excluded-packages '(elfeed-goodies)
+   dotspacemacs-excluded-packages '()
 
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
@@ -248,8 +219,7 @@ It should only modify the values of Spacemacs settings."
    ;; Press `SPC T n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(solarized-dark
-                         spacemacs-dark
-                         monokai)
+                         solarized-light-high-contrast)
 
    ;; Set the theme for the Spaceline. Supported themes are `spacemacs',
    ;; `all-the-icons', `custom', `doom', `vim-powerline' and `vanilla'. The
@@ -448,7 +418,7 @@ It should only modify the values of Spacemacs settings."
    ;; List of search tool executable names. Spacemacs uses the first installed
    ;; tool of the list. Supported tools are `rg', `ag', `pt', `ack' and `grep'.
    ;; (default '("rg" "ag" "pt" "ack" "grep"))
-   dotspacemacs-search-tools '("rg" "ag" "grep")
+   dotspacemacs-search-tools '("rg" "grep")
 
    ;; Format specification for setting the frame title.
    ;; %a - the `abbreviated-file-name', or `buffer-name'
@@ -505,7 +475,6 @@ It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
   ;; make exec-path-from-shell load my $PATH variable correctly from zsh
   ;; see https://github.com/purcell/exec-path-from-shell/issues/40
-  (setq elfeed-excluded-packages '(elfeed-goodies))
   (setq-default exec-path-from-shell-arguments '("-i")))
 
 (defun dotspacemacs/user-load ()
@@ -522,19 +491,19 @@ configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
   ;; load emacs secrets
-  (load-file (concat user-home-directory ".config/emacs.secrets"))
+  ;; (load-file (concat user-home-directory ".config/emacs.secrets"))
 
   ;; All org-mode settings need to be grouped
   ;; because spacemacs does not use the org-mode version that ships with emacs.
   ;; Thus any calls to org-mode functions or any attempt to set org-mode variables
   ;; outside of this `with-eval-after-load' statement will load the default org-mode
   ;; package instead of the spacemacs one, and will cause org-mode to behave weirdly.
-  (with-eval-after-load 'org
-    (let ((f (concat dotspacemacs-directory "org-config.el")))
-      (if (file-exists-p f)
-          (load-file f)
-        (message "Could not find custom org-mode configuration!")))
-    )
+  ;; (with-eval-after-load 'org
+  ;;   (let ((f (concat dotspacemacs-directory "org-config.el")))
+  ;;     (if (file-exists-p f)
+  ;;         (load-file f)
+  ;;       (message "Could not find custom org-mode configuration!")))
+  ;;   )
 
   (let ((f (concat dotspacemacs-directory "config.el")))
     (if (file-exists-p f)
@@ -553,18 +522,13 @@ This function is called at the very end of Spacemacs initialization."
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (lsp-mode muse helm-notmuch notmuch vdirel org-vcard prettier-js helm-git-grep gitignore-templates evil-ledger evil-goggles doom-modeline eldoc-eval shrink-path avy-migemo dotenv-mode yasnippet-snippets yapfify yaml-mode ws-butler winum which-key web-mode web-beautify volatile-highlights vimrc-mode vi-tilde-fringe uuidgen utop use-package unfill tuareg toml-mode toc-org tagedit symon string-inflection stickyfunc-enhance srefactor spaceline-all-the-icons solarized-theme smeargle slim-mode scss-mode sass-mode rjsx-mode restart-emacs ranger rainbow-delimiters racer pyvenv pytest pyenv-mode py-isort pug-mode popwin pippel pipenv pip-requirements persp-mode pdf-tools pcre2el password-generator paradox pangu-spacing ox-reveal ox-clip overseer orgit org-projectile org-present org-pomodoro org-mime org-download org-bullets org-brain open-junk-file ocp-indent neotree nameless mvn mu4e-maildirs-extension mu4e-alert mozc move-text monokai-theme mmm-mode migemo merlin meghanada maven-test-mode markdown-toc magit-svn magit-gitflow macrostep lorem-ipsum livid-mode live-py-mode link-hint ledger-mode json-navigator json-mode js2-refactor js-doc japanese-holidays intero interleave insert-shebang indent-guide importmagic impatient-mode hungry-delete hlint-refactor hl-todo hindent highlight-parentheses highlight-numbers highlight-indentation highlight-escape-sequences helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-mu helm-mode-manager helm-make helm-hoogle helm-gtags helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag haskell-snippets groovy-mode groovy-imports gradle-mode google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md ggtags fuzzy font-lock+ flyspell-correct-helm flycheck-rust flycheck-pos-tip flycheck-ledger flycheck-haskell flycheck-bashate flx-ido fish-mode fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor-ja evil-surround evil-snipe evil-search-highlight-persist evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu ess-R-data-view ensime emmet-mode elisp-slime-nav elfeed-web elfeed-org editorconfig dumb-jump disable-mouse diminish deft define-word ddskk dante dactyl-mode cython-mode csv-mode counsel-projectile company-web company-tern company-statistics company-shell company-lua company-ghci company-ghc company-emacs-eclim company-cabal company-auctex company-anaconda column-enforce-mode cmm-mode clean-aindent-mode centered-cursor-mode cargo auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile auctex-latexmk android-mode aggressive-indent ace-window ace-link ace-jump-helm-line ac-ispell)))
- '(safe-local-variable-values
-   (quote
-    ((org-attach-directory . "~/s/doc/kb/attachments")
-     (emacs . rjsx-mode)
-     (javascript-backend . tern)
-     (javascript-backend . lsp)))))
+    (nginx-mode tide typescript-mode ocp-indent ob-elixir pcache git-gutter-fringe+ fringe-helper git-gutter+ tern yapfify yaml-mode xterm-color ws-butler winum which-key web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package toml-mode toc-org tagedit stickyfunc-enhance srefactor spaceline powerline smeargle slim-mode shell-pop scss-mode sass-mode restart-emacs ranger rainbow-delimiters racer pyvenv pytest pyenv-mode py-isort pug-mode popwin pip-requirements persp-mode pcre2el paradox spinner alert log4e gntp org-plus-contrib org-bullets open-junk-file neotree multi-term move-text mmm-mode markdown-toc magit-gitflow magit-popup macrostep lorem-ipsum livid-mode skewer-mode simple-httpd live-py-mode linum-relative link-hint json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc insert-shebang indent-guide ibuffer-projectile hydra lv hy-mode dash-functional hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-pydoc helm-projectile projectile helm-mode-manager helm-make helm-gitignore request helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag haml-mode google-translate golden-ratio gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy flycheck-rust flycheck-pos-tip pos-tip flycheck pkg-info epl flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-snipe evil-search-highlight-persist highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit magit git-commit with-editor transient evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu eshell-z eshell-prompt-extras esh-help emmet-mode elisp-slime-nav dumb-jump diminish define-word cython-mode company-web web-completion-data company-statistics company-shell company-anaconda company column-enforce-mode coffee-mode clean-aindent-mode cargo markdown-mode rust-mode bind-map bind-key auto-yasnippet yasnippet auto-highlight-symbol auto-compile packed anaconda-mode pythonic f s aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core async ac-ispell auto-complete popup solarized-theme dash))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(default ((((class color) (min-colors 89)) (:foreground "#839496" :background "#002b36"))))
  '(company-tooltip-common ((t (:inherit company-tooltip :weight bold :underline nil))))
  '(company-tooltip-common-selection ((t (:inherit company-tooltip-selection :weight bold :underline nil))))
  '(evil-exchange-highlight-face ((t (:background "#073642"))))
@@ -572,7 +536,6 @@ This function is called at the very end of Spacemacs initialization."
  '(font-lock-preprocessor-face ((t (:foreground "#cb4b16"))))
  '(font-lock-variable-name-face ((t (:foreground "#839496"))))
  '(helm-buffer-modified ((t (:inherit helm-buffer-not-saved))))
- '(helm-selection ((t (:background "#073642" :underline nil))))
  '(org-level-1 ((t (:inherit nil :foreground "#de322f" :height 1.0))))
  '(org-level-2 ((t (:inherit nil :foreground "#859900" :height 1.0))))
  '(org-level-3 ((t (:inherit nil :foreground "#268bd2" :height 1.0))))
