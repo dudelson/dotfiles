@@ -82,7 +82,7 @@ alias history='noglob history'
 alias scp='noglob scp'
 
 alias _='sudo'
-alias ls='ls --group-directories-first --color=auto'
+alias ls='ls -F --group-directories-first'
 alias po='popd'
 alias pu='pushd'
 alias la='ls -A'
@@ -251,21 +251,26 @@ autoload -U zmv
 # Load and initialize the completion system, ignoring insecure dirs
 autoload -Uz compinit && compinit -i
 
-# fasd
-eval "$(fasd --init auto)"
-
-# fzf
-source /usr/share/fzf/completion.zsh
-source /usr/share/fzf/key-bindings.zsh
-
 # syntax highlighting
-source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 # autosuggestions (broken in conjunction with syntax highlighting as of june 2016)
 #source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 
+# fzf
+source /usr/share/doc/fzf/examples/completion.zsh
+source /usr/share/doc/fzf/examples/key-bindings.zsh
+
+# zoxide
+eval "$(zoxide init zsh)"
+
+# tab-rs
+source $HOME/.local/share/zsh/tab-rs/history.zsh
+
 # node version manager (best installed as a zsh plugin, for convenience)
+export NVM_LAZY_LOAD=true
 source $HOME/.local/share/zsh/zsh-nvm/zsh-nvm.plugin.zsh
 
+# for starship prompt, see end of file
 
 #############################################################################
 ##`````````````````````````````````````````````````````````````````````````##
@@ -289,12 +294,15 @@ bindkey '^X^A' fasd-complete
 ##`````````````````````````````````MISC````````````````````````````````````##
 ##`````````````````````````````````````````````````````````````````````````##
 #############################################################################
-# backup prompt, in case powerline doesn't work
+# source secret threatx-specific config
+source $HOME/.threatx.zshrc
+
+# backup prompt, in case starship doesn't work
 export PROMPT="%M %{$fg[blue]%}%~%{$reset_color%} %# "
 
 # enable powerline
 powerline-daemon -q
 source /usr/share/powerline/bindings/zsh/powerline.zsh
 
-# source secret threatx-specific config
-source $HOME/.threatx.zshrc
+# starship prompt
+# eval "$(starship init zsh)"
