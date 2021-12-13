@@ -122,7 +122,6 @@ alias uctl='systemctl --user'
 alias feh='feh --scale-down'
 alias mpv='optirun mpv'
 alias open='xdg-open 2> /dev/null'
-alias pacman='yaourt'
 alias top='htop'
 alias vim='nvim'
 alias gdb='gdb -q'
@@ -148,6 +147,12 @@ alias runghc="stack runghc"
 
 # place temporary aliases and variables here
 alias jcap="joplin-capture"
+alias ec="emacsclient"
+# I keep confusing `rm` and `mv`...
+alias rm="echo 'Please use delete instead.'"
+alias delete="/usr/bin/rm"
+# found out last week that `cp` clobber files by default...
+alias cp="/usr/bin/cp -i"
 
 
 
