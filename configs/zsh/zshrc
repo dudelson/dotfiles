@@ -82,7 +82,7 @@ alias history='noglob history'
 alias scp='noglob scp'
 
 alias _='sudo'
-alias ls='ls --group-directories-first --color=auto'
+alias ls='ls --classify --group-directories-first'
 alias po='popd'
 alias pu='pushd'
 alias la='ls -A'
@@ -144,6 +144,12 @@ alias ghc="stack ghc"
 alias ghci="stack ghci"
 alias runghc="stack runghc"
 
+# aliases for copying commands to clipboard
+alias copycmd="fc -rl 1 | fzf | python -c 'import sys;print(\" \".join(sys.stdin.read().split()[1:]),end=\"\")' | wl-copy"
+alias copyprev="fc -l -1 | python -c 'import sys;print(\" \".join(sys.stdin.read().split()[1:]),end=\"\")' | wl-copy"
+
+# remove color from commands
+alias nocolor="sed 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g'"
 
 # place temporary aliases and variables here
 alias jcap="joplin-capture"
@@ -154,6 +160,8 @@ alias delete="/usr/bin/rm"
 # found out last week that `cp` clobber files by default...
 alias cp="/usr/bin/cp -i"
 
+# CABEM abbrevs
+source $HOME/.local/lib/cabem/cabem.zsh
 
 
 # magic aliases (expand with <SPACE>)
@@ -299,3 +307,12 @@ export PROMPT="%M %{$fg[blue]%}%~%{$reset_color%} %# "
 # enable powerline
 powerline-daemon -q
 source /usr/share/powerline/bindings/zsh/powerline.zsh
+
+
+#### CABEM stuff ####
+#####################
+
+# need to run this keychain command in every shell I spawn so that ssh key
+# forwarding works correctly from all shells
+eval $(keychain --eval --quiet cabem)
+

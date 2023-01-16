@@ -31,7 +31,7 @@ syntax on
 set modelines=0
 
 " solarized setup
-set background=dark
+set background=light
 colorscheme solarized
 
 " turn on relative line numbers
@@ -207,8 +207,8 @@ inoremap kj <ESC>
 vnoremap jk <ESC>
 vnoremap kj <ESC>
 " Also ween myself off of the old way of escaping
-inoremap <c-[> <NOP>
-vnoremap <c-[> <NOP>
+"inoremap <c-[> <NOP>
+"vnoremap <c-[> <NOP>
 " Fast save
 nmap <leader>fs :w!<CR>
 " Quick quit w/o saving
