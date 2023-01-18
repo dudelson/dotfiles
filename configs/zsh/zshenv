@@ -14,18 +14,13 @@ export EDITOR='nvim'
 export LANG='en_US.UTF-8'
 #export LANGUAGE='en_US.UTF-8'
 export LC_ALL='en_US.UTF-8'
-export PATH=$(getconf PATH):/usr/local/bin:$HOME/.local/bin:/usr/bin/core_perl
+export PATH=$(getconf PATH):/usr/local/bin:/usr/bin/core_perl
 export XDG_CONFIG_HOME=$HOME/.config
 # see https://askubuntu.com/questions/466198/how-do-i-change-the-color-for-directories-with-ls-in-the-console
 LS_COLORS=$LS_COLORS:'di=1;37:' ; export LS_COLORS
 
 # java config
-export JAVA_HOME="/lib/jvm/default"
-# for android
-export PATH=$PATH:$HOME/.local/share/android/android-sdk-linux/platform-tools
-export PATH=$PATH:$HOME/.local/share/android/android-sdk-linux/tools
-export ANDROID_EMULATOR_USE_SYSTEM_LIBS=1
-export ANDROID_HOME=$HOME/.local/share/android/android-sdk-linux
+#export JAVA_HOME="/lib/jvm/default"
 
 # python config
 export PYTHONPATH="$PYTHONPATH":"$HOME"/.local/lib
@@ -35,28 +30,12 @@ export GOPATH=$HOME/.go
 export PATH=$PATH:$GOPATH/bin
 
 # ruby config
-export GEM_HOME=$(ruby -e 'print Gem.user_dir')
-export PATH=$PATH:$HOME/.gem/ruby/3.0.0/bin
-
-# ocaml config
-. $HOME/.opam/opam-init/init.zsh > /dev/null 2> /dev/null || true
-
-# haskell config
-export PATH=$PATH:$HOME/.local/stackbin
+#export GEM_HOME=$(ruby -e 'print Gem.user_dir')
+#export PATH=$PATH:$HOME/.gem/ruby/3.0.0/bin
 
 # rust config
-export PATH=$PATH:$HOME/.cargo/bin
+#export PATH=$PATH:$HOME/.cargo/bin
 
 # pass config
 export PASSWORD_STORE_CHARACTER_SET='[:alnum:]!@#$%^*()-_+=/";:'
 
-# settings for japanese input
-export GTK_IM_MODULE=ibus
-export QT_IM_MODULE=ibus
-export XMODIFIERS=@im=ibus
-
-# settings for emacspeak
-export DTK_PROGRAM=$(which espeak)
-
-# google cloud SDK config
-export PATH=$PATH:$HOME/.local/share/google-cloud-sdk/bin

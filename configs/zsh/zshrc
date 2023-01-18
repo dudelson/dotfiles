@@ -61,123 +61,11 @@ zstyle ':completion:*' menu select # TAB highlights selection, just like in the 
 
 # Envvars have been moved to ~/.zshenv
 
-#############################################################################
-##`````````````````````````````````````````````````````````````````````````##
-##````````````````````````````````ALIASES``````````````````````````````````##
-##`````````````````````````````````````````````````````````````````````````##
-#############################################################################
-# from zprezto utility module
-alias cd='nocorrect cd'
-alias cp='nocorrect cp'
-alias gcc='nocorrect gcc'
-alias grep='nocorrect grep'
-alias ln='nocorrect ln'
-alias mkdir='nocorrect mkdir -p'
-alias mv='nocorrect mv'
-alias rm='nocorrect rm'
-
-alias find='noglob find'
-alias ftp='noglob ftp'
-alias history='noglob history'
-alias scp='noglob scp'
-
-alias _='sudo'
-alias ls='ls --classify --group-directories-first'
-alias po='popd'
-alias pu='pushd'
-alias la='ls -A'
-alias sl='ls'
-
-# lists the ten most used commands (from zprezto history module)
-alias history-stat="history 0 | awk '{print \$2}' | sort | uniq -c | sort -n -r | head"
-
-########## custom aliases ##########
-####################################
-
-# use `maim` to screenshot the entire screen to a file
-# screenshot the selected area to a file
-alias maims='maim -s -p 1 -c 1,0,0,0.5 --nokeyboard'
-# screenshot the entire screen to the clipboard
-alias maimc='notify-send "Taking screenshot to clipboard in 3 seconds...";
-             maim -d 3 --format=png /dev/stdout | xclip -selection c -t image/png'
-# screenshot the selected area to the clipboard
-alias maimsc='maim -s -p 1 -c 1,0,0,0.5 --nokeyboard --format=png /dev/stdout | xclip -selection c -t image/png'
-# screenshot specifically for org-download
-alias maimdl='maim -s -p 1 -c 1,0,0,0.5 --nokeyboard /tmp/screenshot.png'
-
-# fasd aliases
-alias v='f -e nvim'
-alias e='f -e emacsclient'
-alias o='a -e xdg-open'
-alias l='d -e "ls --group-directories-first --color=auto"'
-
-# kittens
-alias kdiff='kitty +kitten diff'
-
-# systemd aliases
-alias sctl='sudo systemctl'
-alias uctl='systemctl --user'
-
-# more convenient alternatives to common commands
-alias feh='feh --scale-down'
-alias mpv='optirun mpv'
-alias open='xdg-open 2> /dev/null'
-alias top='htop'
-alias vim='nvim'
-alias gdb='gdb -q'
-alias objdump='objdump -M intel'
-alias zmv='noglob zmv -W'
-
-# new commands
-alias sudovimdiff='SUDO_EDITOR="nvim -d" sudoedit'
-alias pingtest='ping -c 3 8.8.8.8'
-alias latex-clean='latexmk -c'
-alias powercheck='cat /sys/class/power_supply/AC/online'
-alias copy='rsync -rh --info="progress2"'
-# alias to refresh external monitor
-alias swapcaps='setxkbmap -option "ctrl:swapcaps"'
-alias mon='xrandr --output DP1 --off && xrandr --output DP1 --mode 1920x1080'
-alias find-sync-conflicts='fd -L -t f "\.*sync-conflict\.*" ~/s/gtd ~/s/pkb'
-
-# haskell aliases
-alias ghc="stack ghc"
-alias ghci="stack ghci"
-alias runghc="stack runghc"
-
-# aliases for copying commands to clipboard
-alias copycmd="fc -rl 1 | fzf | python -c 'import sys;print(\" \".join(sys.stdin.read().split()[1:]),end=\"\")' | wl-copy"
-alias copyprev="fc -l -1 | python -c 'import sys;print(\" \".join(sys.stdin.read().split()[1:]),end=\"\")' | wl-copy"
-
-# remove color from commands
-alias nocolor="sed 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g'"
-
-# place temporary aliases and variables here
-alias jcap="joplin-capture"
-alias ec="emacsclient"
-# I keep confusing `rm` and `mv`...
-alias rm="echo 'Please use delete instead.'"
-alias delete="/usr/bin/rm"
-# found out last week that `cp` clobber files by default...
-alias cp="/usr/bin/cp -i"
-
-# CABEM abbrevs
-source $HOME/.local/lib/cabem/cabem.zsh
-
-
-# magic aliases (expand with <SPACE>)
-typeset -Ag abbreviations
-abbreviations=(
-    "Ia"    "| awk"
-    "Ic"    "| xclip -sel c"
-    "Ig"    "| ag"
-    "Ih"    "| head"
-    "Il"    "| less"
-    "It"    "| tail"
-    "Is"    "| sort"
-    "Iv"    "| ${VISUAL:-${EDITOR}}"
-    "Iw"    "| wc"
-    "Ix"    "| xargs"
-)
+# Aliases
+source $HOME/.dotfiles/configs/zsh/aliases/main.zsh
+# select one of these depending on your current window manager
+source $HOME/.dotfiles/configs/zsh/aliases/xorg.zsh
+#source $HOME/.dotfiles/configs/zsh/aliases/wayland.zsh
 
 #############################################################################
 ##`````````````````````````````````````````````````````````````````````````##
@@ -315,4 +203,6 @@ source /usr/share/powerline/bindings/zsh/powerline.zsh
 # need to run this keychain command in every shell I spawn so that ssh key
 # forwarding works correctly from all shells
 eval $(keychain --eval --quiet cabem)
+# source cabem aliases
+source $HOME/.local/cabem/cabem.zsh
 
