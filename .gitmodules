@@ -22,6 +22,3 @@
 [submodule "configs/vim/bundle/airline-themes"]
 	path = configs/vim/bundle/airline-themes
 	url = https://github.com/vim-airline/vim-airline-themes.git
-[submodule "configs/spacemacs/layers/calendar"]
-	path = configs/spacemacs/layers/calendar
-	url = git@github.com:dudelson/spacemacs-calendar-layer.git
