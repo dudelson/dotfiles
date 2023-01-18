@@ -25,12 +25,3 @@
 [submodule "configs/spacemacs/layers/calendar"]
 	path = configs/spacemacs/layers/calendar
 	url = git@github.com:dudelson/spacemacs-calendar-layer.git
-[submodule "configs/awesome/lain"]
-	path = configs/awesome/lain
-	url = https://github.com/lcpz/lain
-[submodule "configs/awesome/freedesktop"]
-	path = configs/awesome/freedesktop
-	url = https://github.com/lcpz/awesome-freedesktop
-[submodule "configs/awesome/awesome-switcher"]
-	path = configs/awesome/awesome-switcher
-	url = https://github.com/berlam/awesome-switcher
