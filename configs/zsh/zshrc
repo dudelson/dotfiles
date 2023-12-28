@@ -82,7 +82,7 @@ alias history='noglob history'
 alias scp='noglob scp'
 
 alias _='sudo'
-alias ls='ls --classify --group-directories-first'
+alias ls='ls'
 alias po='popd'
 alias pu='pushd'
 alias la='ls -A'
@@ -160,15 +160,11 @@ alias delete="/usr/bin/rm"
 # found out last week that `cp` clobber files by default...
 alias cp="/usr/bin/cp -i"
 
-# CABEM abbrevs
-source $HOME/.local/lib/cabem/cabem.zsh
-
-
 # magic aliases (expand with <SPACE>)
 typeset -Ag abbreviations
 abbreviations=(
     "Ia"    "| awk"
-    "Ic"    "| xclip -sel c"
+    "Ic"    "| pbcopy"
     "Ig"    "| ag"
     "Ih"    "| head"
     "Il"    "| less"
@@ -268,14 +264,14 @@ autoload -U zmv
 autoload -Uz compinit && compinit -i
 
 # fasd
-eval "$(fasd --init auto)"
+#eval "$(fasd --init auto)"
 
 # fzf
-source /usr/share/fzf/completion.zsh
-source /usr/share/fzf/key-bindings.zsh
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # syntax highlighting
-source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source /opt/homebrew/opt/zsh-fast-syntax-highlighting/share/zsh-fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh
+
 # autosuggestions (broken in conjunction with syntax highlighting as of june 2016)
 #source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 
@@ -305,14 +301,29 @@ bindkey '^X^A' fasd-complete
 export PROMPT="%M %{$fg[blue]%}%~%{$reset_color%} %# "
 
 # enable powerline
-powerline-daemon -q
-source /usr/share/powerline/bindings/zsh/powerline.zsh
+function powerline_precmd() {
+    PS1="$(/opt/homebrew/Cellar/powerline-go/1.24/bin/powerline-go -error $? -jobs ${${(%):%j}:-0})"
 
+    # Uncomment the following line to automatically clear errors after showing
+    # them once. This not only clears the error for powerline-go, but also for
+    # everything else you run in that shell. Don't enable this if you're not
+    # sure this is what you want.
 
-#### CABEM stuff ####
-#####################
+    #set "?"
+}
 
-# need to run this keychain command in every shell I spawn so that ssh key
-# forwarding works correctly from all shells
-eval $(keychain --eval --quiet cabem)
+function install_powerline_precmd() {
+  for s in "${precmd_functions[@]}"; do
+    if [ "$s" = "powerline_precmd" ]; then
+      return
+    fi
+  done
+  precmd_functions+=(powerline_precmd)
+}
+
+install_powerline_precmd
+
+# source homebrew
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
 
