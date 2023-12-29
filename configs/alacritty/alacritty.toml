@@ -1,0 +1,23 @@
+[window.dimensions]
+columns = 120
+lines = 70
+
+[window.padding]
+x = 6
+y = 6
+
+[font]
+size = 16.0
+
+[font.normal]
+family = "SauceCodePro Nerd Font"
+
+[font.bold]
+family = "SauceCodePro Nerd Font"
+
+[font.italic]
+family = "SauceCodePro Nerd Font"
+
+[font.bold_italic]
+family = "SauceCodePro Nerd Font"
+
