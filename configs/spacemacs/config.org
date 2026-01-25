@@ -230,6 +230,9 @@ backups off completely (but not autosave). See [[https://github.com/syl20bnr/spa
    backup-directory-alist `((".*" . ,(concat user-emacs-directory ".cache/backup"))))
 #+END_SRC
 * japanese input
+:PROPERTIES:
+:tangle:   no
+:END:
 Migemo is a package provided by the spacemacs japanese layer which allows
 searching for japanese text using romaji. In order for it to do this, you have
 to point it at the dictionary file (provided by installing migemo on your
@@ -308,6 +311,9 @@ SPC b b so it doesn't work.
       (message "Use SPC ' !")))
 #+END_SRC
 * layer-specific
+:PROPERTIES:
+:tangle:   no
+:END:
 A lot of these settings are grouped with their respective spacemacs layers.
 ** android development
 I've never actually developed anything in android, but I tried once, which is
@@ -822,6 +828,9 @@ but not others.
   (global-disable-mouse-mode)
 #+END_SRC
 * temporary fixes
+:PROPERTIES:
+:tangle:   no
+:END:
 Fixes helm buffers causing one window to disappear in a split view.
 See [[https://github.com/syl20bnr/spacemacs/issues/9984][this spacemacs issue]].
 #+BEGIN_SRC emacs-lisp

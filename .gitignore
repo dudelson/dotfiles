@@ -7,3 +7,4 @@ configs/spacemacs/config.el
 configs/spacemacs/org-config.el
 
 *.un~
+.DS_Store

@@ -40,14 +40,15 @@ This function should only modify configuration layer settings."
       auto-completion-tab-key-behavior 'cycle
       :disabled-for org emacs-lisp markdown text)
      ;; c-c++
-     calendar
-     csv
-     (elfeed
-      :variables
-      rmh-elfeed-org-files (list "~/s/dot/spacemacs/feeds.org")
-      )
+     ;;calendar
+     clojure
+     ;;csv
+     ;;(elfeed
+     ;; :variables
+     ;; rmh-elfeed-org-files (list "~/s/dot/spacemacs/feeds.org")
+     ;; )
      emacs-lisp
-     ess
+     ;;ess
      ;; (evil-habits
      ;;  :disabled-for org
      ;;  )
@@ -57,56 +58,56 @@ This function should only modify configuration layer settings."
       evil-snipe-scope 'visible
       evil-snipe-repeat-scope 'visible
       )
-     finance
+     ;;finance
      git
-     gtags
-     haskell
-     html
-     ibuffer
-     japanese
-     (java
-      :variables
-      java-backend 'lsp
-      )
-     (javascript
-      :variables
-      j2-basic-offset 2)
-     (json
-      :variables
-      js-indent-level 2)
-     lua
-     latex
+     ;;gtags
+     ;;haskell
+     ;;html
+     ;;ibuffer
+     ;;japanese
+     ;;(java
+     ;; :variables
+     ;; java-backend 'lsp
+     ;; )
+     ;;(javascript
+     ;; :variables
+     ;; j2-basic-offset 2)
+     ;;(json
+     ;; :variables
+     ;; js-indent-level 2)
+     ;;lua
+     ;;latex
      lsp
-     (markdown
-      ;; :variables markdown-live-preview-engine 'vmd
-      )
-     notmuch
-     ocaml
+     ;;(markdown
+     ;; ;; :variables markdown-live-preview-engine 'vmd
+     ;; )
+     ;;notmuch
+     ;;ocaml
      (org
       :variables
       ;; org-projectile-file "TODOs.org"
       org-enable-reveal-js-support t
       )
-     (python
-      :variables
-      python-backend 'lsp
-      python-test-runner 'pytest
-      python-enable-yapf-format-on-save t)
-     (ranger
-      :variables
-      ranger-cleanup-eagerly t
-      )
-     react
-     rust
+     ;;(python
+     ;; :variables
+     ;; python-backend 'lsp
+     ;; python-test-runner 'pytest
+     ;; python-enable-yapf-format-on-save t)
+     ;;(ranger
+     ;; :variables
+     ;; ranger-cleanup-eagerly t
+     ;; )
+     ;;react
+     ;;rust
      semantic
-     shell
-     shell-scripts
-     (spell-checking
-      :variables spell-checking-enable-by-default nil
-      )
+     ;;shell
+     ;;shell-scripts
+     ;;(spell-checking
+     ;; :variables spell-checking-enable-by-default nil
+     ;; )
      syntax-checking
-     web-beautify
-     yaml
+     ;;web-beautify
+     ;;yaml
      )
 
    ;; List of additional packages that will be installed without being
@@ -117,12 +118,7 @@ This function should only modify configuration layer settings."
    ;; '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages '(highlight-escape-sequences
-                                      android-mode
-                                      disable-mouse
-                                      mozc
-                                      unfill
-                                      ox-clip
-                                      interleave)
+                                      disable-mouse)
 
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '(
@@ -266,7 +262,7 @@ It should only modify the values of Spacemacs settings."
 
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
-   dotspacemacs-default-font '("Source Code Pro"
+   dotspacemacs-default-font '("SauceCodePro Nerd Font"
                                :size 20
                                :weight normal
                                :width normal
@@ -522,19 +518,19 @@ configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
   ;; load emacs secrets
-  (load-file (concat user-home-directory ".config/emacs.secrets"))
+  ;;(load-file (concat user-home-directory ".config/emacs.secrets"))
 
   ;; All org-mode settings need to be grouped
   ;; because spacemacs does not use the org-mode version that ships with emacs.
   ;; Thus any calls to org-mode functions or any attempt to set org-mode variables
   ;; outside of this `with-eval-after-load' statement will load the default org-mode
   ;; package instead of the spacemacs one, and will cause org-mode to behave weirdly.
-  (with-eval-after-load 'org
-    (let ((f (concat dotspacemacs-directory "org-config.el")))
-      (if (file-exists-p f)
-          (load-file f)
-        (message "Could not find custom org-mode configuration!")))
-    )
+  ;; (with-eval-after-load 'org
+  ;;   (let ((f (concat dotspacemacs-directory "org-config.el")))
+  ;;     (if (file-exists-p f)
+  ;;         (load-file f)
+  ;;       (message "Could not find custom org-mode configuration!")))
+  ;;   )
 
   (let ((f (concat dotspacemacs-directory "config.el")))
     (if (file-exists-p f)

@@ -68,13 +68,13 @@ zstyle ':completion:*' menu select # TAB highlights selection, just like in the 
 #############################################################################
 # from zprezto utility module
 alias cd='nocorrect cd'
-alias cp='nocorrect cp'
+#alias cp='nocorrect cp'
 alias gcc='nocorrect gcc'
 alias grep='nocorrect grep'
 alias ln='nocorrect ln'
 alias mkdir='nocorrect mkdir -p'
 alias mv='nocorrect mv'
-alias rm='nocorrect rm'
+#alias rm='nocorrect rm'
 
 alias find='noglob find'
 alias ftp='noglob ftp'
@@ -120,8 +120,8 @@ alias uctl='systemctl --user'
 
 # more convenient alternatives to common commands
 alias feh='feh --scale-down'
-alias mpv='optirun mpv'
-alias open='xdg-open 2> /dev/null'
+#alias mpv='optirun mpv'
+#alias open='xdg-open 2> /dev/null'
 alias top='htop'
 alias vim='nvim'
 alias gdb='gdb -q'
@@ -155,10 +155,10 @@ alias nocolor="sed 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g'"
 alias jcap="joplin-capture"
 alias ec="emacsclient"
 # I keep confusing `rm` and `mv`...
-alias rm="echo 'Please use delete instead.'"
-alias delete="/usr/bin/rm"
+#alias rm="echo 'Please use delete instead.'"
+alias delete="/bin/rm"
 # found out last week that `cp` clobber files by default...
-alias cp="/usr/bin/cp -i"
+alias cp="/bin/cp -i"
 
 # magic aliases (expand with <SPACE>)
 typeset -Ag abbreviations
@@ -230,20 +230,20 @@ no-magic-abbrev-expand() {
 }
 
 # colored man pages
-man() {
-    env \
-        LESS_TERMCAP_mb=$(printf "\e[1;31m") \
-        LESS_TERMCAP_md=$(printf "\e[1;31m") \
-        LESS_TERMCAP_me=$(printf "\e[0m") \
-        LESS_TERMCAP_se=$(printf "\e[0m") \
-        LESS_TERMCAP_so=$(printf "\e[1;44;33m") \
-        LESS_TERMCAP_ue=$(printf "\e[0m") \
-        LESS_TERMCAP_us=$(printf "\e[1;32m") \
-        PAGER="${commands[less]:-$PAGER}" \
-        _NROFF_U=1 \
-        PATH="$HOME/bin:$PATH" \
-        man "$@"
-}
+#man() {
+#    env \
+#        LESS_TERMCAP_mb=$(printf "\e[1;31m") \
+#        LESS_TERMCAP_md=$(printf "\e[1;31m") \
+#        LESS_TERMCAP_me=$(printf "\e[0m") \
+#        LESS_TERMCAP_se=$(printf "\e[0m") \
+#        LESS_TERMCAP_so=$(printf "\e[1;44;33m") \
+#        LESS_TERMCAP_ue=$(printf "\e[0m") \
+#        LESS_TERMCAP_us=$(printf "\e[1;32m") \
+#        PAGER="${commands[less]:-$PAGER}" \
+#        _NROFF_U=1 \
+#        PATH="$HOME/bin:$PATH" \
+#        man "$@"
+#}
 
 #############################################################################
 ##`````````````````````````````````````````````````````````````````````````##
@@ -326,4 +326,9 @@ install_powerline_precmd
 # source homebrew
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
+[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
 
+
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
