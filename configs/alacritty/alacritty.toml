@@ -1,23 +1,12 @@
-[window.dimensions]
-columns = 120
-lines = 70
-
-[window.padding]
-x = 6
-y = 6
+[window]
+opacity = 0.8
+blur = true
+startup_mode = "Maximized"
+padding = { x = 6, y = 6 }
 
 [font]
-size = 16.0
-
-[font.normal]
-family = "SauceCodePro Nerd Font"
-
-[font.bold]
-family = "SauceCodePro Nerd Font"
-
-[font.italic]
-family = "SauceCodePro Nerd Font"
-
-[font.bold_italic]
-family = "SauceCodePro Nerd Font"
-
+normal = { family = "SauceCodePro Nerd Font Mono", style = "Regular" }
+#bold = { style = "Bold" }
+#italic = { style = "Italic" }
+#bold_italic = { style = "Bold Italic" }
+size = 14.0
