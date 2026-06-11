@@ -1,6 +1,8 @@
 # Dotfiles
 This repo houses my dotfiles for the various unix systems I use (or have used).
 
+**Note 2026-06-11:** `ofc-i-still-love-you` is the second macbook air M1 I have owned. The config for the first macbook air M1 is branch `macbook-air-m1`.
+
 ## Included Configurations
 
 - awesome: awesome window manager config
