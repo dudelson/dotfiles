@@ -15,8 +15,12 @@ export LANG='en_US.UTF-8'
 #export LANGUAGE='en_US.UTF-8'
 export LC_ALL='en_US.UTF-8'
 # homebrew should come first
+#export PATH=$(getconf PATH):/usr/local/bin:$HOME/.local/bin:/usr/bin/core_perl
+#export XDG_CONFIG_HOME=$HOME/.config
 # see https://askubuntu.com/questions/466198/how-do-i-change-the-color-for-directories-with-ls-in-the-console
 #LS_COLORS=$LS_COLORS:'di=1;37:' ; export LS_COLORS
+# for zsh syntax highlighting
+export ZSH_HIGHLIGHT_HIGHLIGHTERS_DIR=/opt/homebrew/share/zsh-syntax-highlighting/highlighters
 
 # java config
 #export JAVA_HOME="/lib/jvm/default"
@@ -68,6 +72,5 @@ export PASSWORD_STORE_CHARACTER_SET='[:alnum:]!@#$%^*()-_+=/";:'
 # google cloud SDK config
 #export PATH=$PATH:$HOME/.local/share/google-cloud-sdk/bin
 
-
+# nvm config
 export NVM_DIR="$HOME/.nvm"
-
